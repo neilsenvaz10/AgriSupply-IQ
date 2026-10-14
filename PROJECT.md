@@ -4,7 +4,7 @@
 > **Hackathon:** SYRUS 7.0 | **Team:** CodeSparks Innovators  
 > **Domain:** Sustainability / Agriculture Technology  
 > **Document type:** Engineering specification, phased implementation plan, and improvement roadmap  
-> **Version:** 1.1 | **Updated:** 14 October 2026  
+> **Version:** 1.2 | **Updated:** 14 October 2026 (v1.2: nationwide, all-crop scope made a core architectural requirement; see §0.1)  
 > **Status:** Proposed architecture and implementation plan; not a statement of completed functionality.
 
 ---
@@ -20,6 +20,17 @@ This is the central implementation guide for building FASALYTICS **from scratch*
 3. `Sustainability_PS-2_CodeSpark-Innovators_NeilsenVaz.pdf` — final concept: crowd-aware recommendations, fair price card, two-way SMS, multilingual/voice access, feedback loop, weather intelligence, proposed tech stack.
 
 **Status conventions:** `MUST` = essential for PS2 MVP; `SHOULD` = strong hackathon differentiator; `LATER` = enhancement requiring more time/data/integration. `Verified` is reserved for functionality actually tested and demonstrated.
+
+## 0.1 Platform scope: nationwide and all-crop (core architectural requirement)
+
+FASALYTICS is a **nationwide, all-commodity platform**, not a Maharashtra or two-crop product.
+
+- **Geography:** India → State/UT → District → Mandi, with canonical identifiers. No state, district or market may be hardcoded in application logic, configuration or schemas.
+- **Commodities:** India's full set of agricultural commodities and varieties, **discovered dynamically from data**. No crop names in business logic. Adding a commodity or market must not require code changes.
+- **Reusable pipelines:** one ingestion, normalisation, forecasting, risk, comparison and allocation pipeline parameterised by commodity and market. No per-crop applications.
+- **Capability is evidence-gated, not whitelisted.** Architectural support for every crop and mandi is a design requirement. Whether a given commodity–market combination receives validated forecasts is decided by **measurable data and backtesting criteria** (§4.2.1). Insufficient data produces an honest, lower capability tier, never a fabricated forecast.
+- **Early validation cases** (for example Potato and Onion in Maharashtra, where the supplied historical files have good continuity) exist only to prove the pipeline. They are **not** product limits and must not be encoded in models, schemas or UI.
+- **Granularity honesty:** mandi-level, state-level and national observations are different things and must never be blended to create misleading values (for example, state-level arrivals are never presented as mandi arrivals).
 
 ### Non-negotiable principles
 
@@ -184,9 +195,36 @@ flowchart TD
 
 **Useful starting links (verify current availability and terms):** [AGMARKNET](https://agmarknet.gov.in/), [data.gov.in](https://www.data.gov.in/), [CEDA](https://agri-market-data.ceda.ashoka.edu.in/). These are **candidate sources**, not assertions that live API credentials, data downloads or licenses are already secured.
 
-## 4.2 Pilot geography and crops
+## 4.2 Coverage strategy: nationwide platform, evidence-gated capability
 
-Start with **Maharashtra** and **2–3 commodities with usable records** (for example onion, tomato and potato, conditional on actual coverage), then identify at least **three well-covered mandis per selected commodity**. Prefer **coverage and continuity over breadth**. Do not train on sparse series merely to claim national coverage. Create a coverage matrix: crop × market × start/end dates × observation count × arrivals completeness × gaps × latest date.
+The platform targets **all of India and all commodities** (§0.1). The data supplied so far is a historical subset, so coverage is **measured, never assumed**.
+
+**Three separate notions must not be confused:**
+
+| Concept | Meaning | Source of truth |
+|---|---|---|
+| **Platform coverage** | What the architecture can represent: any state, district, mandi, commodity, variety | Schemas and registries (no hardcoding) |
+| **Dataset coverage** | What the ingested files actually contain, per source, granularity and period | Coverage matrix generated from data |
+| **Forecast eligibility** | Which commodity–market (or commodity–state) series are validated for forecasting | Automated criteria plus backtests (§4.2.1) |
+
+**Coverage matrix (generated, not hand-written):** source × state × district × market × commodity × variety × granularity × start/end dates × observation count × arrivals completeness × gaps × latest date. Markets are keyed by canonical IDs, not names (the same market name occurs in several states).
+
+**Early technical validation:** use well-covered series (for example Potato and Onion in Maharashtra) to prove ingestion, features, backtesting and API contracts end to end. Then run the **same** pipeline over every series that passes eligibility. Prefer coverage and continuity over breadth *within* a tier. Do not train on sparse series to claim coverage.
+
+### 4.2.1 Capability tiers (determined by measurable criteria)
+
+| Tier | Meaning | Typical evidence |
+|---|---|---|
+| **Full Intelligence** | Validated mandi-level forecasts and decision support | Sufficient mandi-level history, continuity, freshness and backtest skill over baseline |
+| **Limited Intelligence** | Historical mandi data exists, but quality or coverage is insufficient for validated forecasts | Gaps, short history, stale data or no skill over baseline |
+| **State-Level Intelligence** | Only state-level observations exist; state analysis only | State × commodity series (never presented as mandi-level) |
+| **Insufficient Data** | Not enough verified observations | Below minimum counts or too stale |
+
+Criteria (observation count, span, continuity/maximum gap, missingness, freshness, horizon, backtest skill, uncertainty) are configuration values stored with the evaluation, not commodity whitelists. The first, provisional data-sufficiency screen and its results are recorded in `docs/data-sources/PILOT_SELECTION.md`; **only Phase 3 backtests can grant forecast eligibility**.
+
+### 4.2.2 Historical versus recent data
+
+The supplied datasets are **historical**. Current decision support requires a recent feed (verified in Phase 2). Without recent observations the system supports historical exploration and backtesting but must disable or qualify current recommendations and label every value with its reporting date.
 
 ## 4.3 Source adapter contracts
 
@@ -201,8 +239,14 @@ observation_id             UUID
 source_id                  source identifier
 source_record_key          provider record key / dedupe hash
 observed_date              DATE in market local time
-market_id                  canonical UUID
+geo_granularity            market / state / national   (never blended across levels)
+temporal_granularity       daily / monthly
+state_id                   canonical UUID
+district_id                nullable canonical UUID (null for state/national records)
+market_id                  nullable canonical UUID (null for state/national records)
 commodity_id               canonical UUID
+source_file                original filename (provenance)
+is_historical_snapshot     BOOLEAN (true for supplied historical files)
 variety                    nullable string
 grade                      nullable string
 min_price_inr_per_quintal   NUMERIC nullable
@@ -576,7 +620,7 @@ The phases below are **dependency-aware**, not promises of fixed durations. Para
 **Objective:** establish reproducible monorepo and API communication.
 
 **Tasks:**
-1. Confirm pilot crops/markets, user journeys, feature priority and definition of “day” for forecasts.
+1. Confirm the early technical-validation series (not product limits), user journeys, feature priority and definition of “day” for forecasts. Keep all geography and commodities data-driven (§0.1).
 2. Create GitHub repo and branch policy (`main`, short-lived feature branches, PR review).
 3. Initialize React/Vite/TS frontend, Express/TS backend, FastAPI/Python service.
 3a. Inventory all Google Stitch exports (HTML, CSS, JS, images, fonts, screen names and responsive variants); map each exported screen to the project screen inventory and identify missing screens. Store original exports under `design/stitch/original/` and document asset licenses. Do not overwrite originals.
@@ -603,7 +647,7 @@ The phases below are **dependency-aware**, not promises of fixed durations. Para
 8. Create `/commodities`, `/markets`, `/prices` APIs and coverage report.
 9. Verify sample rows manually against source files/portal.
 
-**Deliverables:** source-backed records, coverage matrix, quality dashboard and ingestion logs. **Exit criteria:** reproducible raw→clean transformation; no unlabelled synthetic data; selected pilot market series sufficiently populated or explicitly marked insufficient. **Fallback:** use a documented, timestamped historical snapshot; do not invent current observations.
+**Deliverables:** source-backed records, coverage matrix, quality dashboard and ingestion logs. **Exit criteria:** reproducible raw→clean transformation; no unlabelled synthetic data; canonical state/district/market/commodity registries with alias handling; a generated coverage matrix for all ingested sources; every series classified into a capability tier by measurable criteria (not whitelists). **Fallback:** use a documented, timestamped historical snapshot; do not invent current observations.
 
 ## PHASE 3 — Forecast research, backtesting and inference service
 
@@ -621,7 +665,7 @@ The phases below are **dependency-aware**, not promises of fixed durations. Para
 9. Serve `POST /predict` in FastAPI with fallback and status metadata.
 10. Add tests for missing records, future leakage, zero prices and stale snapshots.
 
-**Deliverables:** reproducible training command, metrics report, model artifact, forecast API. **Exit criteria:** test metrics available; baseline comparison documented; predictions are positive when appropriate; unsupported markets show fallback/unavailable. **Risk:** sparse or biased historical data; mitigate by narrowing pilot coverage and using honest baselines.
+**Deliverables:** reproducible training command, metrics report, model artifact, forecast API. **Exit criteria:** test metrics available; baseline comparison documented; predictions are positive when appropriate; unsupported markets show fallback/unavailable. **Risk:** sparse or biased historical data; mitigate by enabling forecasts only for series that pass eligibility and backtesting, labelling the rest with a lower capability tier, and using honest baselines.
 
 ## PHASE 4 — Risk and weather intelligence
 
@@ -995,7 +1039,9 @@ Use **real, dated source snapshots** if live APIs are unreliable. Explicitly lab
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Historical data sparse or stale | Weak forecast | Narrow pilot; show fallback; document coverage |
+| Historical data sparse or stale | Weak forecast | Evidence-gated eligibility and capability tiers; show fallback; document coverage; never interpolate long gaps |
+| Datasets of mixed granularity (mandi/state/national) | Misleading blended values | Keep granularity explicit per record; state-level arrivals never shown as mandi arrivals |
+| Inconsistent state/market spellings and duplicate market names across states | Wrong joins and comparisons | Canonical registries with human-reviewed aliases; composite keys (state, district, market) |
 | Source format/API changes | Broken ingestion | Adapter tests, raw snapshots, monitoring |
 | Arrival records missing | Risk model weak | Missingness flags; omit unsupported surge claims |
 | Market names inconsistent | Wrong comparisons | Canonical IDs and human-reviewed alias table |
@@ -1014,7 +1060,8 @@ Use **real, dated source snapshots** if live APIs are unreliable. Explicitly lab
 
 - [ ] Document actual source URLs, terms, credentials/access process, and coverage.
 - [ ] Source data has immutable snapshots, quality flags and correct units.
-- [ ] Three pilot mandis have sufficient valid observations or documented gaps.
+- [ ] Coverage matrix generated for all ingested sources; every commodity–market series assigned a capability tier with documented criteria.
+- [ ] At least three eligible mandis exist for the demonstration commodity, or the gap is documented.
 - [ ] Forecast models have held-out backtests, baseline comparison and version IDs.
 - [ ] Every forecast and market card shows date, source and uncertainty status.
 - [ ] Costs and spoilage are calculated consistently and independently tested.
@@ -1036,7 +1083,7 @@ Use **real, dated source snapshots** if live APIs are unreliable. Explicitly lab
 
 # 20. First implementation sprint: exact recommended sequence
 
-1. **Day 0:** choose pilot crops/mandis based on real coverage; create source-access checklist.
+1. **Day 0:** pick well-covered series for early technical validation based on real coverage (not as product limits); create source-access checklist.
 2. **Initialize repo:** frontend, API, intelligence service, PostgreSQL, Docker Compose, CI.
 3. **Prove ingestion:** import one real source file end-to-end and verify 20 randomly selected rows.
 4. **Prove querying:** `GET /prices` returns crop/mandi/date observations with provenance.

@@ -9,7 +9,15 @@
 
 FASALYTICS helps smallholder farmers and FPOs (Farmer Producer Organizations) make data-backed decisions on **when, where, and how much** of their harvest to sell. 
 
-Instead of chasing the highest sticker price at a distant mandi, the platform calculates **true net returns** by factoring in real-time/recent mandi arrivals, 1–7 day price forecasts, transport & handling costs, spoilage risk, and market congestion.
+Instead of chasing the highest sticker price at a distant mandi, the platform calculates **true net returns** by factoring in recent mandi arrivals, 1–7 day price forecasts, transport & handling costs, spoilage risk, and market congestion.
+
+### Scope: nationwide and all-crop
+
+FASALYTICS is designed for **all of India and all agricultural commodities** (India → State/UT → District → Mandi → Commodity → Variety). Nothing is hardcoded to a state or a crop; commodities and markets are discovered from data.
+
+- **Architecture supports everything; data decides capability.** Each commodity–market series is assigned a capability tier (Full / Limited / State-Level Intelligence / Insufficient Data) using measurable criteria and backtests, never a crop whitelist.
+- **Early validation** uses well-covered series (e.g. Potato and Onion in Maharashtra) only to prove the pipeline. They are examples, not limits.
+- **Honest data labelling:** the supplied datasets are *historical*. Mandi-, state- and national-level records are never blended, and historical data is never shown as a current price. See [docs/data-sources/PILOT_SELECTION.md](./docs/data-sources/PILOT_SELECTION.md) for dataset coverage by state.
 
 ### Key Capabilities
 - **Mandi Price & Arrival Tracking:** Source-tracked modal prices and volume arrivals across target mandis.
@@ -26,15 +34,32 @@ Instead of chasing the highest sticker price at a distant mandi, the platform ca
 
 ```text
 AgriSupply-IQ/
-├── PROJECT.md                                      # Master blueprint, architecture specs & phased roadmap
-├── README.md                                       # Project overview and quickstart
-└── stitch_fasalytics_agritech_intelligence_platform/ # Exported UI designs & reference prototypes (Google Stitch)
+├── PROJECT.md                  # Master blueprint, architecture specs & phased roadmap
+├── README.md                   # Project overview
+├── .env.example                # Environment template (placeholders only; copy to .env)
+├── .gitignore                  # Protects secrets, datasets, models and build output
+├── apps/
+│   ├── web/                    # React + Vite + TypeScript frontend      (Milestone 5)
+│   └── api/                    # Express + TypeScript backend            (Milestone 6)
+├── services/
+│   └── intelligence/           # Python 3.12 FastAPI ML service          (Milestone 7)
+├── database/
+│   └── migrations/             # PostgreSQL migrations                   (Milestone 8)
+├── data/
+│   └── raw/                    # Original historical CSVs (git-ignored, read-only)
+├── design/
+│   └── stitch/                 # Stitch asset area (originals move here in Milestone 4)
+├── docs/
+│   └── data-sources/           # Dataset coverage, provenance and limitations
+└── stitch_fasalytics_agritech_intelligence_platform/  # Exported Google Stitch UI (moves in Milestone 4)
     ├── agriintelligence_market_risk_system/
     ├── fasalytics_ai_copilot/
     ├── fasalytics_farmer_dashboard/
     ├── smart_harvest_allocation/
     └── smart_mandi_comparison/
 ```
+
+> `compose.yaml` is introduced in Milestone 9 (Docker Compose integration).
 
 ---
 
@@ -56,15 +81,16 @@ AgriSupply-IQ/
 
 The full engineering blueprint and stage-by-stage implementation guide is documented in [PROJECT.md](./PROJECT.md):
 
-- **Phase 1:** Environment setup, repo scaffolding & data source adapters
-- **Phase 2:** Canonical data pipeline & database migrations
-- **Phase 3:** Forecasting engine & backtesting baseline
-- **Phase 4:** Mandi comparison & net return calculators
-- **Phase 5:** Smart Harvest Allocation optimization engine
-- **Phase 6:** Backend APIs & orchestration layer
-- **Phase 7:** Frontend dashboard conversion (from Stitch prototype to React)
-- **Phase 8:** Groq API tool-calling copilot & scenario simulator
-- **Phase 9:** Validation, unit tests & deployment
+- **Phase 1:** Foundation & environment (monorepo, services, database, Docker, local validation)
+- **Phase 2:** Market data engineering (nationwide ingestion, normalisation, provenance, registries)
+- **Phase 3:** Multi-crop forecasting (generalised models, backtesting, uncertainty, eligibility)
+- **Phase 4:** Risk intelligence (volatility, price-drop, supply pressure, freshness, weather)
+- **Phase 5:** Mandi comparison (net returns, transport costs, sell-now vs wait)
+- **Phase 6:** Smart Harvest Allocation (risk-adjusted optimisation, explainable plans)
+- **Phase 7:** Frontend integration (Stitch designs → React dashboard, PWA)
+- **Phase 8:** AI assistant (Groq tool-calling copilot & what-if simulator)
+- **Phase 9:** Accessibility & communication (multilingual, alerts, SMS/WhatsApp, voice)
+- **Phase 10:** Testing, deployment & demo
 
 ---
 
@@ -73,7 +99,11 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 - [x] Problem statement & requirements analysis
 - [x] UI/UX prototypes designed in Google Stitch
 - [x] Master engineering specification & roadmap ([PROJECT.md](./PROJECT.md))
-- [ ] Core services & data pipeline implementation (in progress)
+- [x] Phase 1 / Milestone 1: development environment verified
+- [x] Phase 1 / Milestone 2: historical datasets profiled ([coverage report](./docs/data-sources/PILOT_SELECTION.md))
+- [x] Phase 1 / Milestone 3: monorepo foundation, `.gitignore`, `.env.example`, raw data organised
+- [ ] Milestone 4: Google Stitch asset inventory and preservation
+- [ ] Core services & data pipeline implementation (not started)
 
 ---
 

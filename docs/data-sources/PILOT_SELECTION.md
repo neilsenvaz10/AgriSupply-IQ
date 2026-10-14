@@ -1,9 +1,25 @@
-# FASALYTICS — Pilot Crop & Mandi Selection
+# FASALYTICS — Dataset Coverage & Early Validation Selection
 
-> **Status:** Milestone 2 analysis of the four historical datasets supplied by the team.
+> **Status:** Milestone 2 analysis of the four historical datasets supplied by the team (updated in Milestone 3 for nationwide scope).
 > **Analysed:** 14 October 2026 (read-only; originals unmodified).
 > **Nature of the data:** every figure below is a **historical observation**, not a live or current market price.
 > Nothing here is a forecast, and no gaps were filled or invented.
+
+> ## ⚠️ Scope correction (read first)
+> FASALYTICS is a **nationwide, all-crop platform** (PROJECT.md §0.1). Sections 3 and 4 below describe **early technical-validation series** (Potato and Onion in Maharashtra) chosen because the supplied files are continuous there. They are **not** the product scope and must not be hardcoded anywhere.
+>
+> Four things are deliberately kept separate in this document:
+>
+> | Concept | Where |
+> |---|---|
+> | **Platform-wide coverage** (what the architecture must support) | PROJECT.md §0.1, §4.2 |
+> | **Actual dataset coverage** (what the files contain, by state and commodity) | Sections 1, 2, 9 |
+> | **Forecast-eligible series** (provisional data-sufficiency screen; backtests decide) | Section 10 |
+> | **Early validation examples** and **future nationwide expansion needs** | Sections 3–4, 11 |
+>
+> *Naming:* the filename `PILOT_SELECTION.md` is retained so existing references keep working. A clearer name such as `DATASET_COVERAGE.md` is recommended once Phase 2 generates the coverage matrix automatically.
+>
+> *Paths:* after Milestone 3 the originals live in `data/raw/` (§12). Checksums were verified identical before and after the move.
 
 ---
 
@@ -23,7 +39,7 @@ SHA-256 prefixes were recorded so later steps can prove the originals were not m
 | | **A – market price rows** | **B – merged arrival reports** | **C – monthly crop prices** | **D – Wholesale Price Index** |
 |---|---|---|---|---|
 | Granularity | **Mandi × commodity × variety × grade × day** | **State × commodity × day** | National monthly average | National monthly index |
-| Geography | 30 states, 1,598 markets | 34 states, no market column | India only | India only |
+| Geography | 29 raw state spellings (≈26 canonical states/UTs), 1,598 markets | 33 raw state names with valid dates, no market column | India only | India only |
 | Period | 2023-06-06 → 2025-06-11 | 2022-01-01 → 2026-07-02 | 2010-01 → 2025-03 | 2012 → 2024 |
 | Min / Max / Modal price | ✅ all three (₹/quintal) | Modal only (₹/quintal) | Monthly averages | Index values, no ₹ |
 | **Arrival quantity** | ❌ none | ✅ tonnes (≈100% populated) | ❌ | ❌ |
@@ -96,9 +112,9 @@ Level agreement is good. Onion tracks very closely; Potato's lower correlation s
 
 ---
 
-## 3. Pilot recommendation
+## 3. Early validation recommendation (not the product scope)
 
-### Primary crop: **Potato** (Maharashtra)
+### First validation crop: **Potato** (Maharashtra)
 
 | Evidence | Value |
 |---|---|
@@ -138,9 +154,9 @@ Dataset B contains 142 Maharashtra commodities, some with slightly more days tha
 
 ---
 
-## 4. Pilot mandis
+## 4. Early validation mandis (Maharashtra)
 
-> Selection is based only on observed coverage in Dataset A. Distances, transport costs and coordinates are **not** verified yet.
+> Selection is based only on observed coverage in Dataset A. These are example series for proving the pipeline; Section 10 shows the same screen applied nationwide. Distances, transport costs and coordinates are **not** verified yet.
 
 ### Potato (primary): proposed set
 
@@ -215,11 +231,13 @@ Best joint coverage: **Kolhapur + Lasalgaon(Vinchur) + Pune(Manjri) report toget
 
 ---
 
-## 8. Decision summary
+## 8. Decision summary (early validation only)
+
+> This table records the **technical-validation** choice. It is not a product restriction. See Sections 9–11 for nationwide coverage.
 
 | Item | Choice |
 |---|---|
-| Region | Maharashtra |
+| Region (validation) | Maharashtra |
 | **Primary crop** | **Potato** (mandi-level continuity) |
 | **Secondary crop** | **Onion** (highest decision value; gaps documented) |
 | Primary mandis | Pune(Manjri), Vashi New Mumbai, Nasik (alternates: Solapur, Amravati, Akola) |
@@ -228,3 +246,165 @@ Best joint coverage: **Kolhapur + Lasalgaon(Vinchur) + Pune(Manjri) report toget
 | Datasets set aside | C and D |
 | Blocking dependency for "live" features | Recent official data (Section 6) |
 
+---
+
+## 9. State-wise dataset coverage (nationwide view)
+
+Recomputed in Milestone 3 directly from the files in `data/raw/`. State names are shown **as written** in each file; Section 11 lists the spelling conflicts a canonical registry must resolve.
+
+### 9.1 Dataset A — mandi-level prices (2023-06-06 → 2025-06-11; 5 commodities; no arrivals)
+
+"Series" = one (state, district, market, commodity) daily series. "Pass" = passes the provisional data-sufficiency screen in Section 10 (not forecast eligibility).
+
+| State (as written) | Rows | Districts | Markets | Commodities | Series | Pass |
+|---|---:|---:|---:|---:|---:|---:|
+| Uttar Pradesh | 188,094 | 56 | 181 | 5 | 728 | 109 |
+| Tamilnadu | 66,602 | 24 | 184 | 2 | 353 | 0 |
+| Haryana | 63,222 | 18 | 80 | 4 | 229 | 45 |
+| Madhya Pradesh | 55,901 | 44 | 285 | 4 | 471 | 2 |
+| West Bengal | 53,927 | 14 | 43 | 5 | 137 | 37 |
+| Maharashtra | 51,816 | 26 | 206 | 5 | 347 | 18 |
+| Kerala | 45,605 | 9 | 58 | 5 | 155 | 23 |
+| Punjab | 44,792 | 14 | 86 | 4 | 218 | 23 |
+| Rajasthan | 35,785 | 28 | 98 | 5 | 183 | 15 |
+| Gujarat | 26,652 | 16 | 73 | 5 | 116 | 11 |
+| Himachal Pradesh | 22,837 | 8 | 33 | 5 | 96 | 14 |
+| Orissa | 20,633 | 20 | 57 | 4 | 144 | 12 |
+| Karnataka | 14,391 | 21 | 72 | 5 | 159 | 3 |
+| Bihar | 12,454 | 19 | 31 | 4 | 54 | 8 |
+| Andhra Pradesh | 9,616 | 10 | 30 | 5 | 58 | 4 |
+| Jammu & Kashmir | 5,299 | 4 | 7 | 3 | 21 | 3 |
+| Assam | 4,099 | 7 | 13 | 5 | 25 | 2 |
+| Delhi | 3,713 | 1 | 5 | 5 | 12 | 2 |
+| Nagaland | 3,012 | 11 | 16 | 3 | 31 | 1 |
+| Chattisgarh | 2,603 | 9 | 24 | 4 | 32 | 2 |
+| Chhattisgarh | 2,250 | 1 | 7 | 4 | 12 | 1 |
+| Manipur | 1,317 | 2 | 2 | 3 | 6 | 0 |
+| Chandigarh | 949 | 1 | 1 | 3 | 3 | 1 |
+| Jammu and Kashmir | 926 | 1 | 2 | 3 | 6 | 0 |
+| Meghalaya | 810 | 5 | 10 | 3 | 20 | 0 |
+| Uttrakhand | 46 | 1 | 1 | 4 | 4 | 0 |
+| Tamil Nadu | 26 | 3 | 6 | 1 | 6 | 0 |
+| Tripura | 11 | 1 | 2 | 1 | 2 | 0 |
+| Gao *(Goa, misspelt)* | 4 | 1 | 1 | 1 | 1 | 0 |
+
+Commodity coverage in A:
+
+| Commodity | Rows | States | Markets | Window |
+|---|---:|---:|---:|---|
+| Onion | 298,658 | 28 | 1,044 | 2023-06-06 → 2025-06-11 |
+| Potato | 327,332 | 27 | 971 | 2023-06-06 → 2025-06-11 |
+| Wheat | 76,976 | 18 | 738 | 2023-06-06 → 2024-02-06 |
+| Tomato | 26,644 | 23 | 660 | 2023-06-06 → 2023-11-06 |
+| Rice | 7,782 | 14 | 195 | 2025-04-06 → 2025-06-06 |
+
+### 9.2 Dataset B — state-level prices and arrivals (2022-01-01 → 2026-07-02; 433 commodities)
+
+"Series" = one (state, commodity) daily series, de-duplicated across overlapping reports.
+
+| State (as written) | Rows | Commodities | First | Last | Series | Pass |
+|---|---:|---:|---|---|---:|---:|
+| Maharashtra | 143,769 | 142 | 2022-01-01 | 2026-07-02 | 142 | 73 |
+| Gujarat | 134,539 | 155 | 2022-01-01 | 2026-07-02 | 155 | 80 |
+| Keralam | 128,371 | 137 | 2022-01-01 | 2026-07-02 | 137 | 76 |
+| Rajasthan | 126,495 | 152 | 2022-01-01 | 2026-07-02 | 152 | 64 |
+| Karnataka | 124,169 | 145 | 2022-01-01 | 2026-07-02 | 145 | 62 |
+| Uttar Pradesh | 121,885 | 176 | 2022-01-01 | 2026-07-02 | 176 | 59 |
+| Telangana | 111,999 | 150 | 2022-01-01 | 2026-07-02 | 150 | 56 |
+| Madhya Pradesh | 110,911 | 247 | 2022-01-01 | 2026-07-02 | 247 | 41 |
+| Punjab | 94,464 | 130 | 2022-01-01 | 2026-07-02 | 130 | 43 |
+| Haryana | 92,974 | 124 | 2022-01-01 | 2026-07-02 | 124 | 43 |
+| NCT of Delhi | 89,047 | 128 | 2022-01-01 | 2026-07-02 | 128 | 34 |
+| West Bengal | 80,425 | 74 | 2022-01-01 | 2026-07-02 | 74 | 43 |
+| Chattisgarh | 73,403 | 136 | 2022-01-01 | 2026-07-02 | 136 | 27 |
+| Tamil Nadu | 68,323 | 130 | 2022-01-01 | 2026-07-02 | 130 | 5 |
+| Himachal Pradesh | 67,930 | 85 | 2022-01-01 | 2026-07-02 | 85 | 35 |
+| Uttarakhand | 61,224 | 111 | 2022-01-01 | 2026-07-02 | 111 | 27 |
+| Odisha | 57,206 | 132 | 2022-01-01 | 2026-07-02 | 132 | 25 |
+| Jammu and Kashmir | 53,120 | 74 | 2022-01-01 | 2026-07-02 | 74 | 26 |
+| Tripura | 47,284 | 82 | 2022-01-01 | 2026-07-02 | 82 | 20 |
+| Andhra Pradesh | 30,061 | 67 | 2022-01-01 | 2026-07-02 | 67 | 12 |
+| Nagaland | 23,482 | 72 | 2022-01-01 | 2026-07-02 | 72 | 6 |
+| Meghalaya | 22,049 | 70 | 2022-01-03 | 2026-07-02 | 70 | 2 |
+| Bihar | 19,307 | 98 | 2022-01-01 | 2026-07-02 | 98 | 2 |
+| Goa | 17,978 | 22 | 2022-01-01 | 2026-07-02 | 22 | 6 |
+| Manipur | 14,364 | 26 | 2022-01-03 | 2026-07-02 | 26 | 0 |
+| Chandigarh | 14,265 | 28 | 2022-01-11 | 2026-07-02 | 28 | 0 |
+| Assam | 14,033 | 84 | 2022-01-05 | 2026-07-02 | 84 | 0 |
+| Andaman and Nicobar | 6,372 | 56 | 2022-01-20 | 2026-07-02 | 56 | 0 |
+| Pondicherry | 3,796 | 18 | 2022-01-03 | 2026-07-02 | 18 | 0 |
+| Arunachal Pradesh | 397 | 22 | 2025-10-27 | 2026-07-02 | 22 | 0 |
+| Jharkhand | 117 | 18 | 2022-01-01 | **2023-01-24** | 18 | 0 |
+| Mizoram | 39 | 9 | 2026-05-30 | 2026-07-01 | 9 | 0 |
+
+Dataset B commodity groups (by distinct commodities): Vegetables 101, Fruits 42, Flowers 31, Forest Products 34, Others 33, Pulses 32, Spices 29, Drug & Narcotics 29, Cereals 24, Oil Seeds 21, Live Stock/Poultry/Fisheries 17, Medicinal & Aromatic Plants 17, Oils & Fats 7, Dry Fruits 7, Fibre Crops 5, Beverages 4. Arrival units are **Metric Tonnes** for 1,876,567 rows, but **Nos** (42,040) and **Bundle** (35,191) for others, so units must be carried per record.
+
+### 9.3 Datasets C and D
+
+National monthly only (no state or district). They give long-run context (C: 16 commodities, 2010 → 2025-03; D: 41 index series, 2012 → 2024) but cannot support state, mandi or daily analysis.
+
+---
+
+## 10. Provisional data-sufficiency screen (NOT forecast eligibility)
+
+A transparent first pass over every series in A and B, to show nationwide *data* availability. **This does not grant forecast eligibility.** Only Phase 3 time-based backtests against baselines can do that, and thresholds are configuration, not whitelists.
+
+| Source | Criteria applied (all must hold) |
+|---|---|
+| A (mandi) | ≥ 365 reporting days · ≥ 60% coverage of own first→last span · max internal gap ≤ 31 days · last observation within 14 days of the file's end (2025-06-11) |
+| B (state) | ≥ 730 reporting days · ≥ 70% coverage of own span · last observation within 30 days of the file's end (2026-07-02) |
+
+### Results
+
+| Level | Series evaluated | Pass screen | Notes |
+|---|---:|---:|---|
+| **A — mandi × commodity** | 3,629 | **336** | **All 336 are Potato**, across 21 states; 335 distinct markets |
+| **B — state × commodity** | 3,100 | **867** | 172 of 433 commodities pass in at least one state |
+
+What this shows:
+- **Potato** clears the mandi-level screen in 21 states (largest: Uttar Pradesh 109, Haryana 45, West Bengal 37, Kerala 23, Punjab 23, Maharashtra 18). Maharashtra is therefore *one of 21*, not the scope.
+- **Onion, Tomato, Wheat, Rice pass nowhere at mandi level**: the supplied Onion file has shared 30-day and 62-day holes, and the others cover windows shorter than the screen. This reflects the supplied files, **not the real markets**; a better recent or complete export may change it.
+- At **state level** (B), 172 commodities across groups (vegetables, fruits, pulses, cereals, oilseeds, spices and others) have long, mostly continuous series. These map to the **State-Level Intelligence** tier, not mandi-level intelligence.
+- No series has been backtested. The numbers above are a *candidate pool*.
+
+### Provisional tier mapping (to be confirmed by Phase 2/3)
+
+| Tier | Provisional population from the supplied files |
+|---|---|
+| Full Intelligence | Candidates only: the 336 Potato mandi series, **pending backtests**; none confirmed |
+| Limited Intelligence | Mandi series in A that fail the screen (3,293), mostly due to short windows or gaps |
+| State-Level Intelligence | The 867 state × commodity series in B that pass the screen |
+| Insufficient Data | Remaining series (for example B series with < 730 days or stale) |
+
+---
+
+## 11. Future nationwide expansion requirements
+
+1. **Canonical geography registry.** Raw state names are inconsistent *within and between* files:
+   - A: `Chattisgarh` vs `Chhattisgarh`; `Jammu & Kashmir` vs `Jammu and Kashmir`; `Tamilnadu` vs `Tamil Nadu`; `Orissa`; `Uttrakhand`; `Gao` (Goa).
+   - B: `Keralam`, `NCT of Delhi`, `Odisha`, `Chattisgarh`, `Pondicherry`.
+   - Only-in-A states: Kerala, Orissa, Delhi, Tamilnadu, Uttrakhand, Chhattisgarh, Jammu & Kashmir, Gao. Only-in-B: Keralam, Odisha, NCT of Delhi, Telangana, Jharkhand, Goa, Mizoram, Arunachal Pradesh, Andaman & Nicobar, Pondicherry, Uttarakhand.
+   - Canonical IDs and a **human-reviewed alias table** are required. **No automatic fuzzy merging.**
+2. **Composite market keys.** 16 market names occur in more than one state (for example Banda, Fatehpur, Gorakhpur, Kota, Patan, Pratapgarh, Sirsa); market name alone is not an identifier. Several yards per city must be modelled explicitly.
+3. **Telangana is absent from A** and appears only in B; Jharkhand has B data only to 2023-01-24; Mizoram and Arunachal Pradesh have data only from 2026. Coverage cannot be assumed uniform.
+4. **Commodities beyond A's five** exist only at state level in B. Mandi-level data for the rest requires a complete export from an official source (Phase 2 investigation of AGMARKNET, data.gov.in and CEDA).
+5. **Recent data feed** (Section 6): the newest mandi observation is 2025-06-11 and the newest state observation 2026-07-02.
+6. **Mandi-level arrivals** do not exist in the supplied files.
+7. **Verified mandi coordinates** are not in the files and are required for distance, transport cost and mapping.
+8. **Variety and grade handling** (Section 2): a documented rule for multiple varieties/grades per market-day.
+9. **Units**: Nos and Bundle records in B must never be combined with Metric Tonnes / ₹ per quintal.
+
+---
+
+## 12. Raw data locations and integrity (updated in Milestone 3)
+
+| Dataset | Original location | Current path | SHA-256 (verified before and after move) |
+|---|---|---|---|
+| A `Agriculture_price_dataset.csv` | repo root | `data/raw/Agriculture_price_dataset.csv` | `156D7F6357E7B90C8AB4AD8B0CE6BAF94B2A99D952024148BD980D8A748410CB` |
+| B `merged_preprocessed_all_reports.csv` | repo root | `data/raw/merged_preprocessed_all_reports.csv` | `899803AC0592CFBE99F481D647CBD70F7579E3FC53784EEF485B247D8B18C754` |
+| C `crop_price_dataset.csv` | repo root | `data/raw/crop_price_dataset.csv` | `7AB839FEAAFAE49B933D762CD632D872B2F2289FC001124BDA2D3C69EA671AB5` |
+| D `Wholesale-Price-Index-from-2012-to-2024.csv` | repo root | `data/raw/Wholesale-Price-Index-from-2012-to-2024.csv` | `7A91DCABCAF2398AE10C631F1D4BDB98B4888C8E9480A7295BE17BB5D080601E` |
+
+- Files are excluded from Git by `.gitignore` (`data/raw/*` and `*.csv`); only `data/raw/.gitkeep` is tracked.
+- Raw files are **read-only inputs**. Processed outputs belong in `data/processed/` (ignored).
+- Verify at any time with `Get-FileHash <file> -Algorithm SHA256`.
