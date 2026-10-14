@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "background": "#f8faf8", "on-secondary-fixed": "#002113", "on-primary-fixed": "#00210b", "on-secondary-fixed-variant": "#005236", "surface-container-highest": "#e1e3e1", "surface-variant": "#e1e3e1", "on-error-container": "#93000a", "surface-bright": "#f8faf8", "tertiary-container": "#7d4e00", "surface-container-low": "#f2f4f2", "secondary-container": "#6cf8bb", "secondary-fixed": "#6ffbbe", "on-tertiary": "#ffffff", "on-primary-fixed-variant": "#005226", "error": "#ba1a1a", "on-tertiary-container": "#ffc47d", "on-secondary": "#ffffff", "tertiary": "#5d3900", "secondary-fixed-dim": "#4edea3", "outline": "#707a6f", "inverse-primary": "#8bd79b", "on-primary": "#ffffff", "surface-tint": "#1f6c3a", "on-tertiary-fixed": "#2a1700", "inverse-on-surface": "#eff1ef", "primary-container": "#166534", "inverse-surface": "#2e3130", "outline-variant": "#bfc9bd", "surface-container": "#eceeec", "on-tertiary-fixed-variant": "#653e00", "on-surface": "#191c1b", "surface-dim": "#d8dad9", "primary-fixed-dim": "#8bd79b", "secondary": "#006c49", "on-secondary-container": "#00714d", "on-surface-variant": "#404940", "surface": "#f8faf8", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "surface-container-high": "#e6e9e7", "primary-fixed": "#a6f4b5", "on-background": "#191c1b", "tertiary-fixed": "#ffddb8", "on-primary-container": "#93e0a2", "tertiary-fixed-dim": "#ffb95f", "primary": "#004c22", "on-error": "#ffffff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin": "2rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", "gutter": "1.5rem", "margin-mobile": "1rem", "space-xl": "2.5rem" }, fontFamily: { "headline-lg-mobile": ["Plus Jakarta Sans"], "label-sm": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], "label-xs": ["Inter"], "body-sm": ["Plus Jakarta Sans"], "metric-xl": ["Inter"], "headline-display-mobile": ["Plus Jakarta Sans"], "metric-md": ["Inter"], "body-lg": ["Plus Jakarta Sans"], "metric-xl-mobile": ["Inter"], "headline-display": ["Plus Jakarta Sans"], "label-md": ["Inter"], "metric-lg": ["Inter"], "body-md": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-lg-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }], "label-xs": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "700" }], "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }], "metric-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-display-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "800" }], "metric-md": ["20px", { lineHeight: "26px", fontWeight: "600" }], "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }], "metric-xl-mobile": ["30px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-display": ["48px", { lineHeight: "56px", letterSpacing: "-0.03em", fontWeight: "800" }], "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }], "metric-lg": ["28px", { lineHeight: "34px", fontWeight: "700" }], "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }], "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }] } } } }</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="FASALYTICS Leaf AI Logo" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1WO0QlB0gmhsL0dvA7nxcq1IZNWFv2H7P8r-WMIJHH4EaGKfpXbG2gabAwek3ERxdIhlQMLwllc3qGGBUfdEf4nsPNk61YjhZmNKWA4NE9yWZaRtWdAfcC5-pT3wcPiUUOtrf-U0adxQCpwuR9uYpmUH7F4JOc2EHRjp9qJ40xYRnEihxoUL9_gKe1kLWcXCCPPrZDTR9wW2VFzkbR8yKuYpHiTqBARDnmZuPT9wa1qYe2R6QcBA_jk2W4"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold truncate">FASALYTICS</span></div><span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold truncate">Smarter Selling</span></div></div><div class="flex items-center gap-space-xs flex-shrink-0"><div aria-label="Language selection" class="flex items-center bg-surface-container-high rounded-full p-0.5" role="group"><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full bg-primary text-on-primary font-label-xs text-label-xs font-bold" type="button">EN</button><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full text-on-surface-variant font-label-xs text-label-xs font-semibold hover:text-on-surface" type="button">हि</button><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full text-on-surface-variant font-label-xs text-label-xs font-semibold hover:text-on-surface" type="button">म</button></div><button aria-label="Notifications" class="relative w-12 h-12 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[24px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="flex items-center justify-center pl-0.5"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNyYjsR0HZEntd65WJHaE6W21_uj4GYvqw5fpcRjy9vZ9u0h7t9mKMQh_RopbVOVvEDodkmTcFC9mjLKXcIU6QNFdtB67XIyue24sPaPNGrLErF9OdcKuHzSJKxjpPNToDgoS9ZnCNrha8i4QlFG9fPC3UwUGWMDNURu3QnoZw2mfRRyHQu3yel4BBFiBzsMBhHwkvvZ-UBXBDwFVoo4Pr157588XflZR8zpNs5vcZAJ7gsIEEAEvt"/></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Harvest Allocator Module -->
+<div class="px-gutter-mobile py-space-md flex flex-col gap-space-lg max-w-lg mx-auto w-full">
+<!-- Top Badge & Header Context -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[16px] animate-spin" style="animation-duration: 4s;">psychology</span>
+<span class="font-label-xs text-label-xs tracking-wider uppercase">AI Multi-Mandi Optimizer</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-xs text-label-xs bg-surface-container px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px] text-primary">event_available</span>
+<span>Tomorrow 05:30 AM</span>
+</div>
+</div>
+<div class="mt-space-xs">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight">Optimal Harvest Distribution</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Maximize net returns while eliminating single-market glut crash risk.</p>
+</div>
+<!-- Crop & Lot Summary Card -->
+<div class="bg-surface-container-low rounded-xl p-3 flex items-center justify-between shadow-sm mt-1">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shadow-inner">
+<span class="material-symbols-outlined text-[24px]">nutrition</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Hybrid Tomato (Grade A)</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant">Batch #HT-4092 • Farm Sector 4B</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-xs text-label-xs font-bold">
+            100 Quintals
+          </div>
+<span class="font-label-xs text-label-xs text-on-surface-variant mt-0.5">Ready for dispatch</span>
+</div>
+</div>
+</div>
+<!-- Risk Tolerance Mode Selector -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Allocation Strategy</span>
+<span class="font-label-xs text-label-xs text-primary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span> Yield Engine v4.2
+        </span>
+</div>
+<div class="grid grid-cols-3 gap-1.5 p-1 bg-surface-container rounded-xl">
+<button class="strat-btn py-2 px-2 rounded-lg flex flex-col items-center justify-center transition-all bg-transparent text-on-surface-variant" id="strat-conservative" onclick="switchStrategy('conservative')" type="button">
+<span class="font-label-sm text-label-sm">Conservative</span>
+<span class="font-label-xs text-label-xs opacity-75">Safest</span>
+</button>
+<button class="strat-btn py-2 px-2 rounded-lg flex flex-col items-center justify-center transition-all bg-primary-container text-on-primary shadow-sm scale-[1.02]" id="strat-balanced" onclick="switchStrategy('balanced')" type="button">
+<span class="font-label-sm text-label-sm flex items-center gap-0.5">Balanced <span class="material-symbols-outlined text-[13px] text-tertiary-fixed">star</span></span>
+<span class="font-label-xs text-label-xs text-primary-fixed">Recommended</span>
+</button>
+<button class="strat-btn py-2 px-2 rounded-lg flex flex-col items-center justify-center transition-all bg-transparent text-on-surface-variant" id="strat-aggressive" onclick="switchStrategy('aggressive')" type="button">
+<span class="font-label-sm text-label-sm">Aggressive</span>
+<span class="font-label-xs text-label-xs opacity-75">Max Profit</span>
+</button>
+</div>
+</div>
+<!-- Interactive Visual Pod: Donut Chart & Live Quotas -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Dispatch Split</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded-full" id="allocated-total-badge">100 / 100 Qtl (100%)</span>
+</div>
+<div class="flex items-center justify-around gap-2">
+<!-- SVG Donut Chart with dynamic stroke dashes -->
+<div class="relative w-36 h-36 flex-shrink-0 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
+<!-- Background circle -->
+<circle cx="50" cy="50" fill="transparent" r="38" stroke="#eceeec" stroke-width="12"></circle>
+<!-- Sangamner Segment (Amber #F59E0B) -->
+<circle class="transition-all duration-500" cx="50" cy="50" fill="transparent" id="svg-seg-sangamner" r="38" stroke="#ffb95f" stroke-dasharray="238.76" stroke-dashoffset="0" stroke-linecap="round" stroke-width="12"></circle>
+<!-- Pune Segment (Forest Green #166534) -->
+<circle class="transition-all duration-500" cx="50" cy="50" fill="transparent" id="svg-seg-pune" r="38" stroke="#004c22" stroke-dasharray="238.76" stroke-dashoffset="191" stroke-linecap="round" stroke-width="12"></circle>
+<!-- Nashik Segment (Emerald #10B981) -->
+<circle class="transition-all duration-500" cx="50" cy="50" fill="transparent" id="svg-seg-nashik" r="38" stroke="#4edea3" stroke-dasharray="238.76" stroke-dashoffset="119.38" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+<span class="font-metric-md text-metric-md text-on-surface font-extrabold tracking-tight" id="donut-center-qty">100</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant -mt-1 uppercase">Quintals</span>
+</div>
+</div>
+<!-- Legend breakdown alongside Donut -->
+<div class="flex flex-col gap-2.5 flex-1 pl-2">
+<div class="flex items-center justify-between text-left">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed-dim flex-shrink-0"></span>
+<span class="font-label-sm text-label-sm text-on-surface truncate">Nashik APMC</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-bold ml-1" id="legend-nashik-val">50 Qtl</span>
+</div>
+<div class="flex items-center justify-between text-left">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="w-2.5 h-2.5 rounded-full bg-primary flex-shrink-0"></span>
+<span class="font-label-sm text-label-sm text-on-surface truncate">Pune Gultekdi</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-bold ml-1" id="legend-pune-val">30 Qtl</span>
+</div>
+<div class="flex items-center justify-between text-left">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary-fixed-dim flex-shrink-0"></span>
+<span class="font-label-sm text-label-sm text-on-surface truncate">Sangamner Local</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-bold ml-1" id="legend-sangamner-val">20 Qtl</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Key Impact Metrics Grid (3 Stat Cards) -->
+<div class="grid grid-cols-1 gap-2.5">
+<!-- Earnings Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider">Total Net Realized Earnings</span>
+<div class="flex items-baseline gap-2 mt-0.5">
+<span class="font-metric-xl-mobile text-metric-xl-mobile text-primary font-extrabold" id="kpi-earnings">₹2,38,450</span>
+</div>
+<span class="font-label-xs text-label-xs text-secondary font-bold flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span id="kpi-earnings-delta">+₹20,190 vs dumping 100% locally</span>
+</span>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-secondary-container text-on-secondary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[26px]">currency_rupee</span>
+</div>
+</div>
+<!-- Risk & Logistics Subgrid -->
+<div class="grid grid-cols-2 gap-2.5">
+<!-- Market Crash Risk Exposure -->
+<div class="bg-surface-container-lowest rounded-2xl p-3.5 shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider leading-tight">Crash Risk Exposure</span>
+<span class="w-2 h-2 rounded-full bg-secondary-fixed-dim animate-pulse"></span>
+</div>
+<div class="flex items-baseline gap-1 my-1">
+<span class="font-metric-md text-metric-md text-on-surface font-bold" id="kpi-risk">14%</span>
+<span class="font-label-xs text-label-xs text-secondary font-bold bg-secondary-container px-1.5 py-0.2 rounded" id="kpi-risk-badge">LOW</span>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant mt-0.5" id="kpi-risk-sub">Down from 68% risk</span>
+</div>
+<!-- Average Spoilage & Logistics -->
+<div class="bg-surface-container-lowest rounded-2xl p-3.5 shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider leading-tight">Logistics &amp; Waste</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">local_shipping</span>
+</div>
+<div class="flex items-baseline gap-1 my-1">
+<span class="font-metric-md text-metric-md text-on-surface font-bold" id="kpi-cost">₹162</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant">/ Qtl</span>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant mt-0.5" id="kpi-cost-sub">Transit time: ~3.4 hrs</span>
+</div>
+</div>
+</div>
+<!-- Market Breakdown Cards with Adjustable Sliders -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Mandi Allocations</h2>
+<span class="font-label-xs text-label-xs text-primary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">tune</span> Fine-tune Sliders
+        </span>
+</div>
+<!-- Card 1: Nashik APMC -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-3">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold font-label-md text-label-md">
+              1
+            </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Nashik APMC</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-xs text-label-xs font-bold">Highest Price</span>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant">Distance: 82 km • Spot Rate: ₹2,650/Qtl</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-metric-md text-metric-md text-on-surface font-bold" id="nashik-qty-display">50 Qtl</span>
+<span class="font-label-xs text-label-xs text-primary font-bold" id="nashik-pct-display">(50%)</span>
+</div>
+</div>
+<!-- Slider Bar -->
+<div class="flex flex-col gap-1">
+<input class="w-full accent-emerald-600 h-2 bg-surface-container-high rounded-lg cursor-pointer" id="slider-nashik" max="100" min="0" oninput="handleSliderChange('nashik', this.value)" type="range" value="50"/>
+<div class="flex justify-between font-label-xs text-label-xs text-on-surface-variant">
+<span>0 Qtl</span>
+<span class="text-error font-semibold">Capped at 60 Qtl max safety</span>
+<span>100 Qtl</span>
+</div>
+</div>
+<!-- Ledger details -->
+<div class="grid grid-cols-4 gap-1 p-2 bg-surface-container-low rounded-xl text-center">
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Gross</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold" id="nashik-gross">₹1,32,500</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Transp.</span>
+<span class="font-label-sm text-label-sm text-error font-semibold" id="nashik-transp">-₹6,500</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Spoilage</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold" id="nashik-spoilage">1.2%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-primary font-bold">Net Return</span>
+<span class="font-label-sm text-label-sm text-primary font-bold" id="nashik-net">₹1,24,410</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Pune Gultekdi -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-3">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-xl bg-primary-container text-on-primary flex items-center justify-center font-bold font-label-md text-label-md">
+              2
+            </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Pune Gultekdi</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-xs text-label-xs font-semibold">Fast Clearance</span>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant">Distance: 44 km • Spot Rate: ₹2,280/Qtl</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-metric-md text-metric-md text-on-surface font-bold" id="pune-qty-display">30 Qtl</span>
+<span class="font-label-xs text-label-xs text-primary font-bold" id="pune-pct-display">(30%)</span>
+</div>
+</div>
+<!-- Slider Bar -->
+<div class="flex flex-col gap-1">
+<input class="w-full accent-green-800 h-2 bg-surface-container-high rounded-lg cursor-pointer" id="slider-pune" max="100" min="0" oninput="handleSliderChange('pune', this.value)" type="range" value="30"/>
+<div class="flex justify-between font-label-xs text-label-xs text-on-surface-variant">
+<span>0 Qtl</span>
+<span>Liquidity Buffer</span>
+<span>100 Qtl</span>
+</div>
+</div>
+<!-- Ledger details -->
+<div class="grid grid-cols-4 gap-1 p-2 bg-surface-container-low rounded-xl text-center">
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Gross</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold" id="pune-gross">₹68,400</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Transp.</span>
+<span class="font-label-sm text-label-sm text-error font-semibold" id="pune-transp">-₹1,800</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Spoilage</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold" id="pune-spoilage">0.5%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-primary font-bold">Net Return</span>
+<span class="font-label-sm text-label-sm text-primary font-bold" id="pune-net">₹65,660</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Sangamner Local -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-3">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-xl bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold font-label-md text-label-md">
+              3
+            </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Sangamner Local</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-xs text-label-xs font-semibold">Zero Transit</span>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant">Distance: 8 km • Spot Rate: ₹2,450/Qtl</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-metric-md text-metric-md text-on-surface font-bold" id="sangamner-qty-display">20 Qtl</span>
+<span class="font-label-xs text-label-xs text-primary font-bold" id="sangamner-pct-display">(20%)</span>
+</div>
+</div>
+<!-- Slider Bar -->
+<div class="flex flex-col gap-1">
+<input class="w-full accent-amber-600 h-2 bg-surface-container-high rounded-lg cursor-pointer" id="slider-sangamner" max="100" min="0" oninput="handleSliderChange('sangamner', this.value)" type="range" value="20"/>
+<div class="flex justify-between font-label-xs text-label-xs text-on-surface-variant">
+<span>0 Qtl</span>
+<span>Immediate Cash Buffer</span>
+<span>100 Qtl</span>
+</div>
+</div>
+<!-- Ledger details -->
+<div class="grid grid-cols-4 gap-1 p-2 bg-surface-container-low rounded-xl text-center">
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Gross</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold" id="sangamner-gross">₹49,000</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Transp.</span>
+<span class="font-label-sm text-label-sm text-error font-semibold" id="sangamner-transp">-₹620</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Spoilage</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold" id="sangamner-spoilage">0.0%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-primary font-bold">Net Return</span>
+<span class="font-label-sm text-label-sm text-primary font-bold" id="sangamner-net">₹48,380</span>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Explainability Section: "Why this AI Allocation?" -->
+<div class="bg-surface-container-low rounded-2xl p-space-md flex flex-col gap-space-sm shadow-sm">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[16px]">lightbulb</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Why this AI Allocation?</h3>
+</div>
+<div class="flex flex-col gap-2.5 mt-1">
+<div class="flex items-start gap-2.5">
+<span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant font-label-xs text-label-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+<strong class="font-semibold text-on-surface">Nashik wholesale arrivals</strong> are capped at 450 tons tomorrow, so sending over 60 quintals risks facing sudden distress discounting.
+          </p>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant font-label-xs text-label-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+<strong class="font-semibold text-on-surface">Splitting 30 quintals to Pune</strong> guarantees same-day cash liquidity within 90 minutes of unloading.
+          </p>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant font-label-xs text-label-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+<strong class="font-semibold text-on-surface">Spreads freight failure</strong> and monsoon weather corridor delays across two distinct transport arteries.
+          </p>
+</div>
+</div>
+</div>
+<!-- Live Corridor Preview Image Container -->
+<div class="relative w-full h-32 rounded-2xl overflow-hidden shadow-sm flex items-end p-3">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="High quality aerial shot of agricultural logistics transport trucks driving along a lush green highway in Maharashtra, morning misty sunlight, rich chlorophyll green fields on either side, modern logistics and farming in India, cinematic 4k" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdlxPt-NlMa8mW36Fyd2z5gLjXAtUFXw-19jTnio-Oc21aFQCPa-yKTsuBCwq9ZlPj-37L5KXONlm2Z_KAsWjp_qBTWNnU4FgOyYFz5kZflXoNktejYXJvG5BvHId2y3e0hfKrJX7JUbDenLW00RDCvGAO7mfMpETDsQytTuxCIAts2aypPnm1tcem-sAJk7uPMfO15FzuYa_WEpdRvf5Ei0apMCyRBR4SKCXKhpHi3JR320bFBnYJ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none"></div>
+<div class="relative z-10 flex items-center justify-between w-full text-on-primary">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-secondary-fixed">route</span>
+<span class="font-label-sm text-label-sm font-semibold">Corridor Transit Forecast: Clear</span>
+</div>
+<span class="font-label-xs text-label-xs bg-primary-container/80 backdrop-blur-sm px-2 py-0.5 rounded text-primary-fixed">GPS Ready</span>
+</div>
+</div>
+<!-- Action Call-To-Action Cluster -->
+<div class="flex flex-col gap-2.5 pt-space-xs">
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary rounded-xl py-3.5 px-space-lg flex items-center justify-center gap-2 font-headline-sm text-headline-sm font-bold shadow-md active:scale-[0.98] transition-transform" onclick="triggerGatePassGeneration()" type="button">
+<span>Accept &amp; Generate Mandi Gate Passes 🚜</span>
+</button>
+<button class="w-full bg-transparent hover:bg-surface-container text-primary rounded-xl py-3 px-space-lg flex items-center justify-center gap-2 font-label-md text-label-md font-semibold transition-colors" onclick="simulateScenarios()" type="button">
+<span class="material-symbols-outlined text-[20px]">science</span>
+<span>Simulate What-If Scenarios</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  // Dynamic allocation state
+  const state = {
+    nashik: 50,
+    pune: 30,
+    sangamner: 20
+  };
+
+  const strategies = {
+    conservative: { nashik: 25, pune: 35, sangamner: 40 },
+    balanced: { nashik: 50, pune: 30, sangamner: 20 },
+    aggressive: { nashik: 65, pune: 25, sangamner: 10 }
+  };
+
+  function updateVisuals() {
+    const total = state.nashik + state.pune + state.sangamner;
+    
+    // Sliders
+    document.getElementById('slider-nashik').value = state.nashik;
+    document.getElementById('slider-pune').value = state.pune;
+    document.getElementById('slider-sangamner').value = state.sangamner;
+
+    // Display values
+    document.getElementById('nashik-qty-display').innerText = state.nashik + ' Qtl';
+    document.getElementById('nashik-pct-display').innerText = '(' + state.nashik + '%)';
+    document.getElementById('legend-nashik-val').innerText = state.nashik + ' Qtl';
+
+    document.getElementById('pune-qty-display').innerText = state.pune + ' Qtl';
+    document.getElementById('pune-pct-display').innerText = '(' + state.pune + '%)';
+    document.getElementById('legend-pune-val').innerText = state.pune + ' Qtl';
+
+    document.getElementById('sangamner-qty-display').innerText = state.sangamner + ' Qtl';
+    document.getElementById('sangamner-pct-display').innerText = '(' + state.sangamner + '%)';
+    document.getElementById('legend-sangamner-val').innerText = state.sangamner + ' Qtl';
+
+    document.getElementById('donut-center-qty').innerText = total;
+    document.getElementById('allocated-total-badge').innerText = total + ' / 100 Qtl (' + total + '%)';
+
+    // SVG Donut Calculations (Circumference = 2 * PI * 38 = ~238.76)
+    const C = 238.76;
+    const nRatio = state.nashik / total;
+    const pRatio = state.pune / total;
+    const sRatio = state.sangamner / total;
+
+    const nDash = nRatio * C;
+    const pDash = pRatio * C;
+    const sDash = sRatio * C;
+
+    const segNashik = document.getElementById('svg-seg-nashik');
+    const segPune = document.getElementById('svg-seg-pune');
+    const segSangamner = document.getElementById('svg-seg-sangamner');
+
+    segNashik.style.strokeDasharray = `${nDash} ${C - nDash}`;
+    segNashik.style.strokeDashoffset = '0';
+
+    segPune.style.strokeDasharray = `${pDash} ${C - pDash}`;
+    segPune.style.strokeDashoffset = `-${nDash}`;
+
+    segSangamner.style.strokeDasharray = `${sDash} ${C - sDash}`;
+    segSangamner.style.strokeDashoffset = `-${nDash + pDash}`;
+
+    // Ledgers Recalculations
+    // Nashik: Gross ₹2,650/qtl, Transp -₹130/qtl, Spoilage 1.2%
+    const nGross = state.nashik * 2650;
+    const nTransp = state.nashik * 130;
+    const nNet = Math.round((nGross * 0.988) - nTransp);
+    document.getElementById('nashik-gross').innerText = '₹' + nGross.toLocaleString('en-IN');
+    document.getElementById('nashik-transp').innerText = '-₹' + nTransp.toLocaleString('en-IN');
+    document.getElementById('nashik-net').innerText = '₹' + nNet.toLocaleString('en-IN');
+
+    // Pune: Gross ₹2,280/qtl, Transp -₹60/qtl, Spoilage 0.5%
+    const pGross = state.pune * 2280;
+    const pTransp = state.pune * 60;
+    const pNet = Math.round((pGross * 0.995) - pTransp);
+    document.getElementById('pune-gross').innerText = '₹' + pGross.toLocaleString('en-IN');
+    document.getElementById('pune-transp').innerText = '-₹' + pTransp.toLocaleString('en-IN');
+    document.getElementById('pune-net').innerText = '₹' + pNet.toLocaleString('en-IN');
+
+    // Sangamner: Gross ₹2,450/qtl, Transp -₹31/qtl, Spoilage 0%
+    const sGross = state.sangamner * 2450;
+    const sTransp = Math.round(state.sangamner * 31);
+    const sNet = sGross - sTransp;
+    document.getElementById('sangamner-gross').innerText = '₹' + sGross.toLocaleString('en-IN');
+    document.getElementById('sangamner-transp').innerText = '-₹' + sTransp.toLocaleString('en-IN');
+    document.getElementById('sangamner-net').innerText = '₹' + sNet.toLocaleString('en-IN');
+
+    // Overall KPI
+    const totalEarnings = nNet + pNet + sNet;
+    const localBaseline = total * (2450 - 31); // 100% dumped locally
+    const delta = totalEarnings - localBaseline;
+
+    document.getElementById('kpi-earnings').innerText = '₹' + totalEarnings.toLocaleString('en-IN');
+    document.getElementById('kpi-earnings-delta').innerText = (delta >= 0 ? '+' : '') + '₹' + delta.toLocaleString('en-IN') + ' vs dumping 100% locally';
+
+    // Risk indicator
+    let riskPct = Math.round((state.nashik * 0.35) + (state.pune * 0.1) + (state.sangamner * 0.05));
+    document.getElementById('kpi-risk').innerText = riskPct + '%';
+    const riskBadge = document.getElementById('kpi-risk-badge');
+    if (riskPct < 25) {
+      riskBadge.innerText = 'LOW';
+      riskBadge.className = 'font-label-xs text-label-xs text-secondary font-bold bg-secondary-container px-1.5 py-0.2 rounded';
+    } else if (riskPct < 45) {
+      riskBadge.innerText = 'MED';
+      riskBadge.className = 'font-label-xs text-label-xs text-tertiary-container font-bold bg-tertiary-fixed px-1.5 py-0.2 rounded';
+    } else {
+      riskBadge.innerText = 'HIGH';
+      riskBadge.className = 'font-label-xs text-label-xs text-error font-bold bg-error-container px-1.5 py-0.2 rounded';
+    }
+
+    // Logistics cost average
+    const totalFreight = nTransp + pTransp + sTransp;
+    const avgFreight = Math.round(totalFreight / Math.max(1, total));
+    document.getElementById('kpi-cost').innerText = '₹' + avgFreight;
+  }
+
+  function handleSliderChange(mandi, val) {
+    const intVal = parseInt(val, 10);
+    state[mandi] = intVal;
+    
+    // Normalize to keep sum reasonable if needed
+    const currentSum = state.nashik + state.pune + state.sangamner;
+    if (currentSum !== 100) {
+      // Free adjustment mode
+      // Visuals simply update proportionally
+    }
+    updateVisuals();
+  }
+
+  function switchStrategy(type) {
+    // Style active button
+    document.querySelectorAll('.strat-btn').forEach(b => {
+      b.className = 'strat-btn py-2 px-2 rounded-lg flex flex-col items-center justify-center transition-all bg-transparent text-on-surface-variant';
+    });
+    
+    const activeBtn = document.getElementById('strat-' + type);
+    activeBtn.className = 'strat-btn py-2 px-2 rounded-lg flex flex-col items-center justify-center transition-all bg-primary-container text-on-primary shadow-sm scale-[1.02]';
+
+    const target = strategies[type];
+    state.nashik = target.nashik;
+    state.pune = target.pune;
+    state.sangamner = target.sangamner;
+    updateVisuals();
+  }
+
+  function triggerGatePassGeneration() {
+    alert('Generating 3 Digital APMC Passes with verified QR codes for Nashik, Pune & Sangamner fleets.');
+  }
+
+  function simulateScenarios() {
+    alert('Simulating Monsoon Storm scenario: Route NH60 closed, re-allocating 25% from Pune to Solapur APMC.');
+  }
+
+  // Initial layout kick
+  updateVisuals();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-bold"><div class="flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-xs text-label-xs mt-0.5">Dashboard</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="mandis" href="#"><span class="material-symbols-outlined text-[24px]">storefront</span><span class="font-label-xs text-label-xs mt-0.5">Mandis</span></a><a aria-current="page" class="relative flex flex-col items-center justify-center -top-3 min-w-[60px] min-h-[56px] group text-primary font-bold" data-path="allocate" href="#"><div class="w-12 h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-[0_8px_16px_-4px_rgba(22,101,52,0.4)] group-active:scale-95 transition-transform"><span class="material-symbols-outlined text-[26px]">pie_chart</span></div><span class="font-label-xs text-label-xs text-primary font-bold mt-1">Allocate</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="ai-copilot" href="#"><span class="material-symbols-outlined text-[24px]">smart_toy</span><span class="font-label-xs text-label-xs mt-0.5">AI Copilot</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="profile" href="#"><span class="material-symbols-outlined text-[24px]">person</span><span class="font-label-xs text-label-xs mt-0.5">Profile</span></a></div></nav></body></html>

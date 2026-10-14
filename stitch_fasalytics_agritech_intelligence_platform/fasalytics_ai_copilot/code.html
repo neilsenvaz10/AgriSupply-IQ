@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "background": "#f8faf8", "on-secondary-fixed": "#002113", "on-primary-fixed": "#00210b", "on-secondary-fixed-variant": "#005236", "surface-container-highest": "#e1e3e1", "surface-variant": "#e1e3e1", "on-error-container": "#93000a", "surface-bright": "#f8faf8", "tertiary-container": "#7d4e00", "surface-container-low": "#f2f4f2", "secondary-container": "#6cf8bb", "secondary-fixed": "#6ffbbe", "on-tertiary": "#ffffff", "on-primary-fixed-variant": "#005226", "error": "#ba1a1a", "on-tertiary-container": "#ffc47d", "on-secondary": "#ffffff", "tertiary": "#5d3900", "secondary-fixed-dim": "#4edea3", "outline": "#707a6f", "inverse-primary": "#8bd79b", "on-primary": "#ffffff", "surface-tint": "#1f6c3a", "on-tertiary-fixed": "#2a1700", "inverse-on-surface": "#eff1ef", "primary-container": "#166534", "inverse-surface": "#2e3130", "outline-variant": "#bfc9bd", "surface-container": "#eceeec", "on-tertiary-fixed-variant": "#653e00", "on-surface": "#191c1b", "surface-dim": "#d8dad9", "primary-fixed-dim": "#8bd79b", "secondary": "#006c49", "on-secondary-container": "#00714d", "on-surface-variant": "#404940", "surface": "#f8faf8", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "surface-container-high": "#e6e9e7", "primary-fixed": "#a6f4b5", "on-background": "#191c1b", "tertiary-fixed": "#ffddb8", "on-primary-container": "#93e0a2", "tertiary-fixed-dim": "#ffb95f", "primary": "#004c22", "on-error": "#ffffff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin": "2rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", "gutter": "1.5rem", "margin-mobile": "1rem", "space-xl": "2.5rem" }, fontFamily: { "headline-lg-mobile": ["Plus Jakarta Sans"], "label-sm": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], "label-xs": ["Inter"], "body-sm": ["Plus Jakarta Sans"], "metric-xl": ["Inter"], "headline-display-mobile": ["Plus Jakarta Sans"], "metric-md": ["Inter"], "body-lg": ["Plus Jakarta Sans"], "metric-xl-mobile": ["Inter"], "headline-display": ["Plus Jakarta Sans"], "label-md": ["Inter"], "metric-lg": ["Inter"], "body-md": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-lg-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }], "label-xs": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "700" }], "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }], "metric-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-display-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "800" }], "metric-md": ["20px", { lineHeight: "26px", fontWeight: "600" }], "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }], "metric-xl-mobile": ["30px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-display": ["48px", { lineHeight: "56px", letterSpacing: "-0.03em", fontWeight: "800" }], "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }], "metric-lg": ["28px", { lineHeight: "34px", fontWeight: "700" }], "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }], "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }] } } } }</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="FASALYTICS Leaf AI Logo" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1WO0QlB0gmhsL0dvA7nxcq1IZNWFv2H7P8r-WMIJHH4EaGKfpXbG2gabAwek3ERxdIhlQMLwllc3qGGBUfdEf4nsPNk61YjhZmNKWA4NE9yWZaRtWdAfcC5-pT3wcPiUUOtrf-U0adxQCpwuR9uYpmUH7F4JOc2EHRjp9qJ40xYRnEihxoUL9_gKe1kLWcXCCPPrZDTR9wW2VFzkbR8yKuYpHiTqBARDnmZuPT9wa1qYe2R6QcBA_jk2W4"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold truncate">FASALYTICS</span></div><span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold truncate">Smarter Selling</span></div></div><div class="flex items-center gap-space-xs flex-shrink-0"><div aria-label="Language selection" class="flex items-center bg-surface-container-high rounded-full p-0.5" role="group"><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full bg-primary text-on-primary font-label-xs text-label-xs font-bold" type="button">EN</button><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full text-on-surface-variant font-label-xs text-label-xs font-semibold hover:text-on-surface" type="button">हि</button><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full text-on-surface-variant font-label-xs text-label-xs font-semibold hover:text-on-surface" type="button">म</button></div><button aria-label="Notifications" class="relative w-12 h-12 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[24px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="flex items-center justify-center pl-0.5"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNyYjsR0HZEntd65WJHaE6W21_uj4GYvqw5fpcRjy9vZ9u0h7t9mKMQh_RopbVOVvEDodkmTcFC9mjLKXcIU6QNFdtB67XIyue24sPaPNGrLErF9OdcKuHzSJKxjpPNToDgoS9ZnCNrha8i4QlFG9fPC3UwUGWMDNURu3QnoZw2mfRRyHQu3yel4BBFiBzsMBhHwkvvZ-UBXBDwFVoo4Pr157588XflZR8zpNs5vcZAJ7gsIEEAEvt"/></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Assistant Status Bar -->
+<div class="px-gutter-mobile py-space-sm bg-surface-container-low shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="relative flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold shadow-sm">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+</div>
+<span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-secondary ring-2 ring-surface-container-low"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-primary font-bold truncate">AI Copilot</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-xs text-label-xs font-bold uppercase tracking-wider">Online</span>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant truncate">Multilingual Agri-LLM • Nashik Hub v4.2</span>
+</div>
+</div>
+<!-- Voice Mode Toggle & Waveform Indicator -->
+<div class="flex items-center gap-space-xs flex-shrink-0">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface font-label-xs text-label-xs font-semibold shadow-sm active:scale-95 transition-all" id="voiceToggle" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">graphic_eq</span>
+<span id="voiceLabel">Voice Active</span>
+<div class="flex items-end gap-0.5 h-3 ml-0.5">
+<span class="w-0.5 h-2 bg-secondary rounded-full animate-pulse"></span>
+<span class="w-0.5 h-3 bg-secondary rounded-full animate-bounce"></span>
+<span class="w-0.5 h-1.5 bg-secondary rounded-full animate-pulse"></span>
+</div>
+</button>
+</div>
+</div>
+<!-- Chat Scroll Area -->
+<div class="flex flex-col px-gutter-mobile py-space-md gap-space-md">
+<!-- Time Anchor -->
+<div class="flex justify-center">
+<span class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-xs text-label-xs font-medium">Today • 08:42 AM</span>
+</div>
+<!-- User Query Bubble -->
+<div class="flex justify-end pl-8">
+<div class="flex flex-col items-end gap-1 max-w-[90%]">
+<div class="p-3.5 rounded-2xl rounded-tr-sm bg-primary text-on-primary shadow-sm">
+<p class="font-body-md text-body-md leading-relaxed font-medium">
+            Tomato rate kadhi vadhnaar? Should I hold 100 quintals for 3 days or sell tomorrow at Nashik?
+          </p>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-xs text-label-xs pr-1">
+<span>08:42 AM</span>
+<span class="material-symbols-outlined text-[14px] text-secondary">done_all</span>
+</div>
+</div>
+</div>
+<!-- AI Response Pod -->
+<div class="flex items-start gap-2.5 pr-2">
+<!-- Bot Avatar -->
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center flex-shrink-0 mt-1 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+</div>
+<!-- Main AI Message Card -->
+<div class="flex flex-col gap-space-sm max-w-[92%] min-w-0">
+<div class="p-4 rounded-2xl rounded-tl-sm bg-surface-container-lowest shadow-md flex flex-col gap-3.5">
+<!-- AI Header Badge & Sound Tool -->
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-secondary">verified</span>
+<span class="font-label-xs text-label-xs font-bold">96% Confidence Analysis</span>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-transform" title="Speak Response" type="button">
+<span class="material-symbols-outlined text-[18px]">volume_up</span>
+</button>
+</div>
+<!-- Greeting & Executive Summary -->
+<div class="flex flex-col gap-1">
+<span class="font-headline-sm text-headline-sm text-primary font-bold">Namaste Rameshwar ji! 🙏</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-normal">
+              Here is the AI market &amp; harvest vulnerability breakdown for your <strong class="font-bold text-on-surface">100 Quintals Tomato</strong> crop:
+            </p>
+</div>
+<!-- Point 1: Recommended Decision -->
+<div class="p-3 rounded-xl bg-secondary-container/30 flex flex-col gap-1 shadow-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">stars</span>
+<span class="font-label-sm text-label-sm text-on-secondary-fixed font-bold uppercase tracking-wide">1. Best Decision Strategy</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface pl-6 font-medium">
+<strong class="text-primary font-bold">Sell 70% tomorrow (Day 1) at Nashik APMC</strong> and hold the remaining 30% in aerated farm crates for Day 3.
+            </p>
+</div>
+<!-- Point 2: Vulnerability Analysis -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-error">warning</span>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">2. Why not hold all 100 Qtl for 3 days?</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-6 leading-relaxed">
+              While mandi rates are projected to rise from <span class="font-semibold text-on-surface">₹2,650</span> to <span class="font-semibold text-on-surface">₹2,740</span> (+₹90/Qtl), ambient heat (<span class="font-semibold text-error">34°C</span>) triggers approx <span class="font-semibold text-error">4.5% moisture/weight loss</span> &amp; fruit softening (<span class="font-semibold text-error">-₹118/Qtl downgrade penalty</span>).
+            </p>
+<div class="ml-6 px-2.5 py-1.5 rounded-lg bg-error-container text-on-error-container font-label-xs text-label-xs font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">trending_down</span>
+<span>Net holding deficit: -₹28/Qtl by waiting full inventory</span>
+</div>
+</div>
+<!-- Point 3: Predicted Net Realization Table -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">currency_rupee</span>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">3. Predicted Net Realization (P&amp;L)</span>
+</div>
+<div class="grid grid-cols-2 gap-2 pl-6 pt-1">
+<div class="p-2.5 rounded-xl bg-surface-container-low flex flex-col gap-0.5">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Tomorrow (70% Sell)</span>
+<span class="font-headline-sm text-headline-sm text-primary font-extrabold tracking-tight">₹2,48,500</span>
+<span class="font-label-xs text-label-xs text-secondary font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">check_circle</span> Optimal Profit
+                </span>
+</div>
+<div class="p-2.5 rounded-xl bg-surface-container-low flex flex-col gap-0.5">
+<span class="font-label-xs text-label-xs text-on-surface-variant">Hold 3 Days (100%)</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-extrabold tracking-tight">₹2,45,700</span>
+<span class="font-label-xs text-label-xs text-error font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">arrow_downward</span> -₹2,800 Net Spoilage
+                </span>
+</div>
+</div>
+</div>
+<!-- Mini Chart Card: 3-Day Price vs Spoilage Curve -->
+<div class="p-3 rounded-xl bg-surface-container flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-xs text-label-xs font-bold text-on-surface uppercase tracking-wider">3-Day Net Curve: Price vs Spoilage</span>
+<span class="font-label-xs text-label-xs text-secondary font-semibold">Max Net: Day 1</span>
+</div>
+<!-- Inline SVG Chart -->
+<div class="relative w-full h-24 flex items-center">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 300 90">
+<!-- Grid Guideline -->
+<line stroke="#707a6f" stroke-dasharray="2 2" stroke-opacity="0.25" stroke-width="1" x1="10" x2="290" y1="20" y2="20"></line>
+<line stroke="#707a6f" stroke-dasharray="2 2" stroke-opacity="0.25" stroke-width="1" x1="10" x2="290" y1="50" y2="50"></line>
+<line stroke="#707a6f" stroke-dasharray="2 2" stroke-opacity="0.25" stroke-width="1" x1="10" x2="290" y1="80" y2="80"></line>
+<!-- Price Curve Line (Dotted Gray - Mandi Benchmark) -->
+<path d="M 30 70 Q 150 45 270 20" fill="none" stroke="#707a6f" stroke-dasharray="3 3" stroke-width="2"></path>
+<!-- Realized Net Gain Line (Solid Emerald) Peak at Day 1 -->
+<path d="M 30 55 Q 120 22 170 35 T 270 65" fill="none" stroke="#004c22" stroke-width="3"></path>
+<!-- Optimal Marker Day 1 -->
+<circle cx="120" cy="22" fill="#004c22" r="5"></circle>
+<circle cx="120" cy="22" fill="#004c22" fill-opacity="0.2" r="9"></circle>
+<!-- Day 3 End Point -->
+<circle cx="270" cy="65" fill="#ba1a1a" r="4"></circle>
+</svg>
+</div>
+<!-- Chart Horizontal Axis Labels -->
+<div class="flex justify-between px-2 pt-0.5 font-label-xs text-label-xs text-on-surface-variant font-medium">
+<span>Today (₹2,480)</span>
+<span class="text-primary font-bold">Tomorrow (Day 1 Peak)</span>
+<span class="text-error font-semibold">Day 3 (Spoilage)</span>
+</div>
+</div>
+<!-- Quick Action Chips Inside Chat -->
+<div class="flex flex-wrap gap-2 pt-1">
+<button class="px-3 py-2 rounded-xl bg-primary text-on-primary font-label-xs text-label-xs font-bold shadow-sm active:scale-95 flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">local_shipping</span>
+<span>Lock Nashik Gate Slot</span>
+</button>
+<button class="px-3 py-2 rounded-xl bg-surface-container-high text-on-surface font-label-xs text-label-xs font-bold active:scale-95 flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">calculate</span>
+<span>Recalculate Spoilage</span>
+</button>
+<button class="px-3 py-2 rounded-xl bg-secondary-container text-on-secondary-container font-label-xs text-label-xs font-bold active:scale-95 flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">volume_up</span>
+<span>मराठीत ऐका 🔊</span>
+</button>
+</div>
+</div>
+<!-- AI Message Sub-meta -->
+<div class="flex items-center gap-2 text-on-surface-variant font-label-xs text-label-xs pl-1">
+<span>08:43 AM</span>
+<span>•</span>
+<span>APMC Live Data: 4 mins ago</span>
+<span>•</span>
+<button class="text-on-surface-variant hover:text-primary" type="button"><span class="material-symbols-outlined text-[14px]">thumb_up</span></button>
+<button class="text-on-surface-variant hover:text-primary" type="button"><span class="material-symbols-outlined text-[14px]">thumb_down</span></button>
+</div>
+</div>
+</div>
+<!-- Live Crop Imagery Card in Feed -->
+<div class="pl-10 pr-2">
+<div class="rounded-2xl overflow-hidden bg-surface-container-lowest shadow-sm flex flex-col">
+<div class="relative h-28 w-full">
+<img class="w-full h-full object-cover" data-alt="Vibrant ripe red tomatoes harvested in rustic green plastic crates under warm morning sunlight in an Indian agricultural marketplace, photorealistic agricultural fintech clarity with lush green foliage accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5iAra9GMaGRzjuqEC6_57pxImhTxB6x0sI-FGX31pq2ScAk3iuBayZq4A-4lp1G0cu23eEElDgaGHXyK0q6c9fUezk9nDA2bkDKTDzuIp38-YAIhaKzIUaFc-dvbUuw8RBeYK_EcfeiAmx1MX6ddfd3iK1Brk-r4LSWJ1nNWzJ8GZSOLohgnozBcZJGGcsvQyuU1AHzNeduzzF0CcOQo7--dbmnjDeUvV8plNbabBIm7OEuDTmmEr"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
+<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-surface/90 backdrop-blur-md text-primary font-label-xs text-label-xs font-bold">
+            Nashik Mandi Lot #4812
+          </span>
+</div>
+<div class="p-3 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Pimpalgaon APMC Dispatch Window</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant">Gate priority open till 11:30 AM tomorrow</span>
+</div>
+<span class="material-symbols-outlined text-[20px] text-secondary">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Interactive Tray -->
+<div class="sticky bottom-0 w-full bg-surface/95 backdrop-blur-lg pt-2 pb-safe flex flex-col gap-2 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]">
+<!-- Suggested Prompt Chips Carousel -->
+<div class="flex items-center gap-2 overflow-x-auto px-gutter-mobile no-scrollbar py-0.5">
+<button class="flex-shrink-0 px-3.5 py-2 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-xs text-label-xs font-semibold whitespace-nowrap active:scale-95 transition-all shadow-sm" onclick="setPrompt(this.innerText)" type="button">
+        ✨ Which mandi gives highest profit today?
+      </button>
+<button class="flex-shrink-0 px-3.5 py-2 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-xs text-label-xs font-semibold whitespace-nowrap active:scale-95 transition-all shadow-sm" onclick="setPrompt(this.innerText)" type="button">
+        🚛 What if diesel rate increases by ₹5/L?
+      </button>
+<button class="flex-shrink-0 px-3.5 py-2 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-xs text-label-xs font-semibold whitespace-nowrap active:scale-95 transition-all shadow-sm" onclick="setPrompt(this.innerText)" type="button">
+        🧅 Compare onion prices Pune vs Lasalgaon
+      </button>
+<button class="flex-shrink-0 px-3.5 py-2 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-xs text-label-xs font-semibold whitespace-nowrap active:scale-95 transition-all shadow-sm" onclick="setPrompt(this.innerText)" type="button">
+        ⛈️ Show weather risk on Nashik highway
+      </button>
+</div>
+<!-- Multilingual Input Box -->
+<div class="px-gutter-mobile pb-2">
+<form class="flex items-center gap-2 p-1.5 rounded-full bg-surface-container-lowest shadow-md" id="chatForm" onsubmit="event.preventDefault(); handleSend();">
+<!-- Voice-to-Text Pulse Button -->
+<button class="relative w-11 h-11 rounded-full bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform" id="micBtn" type="button">
+<span class="material-symbols-outlined text-[22px]">mic</span>
+<!-- Dynamic Visual Pulse Ring -->
+<span class="absolute inset-0 rounded-full ring-2 ring-primary-fixed opacity-40 animate-ping pointer-events-none"></span>
+</button>
+<!-- Prompt Text Input -->
+<input class="flex-1 bg-transparent border-0 outline-none px-2 font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant/70 min-w-0" id="promptInput" placeholder="Ask in English, हिंदी, or मराठी..." type="text"/>
+<!-- Attachment / Camera Option -->
+<button class="w-9 h-9 rounded-full text-on-surface-variant hover:text-primary flex items-center justify-center flex-shrink-0 active:scale-95 transition-transform" title="Attach Crop Specimen Photo" type="button">
+<span class="material-symbols-outlined text-[20px]">add_photo_alternate</span>
+</button>
+<!-- Send Button in Deep Emerald -->
+<button class="w-11 h-11 rounded-full bg-primary-container text-on-primary flex items-center justify-center flex-shrink-0 shadow-md active:scale-95 transition-all" id="sendBtn" type="submit">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</form>
+</div>
+</div>
+</div>
+<script>
+  function setPrompt(text) {
+    const input = document.getElementById('promptInput');
+    // Strip leading emoji if present for a clean prompt
+    const cleanText = text.replace(/^[\s\S]{1,3}\s/, '');
+    input.value = cleanText;
+    input.focus();
+  }
+
+  function handleSend() {
+    const input = document.getElementById('promptInput');
+    if (!input.value.trim()) return;
+    input.value = '';
+  }
+
+  // Voice Mode Visual Toggle
+  const voiceToggle = document.getElementById('voiceToggle');
+  const voiceLabel = document.getElementById('voiceLabel');
+  let isVoiceActive = true;
+
+  if (voiceToggle) {
+    voiceToggle.addEventListener('click', () => {
+      isVoiceActive = !isVoiceActive;
+      if (isVoiceActive) {
+        voiceLabel.innerText = 'Voice Active';
+        voiceToggle.classList.remove('opacity-60');
+      } else {
+        voiceLabel.innerText = 'Muted';
+        voiceToggle.classList.add('opacity-60');
+      }
+    });
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-bold"><div class="flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-xs text-label-xs mt-0.5">Dashboard</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="mandis" href="#"><span class="material-symbols-outlined text-[24px]">storefront</span><span class="font-label-xs text-label-xs mt-0.5">Mandis</span></a><a class="relative flex flex-col items-center justify-center -top-3 min-w-[60px] min-h-[56px] group" data-path="allocate" href="#"><div class="w-12 h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-[0_8px_16px_-4px_rgba(22,101,52,0.4)] group-active:scale-95 transition-transform"><span class="material-symbols-outlined text-[26px]">pie_chart</span></div><span class="font-label-xs text-label-xs text-primary font-bold mt-1">Allocate</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 transition-colors text-primary font-bold" data-path="ai-copilot" href="#"><span class="material-symbols-outlined text-[24px]">smart_toy</span><span class="font-label-xs text-label-xs mt-0.5">AI Copilot</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="profile" href="#"><span class="material-symbols-outlined text-[24px]">person</span><span class="font-label-xs text-label-xs mt-0.5">Profile</span></a></div></nav></body></html>
