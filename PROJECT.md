@@ -293,10 +293,10 @@ Training features must reflect what was *published/known at forecast time*. A hi
 
 | Layer | Initial choice | Why |
 |---|---|---|
-| Web | React + Vite + TypeScript | Fast iteration, typed UI contracts |
+| Web | React + Vite + JavaScript (JSX) | Fast iteration; contracts documented with JSDoc |
 | UI | Tailwind CSS + accessible component library | Mobile-first, consistent patterns |
 | Charts | Recharts | Forecast, arrivals, risk visuals |
-| Main API | Node.js + Express + TypeScript | Auth, orchestration, public REST endpoints |
+| Main API | Node.js + Express (JavaScript, ES modules) | Auth, orchestration, public REST endpoints |
 | Database | PostgreSQL | Relational records, auditability, transactions |
 | ORM/migrations | Prisma or Drizzle (choose one) | Schema evolution and typed queries |
 | ML API | Python + FastAPI + Pydantic | Validation, forecasting, optimization |
@@ -337,8 +337,8 @@ flowchart LR
 ```text
 fasalytics/
   apps/
-    web/                   # React/Vite/TS
-    api/                   # Express/TS
+    web/                   # React/Vite (JavaScript/JSX)
+    api/                   # Express (JavaScript, ES modules)
   services/
     intelligence/          # FastAPI inference, risk, costs, optimization
     data-pipeline/         # source adapters, ETL, quality reports
@@ -622,7 +622,7 @@ The phases below are **dependency-aware**, not promises of fixed durations. Para
 **Tasks:**
 1. Confirm the early technical-validation series (not product limits), user journeys, feature priority and definition of “day” for forecasts. Keep all geography and commodities data-driven (§0.1).
 2. Create GitHub repo and branch policy (`main`, short-lived feature branches, PR review).
-3. Initialize React/Vite/TS frontend, Express/TS backend, FastAPI/Python service.
+3. Initialize React/Vite (JavaScript) frontend, Express (JavaScript) backend, FastAPI/Python service.
 3a. Inventory all Google Stitch exports (HTML, CSS, JS, images, fonts, screen names and responsive variants); map each exported screen to the project screen inventory and identify missing screens. Store original exports under `design/stitch/original/` and document asset licenses. Do not overwrite originals.
 4. Configure PostgreSQL, migrations, Docker Compose, `.env.example`, `.gitignore`.
 5. Add typed request/response contracts, centralized validation and error responses.
@@ -841,7 +841,7 @@ Must include: selected crop/quantity/origin; recommended action and date; candid
 2. **Audit the HTML.** For every file, inspect DOM structure, classes, inline styles, CSS dependencies, scripts, images, links, SVGs, and interactions. Identify repeated header, sidebar, cards, tables, charts, modals, forms, and navigation patterns. Record missing dependencies or broken paths.
 3. **Map screens to product routes.** Associate each export with a route and module (e.g., dashboard → `/dashboard`, forecasting → `/forecasts`, mandi comparison → `/mandis/compare`, allocation → `/allocation`, assistant → `/assistant`, scenario → `/simulator`). Keep a clear `provided / converted / connected / tested` status. If no Stitch export exists for a required screen, design it with the same shared system and label it as a new screen.
 4. **Extract design tokens.** Centralize colors, font stacks, type scale, spacing, shadows, radii, breakpoints, chart styling, and risk status colors in CSS variables/Tailwind theme. Avoid proliferating arbitrary per-screen values.
-5. **Convert HTML to React/TSX.** Split shared layout and UI into reusable components. Convert `class` → `className`, `for` → `htmlFor`, inline styles to React-compatible objects, and imperative DOM manipulation into React state/effects. Use stable keys for repeated elements. Keep accessible semantic markup and replace hard-coded navigation with React Router links.
+5. **Convert HTML to React/JSX.** Split shared layout and UI into reusable components. Convert `class` → `className`, `for` → `htmlFor`, inline styles to React-compatible objects, and imperative DOM manipulation into React state/effects. Use stable keys for repeated elements. Keep accessible semantic markup and replace hard-coded navigation with React Router links.
 6. **Migrate CSS and assets.** Preserve layout fidelity; use locally tracked assets with verified paths. Scope conflicting CSS and remove duplicated styles gradually. Where the original uses third-party CDN resources, prefer controlled package dependencies or approved local alternatives; record any substitutions.
 7. **Wire real behavior.** Bind crop, location, quantity, date filters and risk tolerance to validated form state. Implement loading, empty, stale, error and success states. Replace illustrative values only when the corresponding API is ready. Mark fixtures as `Demo data` until then. All charts must use source-backed API responses with observed/forecast/simulated values visibly distinguished.
 8. **Integrate the application API.** Create typed frontend clients for prices, forecasts, risk, mandi comparison, net returns, allocation, scenario simulation, alerts and chat. Centralize authentication, retry policy, error handling and API base URLs. Keep secrets server-side. Do not put Groq, database or private data-provider credentials in the browser.
@@ -862,7 +862,7 @@ fasalytics/
 └── frontend/
     ├── public/assets/stitch/    # Approved, optimized static assets
     └── src/
-        ├── app/router.tsx
+        ├── app/routes.jsx
         ├── layouts/              # Sidebar, top bar, mobile navigation
         ├── components/ui/        # Buttons, cards, forms, dialogs
         ├── components/charts/    # Source-backed visualizations

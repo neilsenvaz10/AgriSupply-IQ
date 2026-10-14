@@ -39,8 +39,8 @@ AgriSupply-IQ/
 ├── .env.example                # Environment template (placeholders only; copy to .env)
 ├── .gitignore                  # Protects secrets, datasets, models and build output
 ├── apps/
-│   ├── web/                    # React + Vite + TypeScript frontend      (Milestone 5, done)
-│   └── api/                    # Express + TypeScript backend            (Milestone 6, done)
+│   ├── web/                    # React + Vite + JavaScript frontend      (Milestone 5, done)
+│   └── api/                    # Express + JavaScript backend            (Milestone 6, done)
 ├── services/
 │   └── intelligence/           # Python 3.12 FastAPI ML service          (Milestone 7)
 ├── database/
@@ -77,8 +77,8 @@ AgriSupply-IQ/
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| **Frontend** | React, TypeScript, Vite, Tailwind CSS | Mobile-first responsive web app & PWA |
-| **Backend API** | Node.js, Express, TypeScript | Main application API, auth, business orchestration |
+| **Frontend** | React, JavaScript (JSX), Vite, Tailwind CSS | Mobile-first responsive web app & PWA |
+| **Backend API** | Node.js, Express (JavaScript, ES modules) | Main application API, auth, business orchestration |
 | **Database** | PostgreSQL + Prisma / Drizzle | Relational data, mandi records, transaction logs |
 | **ML & Analytics** | Python, FastAPI, Pandas, scikit-learn, XGBoost | Price forecasting, arrival trends, risk scoring |
 | **Optimization** | SciPy / PuLP | Constrained harvest allocation solver |
@@ -113,8 +113,8 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 - [x] Phase 1 / Milestone 2: historical datasets profiled ([coverage report](./docs/data-sources/DATASET_COVERAGE.md))
 - [x] Phase 1 / Milestone 3: monorepo foundation, `.gitignore`, `.env.example`, raw data organised
 - [x] Phase 1 / Milestone 4: Google Stitch assets preserved, inventoried and documented ([screen map](./design/stitch/SCREEN_MAP.md))
-- [x] Phase 1 / Milestone 5: frontend foundation in `apps/web` (React + Vite + TypeScript + Tailwind v3, status page, typed API client)
-- [x] Phase 1 / Milestone 6: Express.js + TypeScript API foundation in `apps/api` (`/health`, `/health/dependencies`, `/api/v1`)
+- [x] Phase 1 / Milestone 5: frontend foundation in `apps/web` (React + Vite + JavaScript + Tailwind v3, status page, JSDoc-typed API client)
+- [x] Phase 1 / Milestone 6: Express.js (JavaScript) API foundation in `apps/api` (`/health`, `/health/dependencies`, `/api/v1`)
 - [ ] Milestone 7: FastAPI intelligence service foundation
 - [ ] Core services & data pipeline implementation (not started)
 

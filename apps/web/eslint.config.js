@@ -4,30 +4,31 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
 
 export default defineConfig([
   globalIgnores(['dist', 'coverage', 'node_modules']),
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,
-      tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
       prettier,
     ],
     languageOptions: {
-      ecmaVersion: 2022,
+      ecmaVersion: 2023,
+      sourceType: 'module',
       globals: globals.browser,
+      parserOptions: { ecmaFeatures: { jsx: true } },
     },
     rules: {
-      '@typescript-eslint/consistent-type-imports': 'error',
+      // JSX usage counts as use: ignore component-style (capitalised) identifiers.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' }],
       eqeqeq: ['error', 'always'],
     },
   },
   {
-    files: ['*.config.{js,ts}'],
+    files: ['*.config.js'],
     languageOptions: { globals: globals.node },
   },
 ]);

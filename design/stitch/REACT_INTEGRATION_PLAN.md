@@ -185,7 +185,7 @@ Phase 7 must not start until the Phase 2–6 services these screens call exist o
 
 1. Re-read `SCREEN_MAP.md` entry and screenshot; list required states (loading, empty, error, stale, unavailable).
 2. Create tokens in `tokens.css` (once) and map them into the Tailwind theme.
-3. Convert HTML to TSX: `class`→`className`, `for`→`htmlFor`, inline style objects, remove DOM scripting in favour of state/effects, stable keys.
+3. Convert HTML to JSX: `class`→`className`, `for`→`htmlFor`, inline style objects, remove DOM scripting in favour of state/effects, stable keys.
 4. Swap hardcoded values for typed props; no literal ₹ values, places or crops remain.
 5. Wire to the API client; add all states.
 6. Replace every inert control: **works, or disabled with an explanation** (PROJECT.md §11.4.2 step 9).

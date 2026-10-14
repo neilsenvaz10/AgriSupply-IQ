@@ -50,7 +50,7 @@ All reached through the direct dev dependency `tailwindcss@3.4.19`, used only by
 
 | Choice | Reason |
 |---|---|
-| TypeScript pinned to 6.0.x | `typescript-eslint@8.71.2` declares `typescript <6.1.0`; TypeScript 7.0.2 is the npm "latest" |
+| TypeScript removed | Both apps were migrated to JavaScript; `typescript`, `typescript-eslint`, `tsx` and all `@types/*` packages are no longer dependencies |
 | `jsdom` pinned to 29.1.1 (web) | `jsdom@30` requires Node ≥ 24.15; the project machine runs 24.13.1 |
 | Express 5 | Current stable line; native async error propagation |
 
