@@ -2,7 +2,7 @@
 
 > **Milestone 4 deliverable. Planning only.** React, Vite and Tailwind have **not** been initialised. No component was converted.
 > Inputs: `SCREEN_MAP.md`, `DESIGN_SYSTEM.md`, `MISSING_SCREENS.md`, `PROJECT.md` §11.4.
-> **Scope (updated):** all **eight** exports: Batch 1 (dashboard, comparison, allocation, copilot) and Batch 2 (forecast, commodities, market explorer, simulator). Batch 2 currently lives in `design/new-exports/`; before Phase 7 it should be preserved immutably alongside `original/`.
+> **Scope (updated):** all **eight** exports: Batch 1 (dashboard, comparison, allocation, copilot) and Batch 2 (forecast, commodities, market explorer, simulator). Batch 2 currently lives in `design/stitch/new-exports/`; before Phase 7 it should be preserved immutably alongside `original/`.
 > Rule from PROJECT.md: the Stitch exports are the primary visual reference; do **not** redesign them. Originals in `design/stitch/original/` are immutable.
 
 ---
@@ -262,7 +262,7 @@ Per this milestone's rules: **nothing was downloaded or replaced.** Asset licenc
 | 6 | Map provider | Decide, or defer the map card |
 | 7 | Chart library | PROJECT.md specifies Recharts; confirm it can meet the SVG fidelity of the exports |
 | 8 | Current-data feed (Phase 2) | Without recent data, "current recommendation" screens must stay disabled/qualified |
-| 9 | Batch 2 location (`design/new-exports/`, not `design/stitch/`) | Decide whether to move it under `design/stitch/` and mark immutable |
+| 9 | Batch 2 location (`design/stitch/new-exports/`, not `design/stitch/`) | Decide whether to move it under `design/stitch/` and mark immutable |
 | 10 | Navigation for eight screens | Approve §3.1 proposal |
 | 11 | Revision of Batch 2 screens (district level, unavailable states, honest labels) | Approve in-house revision vs regenerate in Stitch |
 | 12 | Single eligibility vocabulary (Forecast Qualified / Exploratory vs Full / Limited / State-Level / Insufficient) | Agree names; keep state-vs-mandi distinction |

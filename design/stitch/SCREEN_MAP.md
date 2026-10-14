@@ -1,7 +1,7 @@
 # FASALYTICS — Stitch Screen Map
 
 > **Milestone 4 deliverable.** Inventory and analysis only. No screen has been converted to React.
-> **Source of truth for visuals:** the preserved originals in `design/stitch/original/` (immutable) and the second batch in `design/new-exports/` (see §1.1).
+> **Source of truth for visuals:** the preserved originals in `design/stitch/original/` (immutable) and the second batch in `design/stitch/new-exports/` (see §1.1).
 > **Analysed:** 14 October 2026 by reading every export's source and screenshot. **Batch 1** (4 screens) in `original/`; **Batch 2** (4 screens) added the same day.
 > A static Stitch export is **not** a working screen. Nothing below is marked implemented.
 
@@ -39,10 +39,10 @@ All paths are relative to `design/stitch/original/stitch_fasalytics_agritech_int
 
 ### 1.1 Batch 2 inventory (added 14 October 2026)
 
-> **Location note:** you described these as being under `design/stitch/new-exports/`. They are actually at **`design/new-exports/`** (one level up). Nothing was moved. Paths below are the real ones; moving the folder under `design/stitch/` is a one-line decision for you.
-> Not yet preserved in an immutable location: `design/new-exports/` should be treated as read-only like `original/`.
+> **Location note:** you described these as being under `design/stitch/new-exports/`. They are actually at **`design/stitch/new-exports/`** (one level up). Nothing was moved. Paths below are the real ones; moving the folder under `design/stitch/` is a one-line decision for you.
+> Not yet preserved in an immutable location: `design/stitch/new-exports/` should be treated as read-only like `original/`.
 
-All paths relative to `design/new-exports/`. Hashes were computed with SHA-256 on 14 October 2026.
+All paths relative to `design/stitch/new-exports/`. Hashes were computed with SHA-256 on 14 October 2026.
 
 | # | Path | Ext | Bytes | SHA-256 | Screen | Purpose |
 |---|---|---|---:|---|---|---|
@@ -194,7 +194,7 @@ All paths relative to `design/new-exports/`. Hashes were computed with SHA-256 o
 
 | Field | Value |
 |---|---|
-| Original folder | `design/new-exports/ai_price_forecasting/` |
+| Original folder | `design/stitch/new-exports/ai_price_forecasting/` |
 | HTML / screenshot | `code.html` (371 lines) / `screen.png` (302 × 1600) |
 | Purpose | 1–7-day price forecast for one crop at one mandi with trajectory, drivers and dispatch context |
 | Proposed route | `/forecast` |
@@ -224,7 +224,7 @@ All paths relative to `design/new-exports/`. Hashes were computed with SHA-256 o
 
 | Field | Value |
 |---|---|
-| Original folder | `design/new-exports/all_crop_commodity_explorer/` |
+| Original folder | `design/stitch/new-exports/all_crop_commodity_explorer/` |
 | HTML / screenshot | `code.html` (367 lines) / `screen.png` (337 × 1600) |
 | Purpose | Directory of all commodities with category filter, search and forecast-eligibility indicators |
 | Proposed route | `/commodities` |
@@ -254,7 +254,7 @@ All paths relative to `design/new-exports/`. Hashes were computed with SHA-256 o
 
 | Field | Value |
 |---|---|
-| Original folder | `design/new-exports/nationwide_market_explorer/` |
+| Original folder | `design/stitch/new-exports/nationwide_market_explorer/` |
 | HTML / screenshot | `code.html` (414 lines) / `screen.png` (337 × 1600) |
 | Purpose | Discover mandis across India by state and crop; select several to compare |
 | Proposed route | `/markets` (the existing "Mandis" tab) |
@@ -285,7 +285,7 @@ All paths relative to `design/new-exports/`. Hashes were computed with SHA-256 o
 
 | Field | Value |
 |---|---|
-| Original folder | `design/new-exports/what_if_market_simulator/` |
+| Original folder | `design/stitch/new-exports/what_if_market_simulator/` |
 | HTML / screenshot | `code.html` (456 lines) / `screen.png` (324 × 1600) |
 | Purpose | Stress-test a harvest plan with freight, price and storage-duration levers |
 | Proposed route | `/simulate` |

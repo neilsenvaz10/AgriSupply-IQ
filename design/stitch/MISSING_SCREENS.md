@@ -1,7 +1,7 @@
 # FASALYTICS — Missing Screens and Nationwide / All-Crop UX Gaps
 
 > **Milestone 4 deliverable. Identification only.** No screen was generated or designed here.
-> **Baseline (updated for Batch 2):** **eight** mobile HTML exports: dashboard, mandi comparison, harvest allocation, AI copilot (Batch 1) plus AI Price Forecasting, Explore Commodities, Nationwide Market Explorer, What-If Simulator (Batch 2, in `design/new-exports/`) and `DESIGN.md`. See `SCREEN_MAP.md`.
+> **Baseline (updated for Batch 2):** **eight** mobile HTML exports: dashboard, mandi comparison, harvest allocation, AI copilot (Batch 1) plus AI Price Forecasting, Explore Commodities, Nationwide Market Explorer, What-If Simulator (Batch 2, in `design/stitch/new-exports/`) and `DESIGN.md`. See `SCREEN_MAP.md`.
 > **Priority scale:** **P0** essential for the core demo · **P1** important supporting · **P2** optional.
 > Several features are intentionally merged into one route where that gives a better user flow.
 

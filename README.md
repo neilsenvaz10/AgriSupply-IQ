@@ -39,7 +39,7 @@ AgriSupply-IQ/
 ├── .env.example                # Environment template (placeholders only; copy to .env)
 ├── .gitignore                  # Protects secrets, datasets, models and build output
 ├── apps/
-│   ├── web/                    # React + Vite + TypeScript frontend      (Milestone 5)
+│   ├── web/                    # React + Vite + TypeScript frontend      (Milestone 5, done)
 │   └── api/                    # Express + TypeScript backend            (Milestone 6)
 ├── services/
 │   └── intelligence/           # Python 3.12 FastAPI ML service          (Milestone 7)
@@ -58,7 +58,7 @@ AgriSupply-IQ/
 │       │       ├── smart_mandi_comparison/
 │       │       ├── smart_harvest_allocation/
 │       │       └── fasalytics_ai_copilot/
-│       ├── (Batch 2 exports currently at design/new-exports/: forecast, commodities,
+│       ├── (Batch 2 exports currently at design/stitch/new-exports/: forecast, commodities,
 │       │    market explorer, what-if simulator)
 │       ├── SCREEN_MAP.md               # Screen inventory, checksums, defects
 │       ├── DESIGN_SYSTEM.md            # Extracted tokens and components
@@ -113,6 +113,8 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 - [x] Phase 1 / Milestone 2: historical datasets profiled ([coverage report](./docs/data-sources/DATASET_COVERAGE.md))
 - [x] Phase 1 / Milestone 3: monorepo foundation, `.gitignore`, `.env.example`, raw data organised
 - [x] Phase 1 / Milestone 4: Google Stitch assets preserved, inventoried and documented ([screen map](./design/stitch/SCREEN_MAP.md))
+- [x] Phase 1 / Milestone 5: frontend foundation in `apps/web` (React + Vite + TypeScript + Tailwind v3, status page, typed API client)
+- [ ] Milestone 6: Express.js and TypeScript API foundation
 - [ ] Core services & data pipeline implementation (not started)
 
 ---
