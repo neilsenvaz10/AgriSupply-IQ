@@ -51,6 +51,12 @@ function joinUrl(baseUrl, path) {
  */
 export function createApiClient(options) {
   const { baseUrl, timeoutMs } = options;
+  /**
+   * @template T
+   * @param {string} path
+   * @param {GetOptions<T>} options
+   * @returns {Promise<T>}
+   */
   async function get(path, { parse, signal }) {
     if (baseUrl === null) {
       throw new ApiError('config', 'API base URL is not configured (VITE_API_BASE_URL).');

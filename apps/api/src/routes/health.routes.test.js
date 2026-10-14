@@ -64,7 +64,7 @@ describe('GET /health/dependencies', () => {
     expect(text).not.toMatch(/postgres:\/\//);
   });
   it('reports the intelligence service healthy only after a successful probe', async () => {
-    const fetchImpl = vi.fn(() => Promise.resolve(okResponse(200)));
+    const fetchImpl = vi.fn(/** @type {typeof fetch} */ (() => Promise.resolve(okResponse(200))));
     const app = createApp(testConfig({ mlServiceUrl: 'http://ml.internal:8000' }), { fetchImpl });
     const res = await request(app).get('/health/dependencies');
     expect(fetchImpl).toHaveBeenCalledTimes(1);

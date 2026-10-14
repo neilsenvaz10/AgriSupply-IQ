@@ -5,8 +5,17 @@ import { routes } from '../app/routes';
 import { createApiClient } from '../services/api/client';
 import { ApiClientContext } from '../services/api/context';
 
+/**
+ * @param {string} path
+ * @param {unknown} fetchImpl A mocked fetch (typed loosely so tests can pass any mock).
+ * @param {string | null} [baseUrl]
+ */
 function renderAt(path, fetchImpl, baseUrl = 'http://api.test') {
-  const client = createApiClient({ baseUrl, timeoutMs: 1000, fetchImpl });
+  const client = createApiClient({
+    baseUrl,
+    timeoutMs: 1000,
+    fetchImpl: /** @type {typeof fetch} */ (fetchImpl),
+  });
   const router = createMemoryRouter(routes, { initialEntries: [path] });
   return render(
     <ApiClientContext.Provider value={client}>

@@ -20,7 +20,9 @@ describe('createApiClient', () => {
     vi.useRealTimers();
   });
   it('requests the joined URL and returns the parsed body', async () => {
-    const fetchImpl = vi.fn(() => Promise.resolve(jsonResponse('hello')));
+    const fetchImpl = vi.fn(
+      /** @type {typeof fetch} */ (() => Promise.resolve(jsonResponse('hello'))),
+    );
     const client = createApiClient({ baseUrl: 'http://api.test', timeoutMs: 1000, fetchImpl });
     await expect(client.get('/health', { parse: asString })).resolves.toBe('hello');
     expect(fetchImpl).toHaveBeenCalledTimes(1);

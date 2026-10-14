@@ -7,6 +7,7 @@ import { SERVICE_NAME, SERVICE_VERSION } from './version.js';
 /** Process entry point. Everything testable lives in app.js / lifecycle.js. */
 async function main() {
   const loadedFiles = loadEnvFiles();
+  /** @type {import('./config/env.js').AppConfig} */
   let config;
   try {
     config = loadConfig();
@@ -39,7 +40,7 @@ async function main() {
       intelligenceServiceConfigured: config.mlServiceUrl !== null,
     });
   } catch (error) {
-    const code = error.code;
+    const code = /** @type {NodeJS.ErrnoException} */ (error).code;
     logger.error(
       code === 'EADDRINUSE'
         ? `port ${config.port} is already in use on ${config.host}`

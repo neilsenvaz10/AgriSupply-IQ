@@ -39,7 +39,7 @@ const config = {
         ...fontFamily,
         sans: [...stacks['Plus Jakarta Sans']],
       },
-      fontSize,
+      fontSize: /** @type {any} */ (fontSize),
     },
   },
   plugins: [],

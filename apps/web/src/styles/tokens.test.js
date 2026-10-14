@@ -1,7 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import config from '../../tailwind.config';
 
-const extend = config.theme.extend;
+/**
+ * The extended Tailwind theme, typed for the sections these tests read.
+ *
+ * @type {{
+ *   colors: Record<string, string>,
+ *   borderRadius: Record<string, string>,
+ *   spacing: Record<string, string>,
+ *   fontFamily: Record<string, string[]>,
+ *   fontSize: Record<string, unknown>,
+ * }}
+ */
+const extend = /** @type {any} */ (config).theme.extend;
 
 describe('Stitch design tokens in the Tailwind theme', () => {
   it('uses the approved canonical palette', () => {

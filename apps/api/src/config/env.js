@@ -116,13 +116,22 @@ function parseHttpBaseUrl(raw, key, issues) {
   return raw.replace(/\/+$/, '');
 }
 
+/**
+ * Reads and validates the process environment.
+ *
+ * @param {Record<string, string | undefined>} [env] Defaults to `process.env`.
+ * @returns {AppConfig}
+ * @throws {ConfigError} Listing every invalid variable (names and rules only, never values).
+ */
 export function loadConfig(env = process.env) {
+  /** @type {string[]} */
   const issues = [];
   // NODE_ENV
   const rawNodeEnv = read(env, 'NODE_ENV') ?? 'development';
+  /** @type {NodeEnv} */
   let nodeEnv = 'development';
   if (NODE_ENVS.includes(rawNodeEnv)) {
-    nodeEnv = rawNodeEnv;
+    nodeEnv = /** @type {NodeEnv} */ (rawNodeEnv);
   } else {
     issues.push(`NODE_ENV must be one of: ${NODE_ENVS.join(', ')}.`);
   }
@@ -184,9 +193,10 @@ export function loadConfig(env = process.env) {
   const requestTimeoutMs = readInt(env, 'API_REQUEST_TIMEOUT_MS', 15000, 1000, 120000, issues);
   // Logging
   const rawLevel = read(env, 'LOG_LEVEL') ?? (nodeEnv === 'test' ? 'silent' : 'info');
+  /** @type {LogLevel} */
   let logLevel = 'info';
   if (LOG_LEVELS.includes(rawLevel)) {
-    logLevel = rawLevel;
+    logLevel = /** @type {LogLevel} */ (rawLevel);
   } else {
     issues.push(`LOG_LEVEL must be one of: ${LOG_LEVELS.join(', ')}.`);
   }

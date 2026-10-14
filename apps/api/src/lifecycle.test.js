@@ -33,7 +33,10 @@ describe('startServer', () => {
     );
     try {
       const res = await fetch(`http://127.0.0.1:${running.port}/health/dependencies`);
-      const body = await res.json();
+      const body =
+        /** @type {{ dependencies: Record<string, { status: string, reason?: string }> }} */ (
+          await res.json()
+        );
       expect(res.status).toBe(200);
       expect(body.dependencies.postgres.status).toBe('not_checked');
       expect(body.dependencies.intelligence_service).toMatchObject({

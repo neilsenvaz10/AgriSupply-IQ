@@ -1,4 +1,9 @@
-/** A valid configuration for tests; override only what a test cares about. */
+/**
+ * A valid configuration for tests; override only what a test cares about.
+ *
+ * @param {Partial<import('../config/env.js').AppConfig>} [overrides]
+ * @returns {import('../config/env.js').AppConfig}
+ */
 export function testConfig(overrides = {}) {
   return {
     nodeEnv: 'test',
@@ -15,6 +20,11 @@ export function testConfig(overrides = {}) {
   };
 }
 
+/**
+ * @param {number} [status]
+ * @param {unknown} [body]
+ * @returns {Response}
+ */
 export function okResponse(status = 200, body = { status: 'ok' }) {
   return new Response(JSON.stringify(body), {
     status,

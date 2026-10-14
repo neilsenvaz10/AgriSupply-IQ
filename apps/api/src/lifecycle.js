@@ -35,18 +35,22 @@ export function startServer(config, deps = {}) {
     server.once('error', reject);
     server.once('listening', () => {
       server.off('error', reject);
-      const address = server.address();
+      // A TCP server bound with a port always reports an AddressInfo (not a pipe path or null).
+      const address = /** @type {import('node:net').AddressInfo} */ (server.address());
+      /** @type {Promise<void> | undefined} */
       let closing;
       const close = (graceMs = 10_000) => {
-        closing ??= new Promise((done) => {
-          const forceTimer = setTimeout(() => server.closeAllConnections(), graceMs);
-          forceTimer.unref();
-          server.close(() => {
-            clearTimeout(forceTimer);
-            done();
-          });
-          server.closeIdleConnections();
-        });
+        closing ??= /** @type {Promise<void>} */ (
+          new Promise((done) => {
+            const forceTimer = setTimeout(() => server.closeAllConnections(), graceMs);
+            forceTimer.unref();
+            server.close(() => {
+              clearTimeout(forceTimer);
+              done();
+            });
+            server.closeIdleConnections();
+          })
+        );
         return closing;
       };
       resolve({ server, port: address.port, close });

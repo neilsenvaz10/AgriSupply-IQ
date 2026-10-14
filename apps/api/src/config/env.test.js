@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { ConfigError, expandLoopbackOrigins, loadConfig, parseOrigin } from './env.js';
 
+/**
+ * @param {Record<string, string>} env
+ * @returns {readonly string[]}
+ */
 function issuesFor(env) {
   try {
     loadConfig(env);
@@ -104,8 +108,9 @@ describe('loadConfig', () => {
       });
     } catch (error) {
       expect(error).toBeInstanceOf(ConfigError);
-      message = error.message;
-      expect(error.issues.length).toBeGreaterThanOrEqual(3);
+      const configError = /** @type {ConfigError} */ (error);
+      message = configError.message;
+      expect(configError.issues.length).toBeGreaterThanOrEqual(3);
     }
     expect(message).not.toBe('');
     expect(message).not.toContain(secret);
