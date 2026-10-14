@@ -40,7 +40,7 @@ AgriSupply-IQ/
 ├── .gitignore                  # Protects secrets, datasets, models and build output
 ├── apps/
 │   ├── web/                    # React + Vite + TypeScript frontend      (Milestone 5, done)
-│   └── api/                    # Express + TypeScript backend            (Milestone 6)
+│   └── api/                    # Express + TypeScript backend            (Milestone 6, done)
 ├── services/
 │   └── intelligence/           # Python 3.12 FastAPI ML service          (Milestone 7)
 ├── database/
@@ -114,7 +114,8 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 - [x] Phase 1 / Milestone 3: monorepo foundation, `.gitignore`, `.env.example`, raw data organised
 - [x] Phase 1 / Milestone 4: Google Stitch assets preserved, inventoried and documented ([screen map](./design/stitch/SCREEN_MAP.md))
 - [x] Phase 1 / Milestone 5: frontend foundation in `apps/web` (React + Vite + TypeScript + Tailwind v3, status page, typed API client)
-- [ ] Milestone 6: Express.js and TypeScript API foundation
+- [x] Phase 1 / Milestone 6: Express.js + TypeScript API foundation in `apps/api` (`/health`, `/health/dependencies`, `/api/v1`)
+- [ ] Milestone 7: FastAPI intelligence service foundation
 - [ ] Core services & data pipeline implementation (not started)
 
 ---
