@@ -17,7 +17,7 @@
 > | **Forecast-eligible series** (provisional data-sufficiency screen; backtests decide) | Section 10 |
 > | **Early validation examples** and **future nationwide expansion needs** | Sections 3–4, 11 |
 >
-> *Naming:* the filename `PILOT_SELECTION.md` is retained so existing references keep working. A clearer name such as `DATASET_COVERAGE.md` is recommended once Phase 2 generates the coverage matrix automatically.
+> *Naming:* this file was previously `PILOT_SELECTION.md`; it was renamed to `DATASET_COVERAGE.md` in Milestone 4 to reflect the nationwide, all-crop scope. Content is unchanged. Earlier commit messages and history still use the old name.
 >
 > *Paths:* after Milestone 3 the originals live in `data/raw/` (§12). Checksums were verified identical before and after the move.
 
@@ -353,6 +353,16 @@ A transparent first pass over every series in A and B, to show nationwide *data*
 |---|---|
 | A (mandi) | ≥ 365 reporting days · ≥ 60% coverage of own first→last span · max internal gap ≤ 31 days · last observation within 14 days of the file's end (2025-06-11) |
 | B (state) | ≥ 730 reporting days · ≥ 70% coverage of own span · last observation within 30 days of the file's end (2026-07-02) |
+
+### Status and caveats of these thresholds
+
+The thresholds above (**365 days, 60% coverage, 31-day maximum gap** for mandi-level data) are **confirmed as the current provisional values**. They are preliminary data-sufficiency screens, **not proof of forecast accuracy**.
+
+- They may change during Phase 3 as backtesting reveals what the models actually need.
+- Forecast eligibility ultimately requires **time-based backtesting** against baselines; passing this screen only creates a candidate pool.
+- **State-level data cannot automatically qualify for mandi-level forecasting.** State series are assessed and labelled separately (State-Level Intelligence).
+- **Different reporting frequencies need different criteria.** Daily mandi series, daily state series and monthly national series (Datasets C and D) must not share one day-count threshold.
+- **Data freshness is assessed separately** from historical coverage. A long, continuous series that ended months ago is not eligible for *current* decision support, whatever its coverage. (The freshness check inside this screen is relative to each file's own end date, not to today.)
 
 ### Results
 

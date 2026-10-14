@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "background": "#f8faf8", "on-secondary-fixed": "#002113", "on-primary-fixed": "#00210b", "on-secondary-fixed-variant": "#005236", "surface-container-highest": "#e1e3e1", "surface-variant": "#e1e3e1", "on-error-container": "#93000a", "surface-bright": "#f8faf8", "tertiary-container": "#7d4e00", "surface-container-low": "#f2f4f2", "secondary-container": "#6cf8bb", "secondary-fixed": "#6ffbbe", "on-tertiary": "#ffffff", "on-primary-fixed-variant": "#005226", "error": "#ba1a1a", "on-tertiary-container": "#ffc47d", "on-secondary": "#ffffff", "tertiary": "#5d3900", "secondary-fixed-dim": "#4edea3", "outline": "#707a6f", "inverse-primary": "#8bd79b", "on-primary": "#ffffff", "surface-tint": "#1f6c3a", "on-tertiary-fixed": "#2a1700", "inverse-on-surface": "#eff1ef", "primary-container": "#166534", "inverse-surface": "#2e3130", "outline-variant": "#bfc9bd", "surface-container": "#eceeec", "on-tertiary-fixed-variant": "#653e00", "on-surface": "#191c1b", "surface-dim": "#d8dad9", "primary-fixed-dim": "#8bd79b", "secondary": "#006c49", "on-secondary-container": "#00714d", "on-surface-variant": "#404940", "surface": "#f8faf8", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "surface-container-high": "#e6e9e7", "primary-fixed": "#a6f4b5", "on-background": "#191c1b", "tertiary-fixed": "#ffddb8", "on-primary-container": "#93e0a2", "tertiary-fixed-dim": "#ffb95f", "primary": "#004c22", "on-error": "#ffffff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin": "2rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", "gutter": "1.5rem", "margin-mobile": "1rem", "space-xl": "2.5rem" }, fontFamily: { "headline-lg-mobile": ["Plus Jakarta Sans"], "label-sm": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], "label-xs": ["Inter"], "body-sm": ["Plus Jakarta Sans"], "metric-xl": ["Inter"], "headline-display-mobile": ["Plus Jakarta Sans"], "metric-md": ["Inter"], "body-lg": ["Plus Jakarta Sans"], "metric-xl-mobile": ["Inter"], "headline-display": ["Plus Jakarta Sans"], "label-md": ["Inter"], "metric-lg": ["Inter"], "body-md": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-lg-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }], "label-xs": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "700" }], "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }], "metric-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-display-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "800" }], "metric-md": ["20px", { lineHeight: "26px", fontWeight: "600" }], "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }], "metric-xl-mobile": ["30px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-display": ["48px", { lineHeight: "56px", letterSpacing: "-0.03em", fontWeight: "800" }], "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }], "metric-lg": ["28px", { lineHeight: "34px", fontWeight: "700" }], "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }], "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }] } } } }</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="FASALYTICS Leaf AI Logo" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1WO0QlB0gmhsL0dvA7nxcq1IZNWFv2H7P8r-WMIJHH4EaGKfpXbG2gabAwek3ERxdIhlQMLwllc3qGGBUfdEf4nsPNk61YjhZmNKWA4NE9yWZaRtWdAfcC5-pT3wcPiUUOtrf-U0adxQCpwuR9uYpmUH7F4JOc2EHRjp9qJ40xYRnEihxoUL9_gKe1kLWcXCCPPrZDTR9wW2VFzkbR8yKuYpHiTqBARDnmZuPT9wa1qYe2R6QcBA_jk2W4"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold truncate">FASALYTICS</span></div><span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold truncate">Smarter Selling</span></div></div><div class="flex items-center gap-space-xs flex-shrink-0"><div aria-label="Language selection" class="flex items-center bg-surface-container-high rounded-full p-0.5" role="group"><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full bg-primary text-on-primary font-label-xs text-label-xs font-bold" type="button">EN</button><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full text-on-surface-variant font-label-xs text-label-xs font-semibold hover:text-on-surface" type="button">हि</button><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full text-on-surface-variant font-label-xs text-label-xs font-semibold hover:text-on-surface" type="button">म</button></div><button aria-label="Notifications" class="relative w-12 h-12 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[24px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="flex items-center justify-center pl-0.5"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNyYjsR0HZEntd65WJHaE6W21_uj4GYvqw5fpcRjy9vZ9u0h7t9mKMQh_RopbVOVvEDodkmTcFC9mjLKXcIU6QNFdtB67XIyue24sPaPNGrLErF9OdcKuHzSJKxjpPNToDgoS9ZnCNrha8i4QlFG9fPC3UwUGWMDNURu3QnoZw2mfRRyHQu3yel4BBFiBzsMBhHwkvvZ-UBXBDwFVoo4Pr157588XflZR8zpNs5vcZAJ7gsIEEAEvt"/></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full px-gutter-mobile space-y-space-md">
+<!-- Breadcrumb & AI Engine Confidence Badge -->
+<div class="flex flex-col space-y-space-xs mt-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">psychology</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight font-extrabold">AI Price Forecasting</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors cursor-pointer" title="Model Insights">
+<span class="material-symbols-outlined text-[18px]">info</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container text-on-primary-container font-label-xs text-label-xs font-bold tracking-wide shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+        Prophet + Ensemble v3.2 • 93% Backtested
+      </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-xs text-label-xs">
+<span class="material-symbols-outlined text-[13px] text-secondary">verified</span>
+        APMC Calibrated
+      </span>
+</div>
+</div>
+<!-- Crop & Mandi Context Card (Interactive Selector Pod) -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm relative overflow-hidden">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm min-w-0">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover rounded-xl" data-alt="Macro close-up shot of golden Sharbati wheat grains bathed in warm sunlight, high-resolution agricultural grain detail with vibrant amber and sunlit natural tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHeDgA-muSoHDhEMFre_O7w71vui55syRQ5e1xwQl_iY5iICx-PZ9j4-9Nf5Jl2xs9llSNNfocADhYJqdW3kVgP6uDs4O5OuTO6b-BlyMp3LAiOP6Ay4YKIdY7MSxm1uhXj2XObC-rW506L_ZhjIsSLPCdHOFb4gM3weRSx3YE7ko5bTHnQpYtOs4iP2yZpz4RTwHNR4h-GEmABhwTXIsTFHJG2iPT_YdR-PGW4KwQKFKSx5yI5ObE"/>
+<div class="absolute inset-0 bg-primary/10"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold truncate">Wheat (Sharbati)</span>
+<span class="px-1.5 py-0.5 rounded bg-primary-fixed text-on-primary-fixed-variant font-label-xs text-label-xs font-semibold">Grade A</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Khanna Mandi, Ludhiana, Punjab</p>
+</div>
+</div>
+<button aria-label="Change Crop or Mandi" class="flex-shrink-0 h-9 px-2.5 rounded-xl bg-surface-container text-primary font-label-xs text-label-xs font-bold flex items-center gap-1 hover:bg-surface-container-high transition-colors active:scale-95" type="button">
+<span>Change</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-on-surface-variant font-label-xs text-label-xs">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-secondary">sync</span>
+<span>Today 07:00 AM Sync</span>
+</div>
+<div class="flex items-center gap-1 font-semibold text-primary">
+<span class="material-symbols-outlined text-[15px]">conveyor_belt</span>
+<span>Agmarknet: 5,400 Qtl</span>
+</div>
+</div>
+</section>
+<!-- Horizon Tabs (Segmented Control) -->
+<div class="w-full bg-surface-container p-1 rounded-xl flex items-center shadow-inner" role="tablist">
+<button aria-selected="false" class="flex-1 py-2 text-center rounded-lg font-label-sm text-label-sm text-on-surface-variant transition-all hover:text-on-surface" role="tab">1-Day Ahead</button>
+<button aria-selected="false" class="flex-1 py-2 text-center rounded-lg font-label-sm text-label-sm text-on-surface-variant transition-all hover:text-on-surface" role="tab">3-Day Ahead</button>
+<button aria-selected="true" class="flex-1 py-2 text-center rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm font-bold shadow-sm transition-all" role="tab">7-Day Trajectory</button>
+</div>
+<!-- Hero Price Forecast Card -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm relative overflow-hidden">
+<div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-secondary-container/20 pointer-events-none blur-xl"></div>
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold">Projected Modal Price</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-xs text-label-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+        +₹160/Qtl (+5.9% by Day 3)
+      </span>
+</div>
+<!-- Primary Metric Anchor -->
+<div class="flex items-baseline gap-2">
+<span class="font-metric-xl-mobile text-metric-xl-mobile text-primary font-extrabold tracking-tight">₹2,840</span>
+<span class="font-body-md text-body-md text-on-surface-variant font-medium">/ Qtl</span>
+<span class="ml-auto font-label-xs text-label-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded-lg">Band: ₹2,790 – ₹2,890</span>
+</div>
+<!-- Recommended Action Callout Pod -->
+<div class="mt-space-md rounded-xl bg-surface-container-low p-space-sm flex items-start gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-primary text-on-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm text-primary font-bold">High Return Window: Thursday Morning</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">
+          Target slot 06:30 – 10:00 AM. Favorable buyer influx from Delhi flour mills and regional bulk aggregators.
+        </p>
+</div>
+</div>
+</section>
+<!-- Interactive Historical vs Predicted Price Line Chart -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex flex-col space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Price Trajectory Curve</h2>
+<span class="font-label-xs text-label-xs text-on-surface-variant">Past 7 Days Actual vs 7 Days AI Confidence</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1 font-label-xs text-label-xs text-on-surface-variant">
+<span class="w-3 h-0.5 bg-outline-variant inline-block"></span>
+          Past
+        </span>
+<span class="flex items-center gap-1 font-label-xs text-label-xs text-primary font-bold">
+<span class="w-3 h-1 bg-primary rounded-full inline-block"></span>
+          AI Forecast
+        </span>
+</div>
+</div>
+<!-- Chart Canvas SVG -->
+<div class="w-full h-44 relative bg-surface-container-low rounded-xl p-2 flex flex-col justify-between overflow-hidden">
+<!-- Watermark Background Graphic -->
+<svg class="w-full h-full overflow-visible" fill="none" viewbox="0 0 340 130" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="confidenceGradient" x1="170" x2="170" y1="20" y2="120">
+<stop offset="0%" stop-color="#166534" stop-opacity="0.22"></stop>
+<stop offset="100%" stop-color="#166534" stop-opacity="0.01"></stop>
+</lineargradient>
+<lineargradient gradientunits="userSpaceOnUse" id="actualLineGradient" x1="0" x2="170" y1="0" y2="0">
+<stop offset="0%" stop-color="#707a6f" stop-opacity="0.4"></stop>
+<stop offset="100%" stop-color="#707a6f" stop-opacity="0.9"></stop>
+</lineargradient>
+</defs>
+<!-- Subtle horizontal grid lines -->
+<line opacity="0.6" stroke="#bfc9bd" stroke-dasharray="3 3" stroke-width="0.75" x1="0" x2="340" y1="25" y2="25"></line>
+<line opacity="0.6" stroke="#bfc9bd" stroke-dasharray="3 3" stroke-width="0.75" x1="0" x2="340" y1="65" y2="65"></line>
+<line opacity="0.6" stroke="#bfc9bd" stroke-dasharray="3 3" stroke-width="0.75" x1="0" x2="340" y1="105" y2="105"></line>
+<!-- Y-Axis Price Anchors -->
+<text fill="#707a6f" font-family="Inter" font-size="9" font-weight="600" x="5" y="24">₹2,900</text>
+<text fill="#707a6f" font-family="Inter" font-size="9" font-weight="600" x="5" y="64">₹2,800</text>
+<text fill="#707a6f" font-family="Inter" font-size="9" font-weight="600" x="5" y="104">₹2,700</text>
+<!-- Confidence Area Band (Day 0 to Day 7: X: 160 to 330) -->
+<path d="M 160 88 
+                 C 185 75, 205 24, 230 18 
+                 C 255 24, 275 45, 290 60 
+                 C 310 75, 325 65, 330 62 
+                 L 330 102 
+                 C 320 108, 305 118, 290 105 
+                 C 275 95, 255 75, 230 52 
+                 C 205 60, 185 98, 160 96 Z" fill="url(#confidenceGradient)"></path>
+<!-- Historical Path (Left side, gray dashed) -->
+<path d="M 15 102 Q 50 106, 75 92 T 125 98 T 160 92" fill="none" stroke="url(#actualLineGradient)" stroke-dasharray="4 4" stroke-linecap="round" stroke-width="2.5"></path>
+<!-- Transition boundary marker (Today) -->
+<line opacity="0.4" stroke="#004c22" stroke-dasharray="2 2" stroke-width="1.5" x1="160" x2="160" y1="10" y2="120"></line>
+<text fill="#004c22" font-family="Inter" font-size="8.5" font-weight="700" x="145" y="125">TODAY</text>
+<!-- AI Forecast Predicted Path (Solid Forest Green) -->
+<path d="M 160 92 C 185 78, 208 38, 230 32 C 255 36, 275 58, 290 74 C 310 92, 325 80, 330 78" fill="none" stroke="#004c22" stroke-linecap="round" stroke-width="3"></path>
+<!-- Today Node -->
+<circle cx="160" cy="92" fill="#ffffff" r="4" stroke="#004c22" stroke-width="2.5"></circle>
+<!-- Day 3 Peak Milestone Node with Pulse Highlight -->
+<circle cx="230" cy="32" fill="#6ffbbe" fill-opacity="0.4" r="7"></circle>
+<circle cx="230" cy="32" fill="#004c22" r="4.5"></circle>
+<circle cx="230" cy="32" fill="#ffffff" r="2"></circle>
+<!-- Day 3 Label Flag -->
+<g transform="translate(198, 4)">
+<rect fill="#004c22" height="20" rx="4" width="64"></rect>
+<text fill="#ffffff" font-family="Inter" font-size="9" font-weight="700" text-anchor="middle" x="32" y="13.5">Day 3: ₹2,840 ★</text>
+</g>
+</svg>
+</div>
+<!-- Chart Legend Micro-indicators -->
+<div class="flex items-center justify-between px-1 text-on-surface-variant font-label-xs text-label-xs">
+<span>-7D (₹2,680)</span>
+<span>-3D (₹2,710)</span>
+<span class="font-bold text-primary">Now (₹2,680)</span>
+<span class="font-bold text-secondary">Thu Peak (₹2,840)</span>
+<span>+7D (₹2,750)</span>
+</div>
+</section>
+<!-- 7-Day Forecast Breakdown Scrollable Cards -->
+<section class="flex flex-col space-y-space-xs">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">7-Day Trajectory Breakdown</h2>
+<span class="font-label-xs text-label-xs text-secondary font-semibold">Swipe horizontal →</span>
+</div>
+<div class="flex gap-space-xs overflow-x-auto pb-space-xs -mx-gutter-mobile px-gutter-mobile scrollbar-none snap-x snap-mandatory">
+<!-- Day 1 (Today) -->
+<div class="flex-shrink-0 w-32 bg-surface-container-lowest p-space-sm rounded-xl snap-start flex flex-col justify-between shadow-sm">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-xs text-label-xs text-on-surface-variant font-bold uppercase">Day 1</span>
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold block mt-0.5">Today</span>
+</div>
+<div class="mt-space-md">
+<span class="font-metric-md text-metric-md text-on-surface font-bold">₹2,680</span>
+<p class="font-label-xs text-label-xs text-on-surface-variant mt-0.5">Baseline rate</p>
+</div>
+</div>
+<!-- Day 2 (Tomorrow) -->
+<div class="flex-shrink-0 w-32 bg-surface-container-lowest p-space-sm rounded-xl snap-start flex flex-col justify-between shadow-sm">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-xs text-label-xs text-on-surface-variant font-bold uppercase">Day 2</span>
+<span class="material-symbols-outlined text-secondary text-[16px]">north_east</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold block mt-0.5">Tomorrow</span>
+</div>
+<div class="mt-space-md">
+<span class="font-metric-md text-metric-md text-primary font-bold">₹2,740</span>
+<p class="font-label-xs text-label-xs text-secondary font-semibold mt-0.5">+₹60 (Rising)</p>
+</div>
+</div>
+<!-- Day 3 (Thu - Best Day Highlight) -->
+<div class="flex-shrink-0 w-36 bg-primary-container text-on-primary p-space-sm rounded-xl snap-start flex flex-col justify-between shadow-md relative overflow-hidden ring-2 ring-secondary-fixed">
+<div class="absolute -right-3 -top-3 w-10 h-10 rounded-full bg-secondary-fixed/20"></div>
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-xs text-label-xs text-primary-fixed uppercase font-extrabold tracking-wider">Day 3 • Thu</span>
+<span class="material-symbols-outlined text-secondary-fixed text-[18px]">verified</span>
+</div>
+<span class="font-label-md text-label-md text-on-primary font-extrabold block mt-0.5">Peak Sell Day</span>
+</div>
+<div class="mt-space-md">
+<span class="font-metric-md text-metric-md text-on-primary font-extrabold tracking-tight">₹2,840</span>
+<p class="font-label-xs text-label-xs text-secondary-fixed font-bold mt-0.5">+₹160 (Peak Rate ★)</p>
+</div>
+</div>
+<!-- Day 4 (Fri) -->
+<div class="flex-shrink-0 w-32 bg-surface-container-lowest p-space-sm rounded-xl snap-start flex flex-col justify-between shadow-sm">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-xs text-label-xs text-on-surface-variant font-bold uppercase">Day 4</span>
+<span class="material-symbols-outlined text-outline text-[16px]">horizontal_rule</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold block mt-0.5">Friday</span>
+</div>
+<div class="mt-space-md">
+<span class="font-metric-md text-metric-md text-on-surface font-bold">₹2,810</span>
+<p class="font-label-xs text-label-xs text-on-surface-variant mt-0.5">Stabilizing</p>
+</div>
+</div>
+<!-- Day 5 (Sat) -->
+<div class="flex-shrink-0 w-32 bg-surface-container-lowest p-space-sm rounded-xl snap-start flex flex-col justify-between shadow-sm">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-xs text-label-xs text-on-surface-variant font-bold uppercase">Day 5</span>
+<span class="material-symbols-outlined text-error text-[16px]">south_east</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold block mt-0.5">Saturday</span>
+</div>
+<div class="mt-space-md">
+<span class="font-metric-md text-metric-md text-on-surface font-bold">₹2,760</span>
+<p class="font-label-xs text-label-xs text-on-surface-variant mt-0.5">Weekend dip</p>
+</div>
+</div>
+<!-- Day 6 (Sun) -->
+<div class="flex-shrink-0 w-32 bg-surface-container-lowest p-space-sm rounded-xl snap-start flex flex-col justify-between shadow-sm">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-xs text-label-xs text-on-surface-variant font-bold uppercase">Day 6</span>
+<span class="material-symbols-outlined text-outline text-[16px]">remove</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold block mt-0.5">Sunday</span>
+</div>
+<div class="mt-space-md">
+<span class="font-metric-md text-metric-md text-on-surface font-bold">₹2,720</span>
+<p class="font-label-xs text-label-xs text-on-surface-variant mt-0.5">Low arrivals</p>
+</div>
+</div>
+<!-- Day 7 (Mon) -->
+<div class="flex-shrink-0 w-32 bg-surface-container-lowest p-space-sm rounded-xl snap-start flex flex-col justify-between shadow-sm">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-xs text-label-xs text-on-surface-variant font-bold uppercase">Day 7</span>
+<span class="material-symbols-outlined text-secondary text-[16px]">north_east</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold block mt-0.5">Monday</span>
+</div>
+<div class="mt-space-md">
+<span class="font-metric-md text-metric-md text-on-surface font-bold">₹2,750</span>
+<p class="font-label-xs text-label-xs text-secondary font-semibold mt-0.5">Recovery</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Market Drivers & Supply Dynamics -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">tune</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Key Predictive Drivers</h2>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">Real-time Factors</span>
+</div>
+<div class="flex flex-col space-y-2">
+<!-- Green Factor -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-xl bg-surface-container-low">
+<span class="w-3 h-3 rounded-full bg-secondary mt-1 flex-shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface font-bold">Arrival Volume Controlled</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">Current arrivals at 5,400 Qtl indicate -12% supply pressure compared to 3-year seasonal averages.</p>
+</div>
+</div>
+<!-- Amber Factor -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-xl bg-surface-container-low">
+<span class="w-3 h-3 rounded-full bg-tertiary-fixed-dim mt-1 flex-shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface font-bold">Logistics &amp; Rail Rake Steady</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">Ludhiana freight siding reports 94% cargo wagon allotment for transit to southern processing clusters.</p>
+</div>
+</div>
+<!-- Blue/Secondary Factor -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-xl bg-surface-container-low">
+<span class="w-3 h-3 rounded-full bg-primary-fixed-dim mt-1 flex-shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface font-bold">Corridor Weather Optimal</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">Zero precipitation risk across the GT Road Delhi-NCR freight route through Friday morning.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Visual Regional APMC Transit Snapshot Card -->
+<section class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-primary font-bold">Corridor Dispatch Context</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant">GT Road Route</span>
+</div>
+<div class="w-full h-28 rounded-xl overflow-hidden relative shadow-inner">
+<img class="w-full h-full object-cover" data-alt="Expansive shot of an Indian agricultural grain market mandi with orderly stacked golden wheat sacks and clean modern transport trucks on a clear morning" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlAomDTc0yTnun2NtSxI-PlLf65xd1sPkL3YogNuUdu0uUvzs5BQyrGwyzUW6gVWW8lwSlsvaLJDNWk2svnE7D5s2TYdAqjk2WGo-fqcl6wLD9tbTxdQ1G1qCpT2Qkye6OKBMfxzMjkZ3efZF9XDt2M7P7fYzL25G7Ak6INF5xn-Mqm29u_KsR5glwdOwlFILAULuX1E7SFx1e0kX73ALeJ82bhoK4ItNQdG-kmKCKYo-goBnoAf3G"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent"></div>
+<div class="absolute bottom-2 left-3 right-3 flex items-center justify-between text-on-primary">
+<div>
+<p class="font-label-xs text-label-xs opacity-90">Dispatch Destination</p>
+<p class="font-label-sm text-label-sm font-bold">Narela APMC, Delhi (+₹110 Gross Delta)</p>
+</div>
+<span class="px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-xs text-label-xs font-bold">6.2 hrs transit</span>
+</div>
+</div>
+</section>
+<!-- Methodology & Model Transparency Disclaimer -->
+<div class="p-space-sm rounded-xl bg-surface-container-high/60 flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant mt-0.5 flex-shrink-0">dataset</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[12px] leading-relaxed">
+<strong class="text-on-surface font-semibold">Model Screening:</strong> Meets 365+ day historical span &amp; 60% observation thresholds. Model backtested with rolling-origin WAPE 4.2% across northern wheat corridors.
+    </p>
+</div>
+<!-- Primary & Secondary Interactive Action CTAs -->
+<div class="flex flex-col space-y-space-xs pt-space-xs pb-space-sm">
+<button class="w-full h-12 bg-primary text-on-primary rounded-xl font-label-md text-label-md font-bold flex items-center justify-center gap-space-xs shadow-md hover:bg-primary-container active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">compare_arrows</span>
+<span>Compare Inter-State Mandis for Wheat</span>
+</button>
+<button class="w-full h-12 bg-surface-container text-primary rounded-xl font-label-md text-label-md font-bold flex items-center justify-center gap-space-xs hover:bg-surface-container-high active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">notification_add</span>
+<span>Set Price Alert at ₹2,800+</span>
+</button>
+<div class="text-center pt-space-xs">
+<span class="font-label-xs text-label-xs text-on-surface-variant/80">
+        Illustrative AgriTech Demo Data • Verified APMC API Model
+      </span>
+</div>
+</div>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-bold"><div class="flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-xs text-label-xs mt-0.5">Dashboard</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="mandis" href="#"><span class="material-symbols-outlined text-[24px]">storefront</span><span class="font-label-xs text-label-xs mt-0.5">Mandis</span></a><a class="relative flex flex-col items-center justify-center -top-3 min-w-[60px] min-h-[56px] group" data-path="allocate" href="#"><div class="w-12 h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-[0_8px_16px_-4px_rgba(22,101,52,0.4)] group-active:scale-95 transition-transform"><span class="material-symbols-outlined text-[26px]">pie_chart</span></div><span class="font-label-xs text-label-xs text-primary font-bold mt-1">Allocate</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="ai-copilot" href="#"><span class="material-symbols-outlined text-[24px]">smart_toy</span><span class="font-label-xs text-label-xs mt-0.5">AI Copilot</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="profile" href="#"><span class="material-symbols-outlined text-[24px]">person</span><span class="font-label-xs text-label-xs mt-0.5">Profile</span></a></div></nav></body></html>

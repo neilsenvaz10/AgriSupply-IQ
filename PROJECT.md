@@ -220,7 +220,7 @@ The platform targets **all of India and all commodities** (§0.1). The data supp
 | **State-Level Intelligence** | Only state-level observations exist; state analysis only | State × commodity series (never presented as mandi-level) |
 | **Insufficient Data** | Not enough verified observations | Below minimum counts or too stale |
 
-Criteria (observation count, span, continuity/maximum gap, missingness, freshness, horizon, backtest skill, uncertainty) are configuration values stored with the evaluation, not commodity whitelists. The first, provisional data-sufficiency screen and its results are recorded in `docs/data-sources/PILOT_SELECTION.md`; **only Phase 3 backtests can grant forecast eligibility**.
+Criteria (observation count, span, continuity/maximum gap, missingness, freshness, horizon, backtest skill, uncertainty) are configuration values stored with the evaluation, not commodity whitelists. The first, provisional data-sufficiency screen and its results are recorded in `docs/data-sources/DATASET_COVERAGE.md`; **only Phase 3 backtests can grant forecast eligibility**.
 
 ### 4.2.2 Historical versus recent data
 

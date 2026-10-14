@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "background": "#f8faf8", "on-secondary-fixed": "#002113", "on-primary-fixed": "#00210b", "on-secondary-fixed-variant": "#005236", "surface-container-highest": "#e1e3e1", "surface-variant": "#e1e3e1", "on-error-container": "#93000a", "surface-bright": "#f8faf8", "tertiary-container": "#7d4e00", "surface-container-low": "#f2f4f2", "secondary-container": "#6cf8bb", "secondary-fixed": "#6ffbbe", "on-tertiary": "#ffffff", "on-primary-fixed-variant": "#005226", "error": "#ba1a1a", "on-tertiary-container": "#ffc47d", "on-secondary": "#ffffff", "tertiary": "#5d3900", "secondary-fixed-dim": "#4edea3", "outline": "#707a6f", "inverse-primary": "#8bd79b", "on-primary": "#ffffff", "surface-tint": "#1f6c3a", "on-tertiary-fixed": "#2a1700", "inverse-on-surface": "#eff1ef", "primary-container": "#166534", "inverse-surface": "#2e3130", "outline-variant": "#bfc9bd", "surface-container": "#eceeec", "on-tertiary-fixed-variant": "#653e00", "on-surface": "#191c1b", "surface-dim": "#d8dad9", "primary-fixed-dim": "#8bd79b", "secondary": "#006c49", "on-secondary-container": "#00714d", "on-surface-variant": "#404940", "surface": "#f8faf8", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "surface-container-high": "#e6e9e7", "primary-fixed": "#a6f4b5", "on-background": "#191c1b", "tertiary-fixed": "#ffddb8", "on-primary-container": "#93e0a2", "tertiary-fixed-dim": "#ffb95f", "primary": "#004c22", "on-error": "#ffffff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin": "2rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", "gutter": "1.5rem", "margin-mobile": "1rem", "space-xl": "2.5rem" }, fontFamily: { "headline-lg-mobile": ["Plus Jakarta Sans"], "label-sm": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], "label-xs": ["Inter"], "body-sm": ["Plus Jakarta Sans"], "metric-xl": ["Inter"], "headline-display-mobile": ["Plus Jakarta Sans"], "metric-md": ["Inter"], "body-lg": ["Plus Jakarta Sans"], "metric-xl-mobile": ["Inter"], "headline-display": ["Plus Jakarta Sans"], "label-md": ["Inter"], "metric-lg": ["Inter"], "body-md": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-lg-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }], "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }], "label-xs": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "700" }], "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }], "metric-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-display-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "800" }], "metric-md": ["20px", { lineHeight: "26px", fontWeight: "600" }], "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }], "metric-xl-mobile": ["30px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-display": ["48px", { lineHeight: "56px", letterSpacing: "-0.03em", fontWeight: "800" }], "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }], "metric-lg": ["28px", { lineHeight: "34px", fontWeight: "700" }], "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }], "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }] } } } }</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="FASALYTICS Leaf AI Logo" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1WO0QlB0gmhsL0dvA7nxcq1IZNWFv2H7P8r-WMIJHH4EaGKfpXbG2gabAwek3ERxdIhlQMLwllc3qGGBUfdEf4nsPNk61YjhZmNKWA4NE9yWZaRtWdAfcC5-pT3wcPiUUOtrf-U0adxQCpwuR9uYpmUH7F4JOc2EHRjp9qJ40xYRnEihxoUL9_gKe1kLWcXCCPPrZDTR9wW2VFzkbR8yKuYpHiTqBARDnmZuPT9wa1qYe2R6QcBA_jk2W4"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold truncate">FASALYTICS</span></div><span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold truncate">Smarter Selling</span></div></div><div class="flex items-center gap-space-xs flex-shrink-0"><div aria-label="Language selection" class="flex items-center bg-surface-container-high rounded-full p-0.5" role="group"><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full bg-primary text-on-primary font-label-xs text-label-xs font-bold" type="button">EN</button><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full text-on-surface-variant font-label-xs text-label-xs font-semibold hover:text-on-surface" type="button">हि</button><button class="min-w-[28px] h-7 px-1.5 flex items-center justify-center rounded-full text-on-surface-variant font-label-xs text-label-xs font-semibold hover:text-on-surface" type="button">म</button></div><button aria-label="Notifications" class="relative w-12 h-12 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-colors" type="button"><span class="material-symbols-outlined text-[24px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="flex items-center justify-center pl-0.5"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNyYjsR0HZEntd65WJHaE6W21_uj4GYvqw5fpcRjy9vZ9u0h7t9mKMQh_RopbVOVvEDodkmTcFC9mjLKXcIU6QNFdtB67XIyue24sPaPNGrLErF9OdcKuHzSJKxjpPNToDgoS9ZnCNrha8i4QlFG9fPC3UwUGWMDNURu3QnoZw2mfRRyHQu3yel4BBFiBzsMBhHwkvvZ-UBXBDwFVoo4Pr157588XflZR8zpNs5vcZAJ7gsIEEAEvt"/></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full px-gutter-mobile space-y-space-md pb-6">
+<!-- Header & Context Tag -->
+<div class="flex flex-col pt-space-xs">
+<div class="flex items-center gap-space-xs flex-wrap mb-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-xs text-label-xs uppercase tracking-wider font-bold">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+        Sensitivity &amp; Scenario Engine
+      </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-xs text-label-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim"></span>
+        Live Modeler
+      </span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight font-extrabold">
+      What-If Decision Simulator
+    </h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+      Test price changes, diesel fuel hikes, and storage holding impact before harvest dispatch.
+    </p>
+</div>
+<!-- Baseline Parameters Input Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 opacity-5 pointer-events-none text-primary">
+<span class="material-symbols-outlined text-[130px]">science</span>
+</div>
+<div class="flex items-center justify-between pb-space-sm mb-space-sm bg-surface-container-low -mx-space-md -mt-space-md px-space-md py-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">inventory_2</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Baseline Harvest Lot</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-xs text-label-xs font-bold">
+        Verified Lot #MP-492
+      </span>
+</div>
+<div class="grid grid-cols-2 gap-3 mb-space-sm">
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low">
+<span class="font-label-xs text-label-xs text-on-surface-variant font-medium">Commodity &amp; Volume</span>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Yellow Soybean</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold">100 Quintals (10 MT)</span>
+</div>
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low">
+<span class="font-label-xs text-label-xs text-on-surface-variant font-medium">Route &amp; Mileage</span>
+<span class="font-label-md text-label-md text-on-surface font-bold truncate mt-0.5">Sehore ➔ Indore</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant font-medium">Indore APMC • 85 km</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-primary/5">
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold">Current Baseline Realization</span>
+<span class="font-metric-lg text-metric-lg text-primary tracking-tight font-extrabold">₹4,72,000</span>
+</div>
+<div class="text-right">
+<span class="inline-block px-2 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed font-label-xs text-label-xs font-bold">
+          ₹4,720 / Qtl
+        </span>
+<span class="block font-label-xs text-label-xs text-on-surface-variant mt-0.5">Net in Hand</span>
+</div>
+</div>
+</div>
+<!-- Scenario Presets Tabs -->
+<div class="flex flex-col space-y-1.5">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-bold">
+        Quick Scenario Presets
+      </span>
+<span class="font-label-xs text-label-xs text-secondary font-semibold">Tap to stress-test</span>
+</div>
+<!-- Horizontal scrollable presets -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 -mx-gutter-mobile px-gutter-mobile no-scrollbar">
+<button class="preset-btn shrink-0 px-3.5 py-2 rounded-xl bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold flex items-center gap-1.5 active:scale-95 transition-all" id="preset-fuel" type="button">
+<span class="material-symbols-outlined text-[16px] text-tertiary">local_gas_station</span>
+<span>Fuel Hike (+20%)</span>
+</button>
+<button class="preset-btn shrink-0 px-3.5 py-2 rounded-xl bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold flex items-center gap-1.5 active:scale-95 transition-all" id="preset-crash" type="button">
+<span class="material-symbols-outlined text-[16px] text-error">trending_down</span>
+<span>Crash (-10%)</span>
+</button>
+<button class="preset-btn shrink-0 px-3.5 py-2 rounded-xl bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold flex items-center gap-1.5 active:scale-95 transition-all" id="preset-hold" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">warehouse</span>
+<span>Hold 5 Days</span>
+</button>
+<button class="preset-btn shrink-0 px-3.5 py-2 rounded-xl bg-primary text-on-primary font-label-sm text-label-sm font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all" id="preset-custom" type="button">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span>Custom Shock</span>
+</button>
+</div>
+</div>
+<!-- Interactive Range Sliders Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm space-y-space-md">
+<div class="flex items-center justify-between border-b-0 pb-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[22px]">sliders</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Dynamic Shock Levers</span>
+</div>
+<span class="font-label-xs text-label-xs px-2 py-0.5 bg-surface-container-high rounded-full font-semibold text-on-surface-variant">Real-Time</span>
+</div>
+<!-- Slider 1: Freight / Diesel -->
+<div class="flex flex-col space-y-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-6 h-6 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">local_shipping</span>
+</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Freight / Diesel Tariff</span>
+</div>
+<span class="font-label-md text-label-md text-tertiary-container font-extrabold bg-tertiary-fixed/40 px-2 py-0.5 rounded-md tabular-nums" id="label-freight">
+          +15% (+₹18/Qtl)
+        </span>
+</div>
+<div class="relative w-full py-1">
+<input class="w-full accent-primary h-2 bg-surface-container-highest rounded-lg cursor-pointer" id="slider-freight" max="25" min="-15" step="5" type="range" value="15"/>
+</div>
+<div class="flex justify-between font-label-xs text-label-xs text-on-surface-variant font-medium">
+<span>-15% (Subsidy)</span>
+<span class="text-on-surface font-semibold">0% Base</span>
+<span>+25% (Extreme Hike)</span>
+</div>
+</div>
+<!-- Slider 2: Spot Price Market Shock -->
+<div class="flex flex-col space-y-1.5 pt-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-6 h-6 rounded-lg bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">show_chart</span>
+</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Mandi Spot Price Shift</span>
+</div>
+<span class="font-label-md text-label-md text-error font-extrabold bg-error-container/60 px-2 py-0.5 rounded-md tabular-nums" id="label-price">
+          -5% (-₹245/Qtl)
+        </span>
+</div>
+<div class="relative w-full py-1">
+<input class="w-full accent-primary h-2 bg-surface-container-highest rounded-lg cursor-pointer" id="slider-price" max="15" min="-20" step="1" type="range" value="-5"/>
+</div>
+<div class="flex justify-between font-label-xs text-label-xs text-on-surface-variant font-medium">
+<span class="text-error font-semibold">-20% (Crash)</span>
+<span class="text-on-surface font-semibold">0% Level</span>
+<span class="text-secondary font-semibold">+15% (Rally)</span>
+</div>
+</div>
+<!-- Slider 3: Storage Duration -->
+<div class="flex flex-col space-y-1.5 pt-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-6 h-6 rounded-lg bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">hourglass_top</span>
+</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Storage &amp; Moisture Decay</span>
+</div>
+<span class="font-label-md text-label-md text-secondary font-extrabold bg-secondary-fixed/50 px-2 py-0.5 rounded-md tabular-nums" id="label-storage">
+          3 Days (1.2% Loss)
+        </span>
+</div>
+<div class="relative w-full py-1">
+<input class="w-full accent-primary h-2 bg-surface-container-highest rounded-lg cursor-pointer" id="slider-storage" max="7" min="0" step="1" type="range" value="3"/>
+</div>
+<div class="flex justify-between font-label-xs text-label-xs text-on-surface-variant font-medium">
+<span>0 Days (Direct Sell)</span>
+<span class="text-on-surface font-semibold">3 Days</span>
+<span>7 Days (Warehouse Max)</span>
+</div>
+</div>
+</div>
+<!-- Impact Analysis & Comparison Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">balance</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Payout Impact Analysis</span>
+</div>
+<span class="font-label-xs text-label-xs text-on-surface-variant">Live Sensitivity</span>
+</div>
+<!-- Side-by-side Payout Comparison -->
+<div class="grid grid-cols-2 gap-3 p-3 rounded-xl bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-on-surface-variant font-semibold">Baseline Payout</span>
+<span class="font-metric-md text-metric-md text-on-surface-variant line-through opacity-70 mt-0.5">₹4,72,000</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant mt-0.5">Original dispatch</span>
+</div>
+<div class="flex flex-col items-end text-right">
+<span class="font-label-xs text-label-xs text-primary font-bold">Simulated Net</span>
+<span class="font-metric-lg text-metric-lg text-on-surface font-extrabold tracking-tight mt-0.5" id="metric-simulated">₹4,51,600</span>
+<span class="inline-flex items-center font-label-xs text-label-xs font-bold text-error bg-error-container px-1.5 py-0.5 rounded-full mt-0.5" id="badge-impact-delta">
+          -₹20,400 (-4.3%)
+        </span>
+</div>
+</div>
+<!-- Itemized Shock Breakdown Bars -->
+<div class="space-y-2.5 pt-1">
+<span class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-bold">Itemized Variation Waterfall</span>
+<!-- Freight surcharge -->
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2 min-w-0">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Freight / Diesel Surcharge</span>
+</div>
+<span class="font-label-md text-label-md text-error font-bold tabular-nums shrink-0" id="breakdown-freight">-₹1,800</span>
+</div>
+<!-- Mandi drop -->
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2 min-w-0">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Spot Price Fluctuations</span>
+</div>
+<span class="font-label-md text-label-md text-error font-bold tabular-nums shrink-0" id="breakdown-price">-₹14,500</span>
+</div>
+<!-- Warehouse & Spoilage -->
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2 min-w-0">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Warehouse Rent &amp; Loss</span>
+</div>
+<span class="font-label-md text-label-md text-error font-bold tabular-nums shrink-0" id="breakdown-storage">-₹4,100</span>
+</div>
+<!-- Visual stacked impact gauge -->
+<div class="w-full h-2.5 rounded-full bg-surface-container-high overflow-hidden flex mt-2">
+<div class="bg-tertiary h-full transition-all duration-300" id="bar-freight" style="width: 15%"></div>
+<div class="bg-error h-full transition-all duration-300" id="bar-price" style="width: 65%"></div>
+<div class="bg-secondary h-full transition-all duration-300" id="bar-storage" style="width: 20%"></div>
+</div>
+<div class="flex items-center justify-between font-label-xs text-label-xs text-on-surface-variant">
+<span>Freight (9%)</span>
+<span>Price Drop (71%)</span>
+<span>Storage/Moisture (20%)</span>
+</div>
+</div>
+</div>
+<!-- Smart Recommendation Under Simulated Scenario -->
+<div class="bg-tertiary-fixed/30 rounded-2xl p-space-md shadow-sm relative overflow-hidden">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-tertiary text-on-tertiary flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+<span class="material-symbols-outlined text-[24px]">alt_route</span>
+</div>
+<div class="flex flex-col min-w-0 space-y-1">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-label-sm text-label-sm font-extrabold text-tertiary uppercase tracking-wider">Action Shift Triggered</span>
+<span class="px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-xs text-label-xs font-bold">Arbitrage Alert</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">
+          If diesel rises &gt;15%, <strong class="font-bold text-primary">Bhopal Mandi (42 km)</strong> becomes <span class="font-bold text-secondary">+₹6,200</span> more profitable than Indore due to freight savings.
+        </p>
+<div class="pt-1.5 flex items-center gap-2">
+<span class="inline-flex items-center text-primary font-label-sm text-label-sm font-bold gap-0.5">
+            View Route Switch <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Comparison Micro-Gallery (Visual Richness) -->
+<div class="grid grid-cols-2 gap-3">
+<div class="flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
+<div class="h-24 w-full bg-surface-container-high relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="High quality aerial documentary view of rural MP mandi yards with orderly soybean bags loaded onto green transport trucks under soft morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkT3XsiDvkzVMKVTJhPYlW-UjMWflGs8mXfkr52hYvETRvBDg1zmzSw51nkW8iDuV4DBBTV7fX9EUouAEbzvMBgq60qfAEjB6Vm6fzZwofxTTmgEKx0Ww6EAsc189UKud6V3Yip5VB6fgVVonDYVTTgIhYy_Forb_Sl4T79Zc6-MUPzqQUZPBxIsxO76rG_AW5DhNKmgdPF3VUbzauXFvSSnwCoUG2He_t5079vVty7jAzohn5zlUJ"/>
+<span class="absolute top-2 left-2 bg-inverse-surface/80 text-inverse-on-surface px-2 py-0.5 rounded font-label-xs text-label-xs font-semibold backdrop-blur-sm">
+          Indore APMC
+        </span>
+</div>
+<div class="p-2.5 flex flex-col justify-between">
+<span class="font-label-sm text-label-sm text-on-surface font-bold">85 km Long Haul</span>
+<span class="font-label-xs text-label-xs text-on-surface-variant">High volume • Fuel sensitive</span>
+</div>
+</div>
+<div class="flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
+<div class="h-24 w-full bg-surface-container-high relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up photograph of lush golden soybean grains being tested in a modern quality grain moisture meter by an agricultural agronomist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaurWR-fsRXRY90hK0rM2UkwEWO32GXlA56OiFfA3unFc4cQHl4IRh9Vq4985T-J-760e1YufKT4VcSb_Eo_gREXfJcmnE_EMW73dUBMrfE5wtFwQ6FsnTtb4bRWOyhdYk2pZfY4f-SoWtEmy864I3aXEkyJHF8wVl9JyRnP4lqaPkMJtXbVHbohFvcD-glMP8R3oPCx06VYZaEmgswx56v0UJVRlEjn4S_724t5w_V4hdk-AcAKKE"/>
+<span class="absolute top-2 left-2 bg-secondary text-on-secondary px-2 py-0.5 rounded font-label-xs text-label-xs font-semibold">
+          Bhopal APMC
+        </span>
+</div>
+<div class="p-2.5 flex flex-col justify-between">
+<span class="font-label-sm text-label-sm text-on-surface font-bold">42 km Short Haul</span>
+<span class="font-label-xs text-label-xs text-secondary font-bold">+₹6,200 net hedge</span>
+</div>
+</div>
+</div>
+<!-- Primary & Secondary Action Callouts -->
+<div class="flex flex-col space-y-2 pt-1">
+<button class="w-full h-12 bg-primary text-on-primary font-label-md text-label-md font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-transform" type="button">
+<span>Run Full Multi-Mandi Optimization</span>
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</button>
+<button class="w-full h-11 bg-transparent text-primary hover:bg-primary/5 font-label-md text-label-md font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors" id="btn-reset" type="button">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+<span>Reset to Baseline</span>
+</button>
+</div>
+<!-- Legal & Decision Engine Footnote -->
+<div class="flex items-center justify-center text-center py-2 px-space-md">
+<p class="font-label-xs text-label-xs text-on-surface-variant/80">
+      Illustrative AgriTech Simulation Engine • Farmer Decision Support
+    </p>
+</div>
+</div>
+<!-- Micro-Interactions Script for Levers & What-If Logic -->
+<script>
+  (function initSimulator() {
+    const sFreight = document.getElementById('slider-freight');
+    const sPrice = document.getElementById('slider-price');
+    const sStorage = document.getElementById('slider-storage');
+
+    const lFreight = document.getElementById('label-freight');
+    const lPrice = document.getElementById('label-price');
+    const lStorage = document.getElementById('label-storage');
+
+    const mSimulated = document.getElementById('metric-simulated');
+    const bDelta = document.getElementById('badge-impact-delta');
+
+    const bFreight = document.getElementById('breakdown-freight');
+    const bPrice = document.getElementById('breakdown-price');
+    const bStorage = document.getElementById('breakdown-storage');
+
+    const barFreight = document.getElementById('bar-freight');
+    const barPrice = document.getElementById('bar-price');
+    const barStorage = document.getElementById('bar-storage');
+
+    const baseVal = 472000;
+
+    function recalculate() {
+      const freightPct = parseInt(sFreight.value, 10);
+      const pricePct = parseInt(sPrice.value, 10);
+      const storageDays = parseInt(sStorage.value, 10);
+
+      // Calculations:
+      // Freight: Baseline is ~₹12,000 for 10MT over 85km. Each +15% is approx ₹1,800.
+      const freightImpact = -Math.round((freightPct / 15) * 1800);
+      const perQtlFreight = Math.round((freightPct / 100) * 120);
+      lFreight.textContent = (freightPct >= 0 ? `+${freightPct}%` : `${freightPct}%`) + ` (${perQtlFreight >= 0 ? '+' : ''}₹${perQtlFreight}/Qtl)`;
+
+      // Price: Baseline soybean ~₹4,720/Qtl.
+      const priceImpact = Math.round((pricePct / 100) * baseVal);
+      const perQtlPrice = Math.round((pricePct / 100) * 4720);
+      lPrice.textContent = (pricePct >= 0 ? `+${pricePct}%` : `${pricePct}%`) + ` (${perQtlPrice >= 0 ? '+' : ''}₹${perQtlPrice}/Qtl)`;
+      lPrice.className = pricePct >= 0 
+        ? "font-label-md text-label-md text-secondary font-extrabold bg-secondary-fixed/50 px-2 py-0.5 rounded-md tabular-nums"
+        : "font-label-md text-label-md text-error font-extrabold bg-error-container/60 px-2 py-0.5 rounded-md tabular-nums";
+
+      // Storage: Warehouse rent ₹600/day + moisture loss ~0.4%/day (~₹750/day loss)
+      const storageImpact = -(storageDays * 1366);
+      const moistureLoss = (storageDays * 0.4).toFixed(1);
+      lStorage.textContent = `${storageDays} Days (${moistureLoss}% Loss)`;
+
+      // Total simulated payout
+      const totalDelta = freightImpact + priceImpact + storageImpact;
+      const simulatedTotal = Math.max(0, baseVal + totalDelta);
+
+      mSimulated.textContent = `₹${simulatedTotal.toLocaleString('en-IN')}`;
+
+      // Net Delta formatting
+      const deltaSign = totalDelta >= 0 ? '+' : '-';
+      const absDelta = Math.abs(totalDelta);
+      const pctDelta = ((totalDelta / baseVal) * 100).toFixed(1);
+      bDelta.textContent = `${deltaSign}₹${absDelta.toLocaleString('en-IN')} (${deltaSign}${Math.abs(pctDelta)}%)`;
+      bDelta.className = totalDelta >= 0 
+        ? "inline-flex items-center font-label-xs text-label-xs font-bold text-on-secondary-container bg-secondary-container px-1.5 py-0.5 rounded-full mt-0.5"
+        : "inline-flex items-center font-label-xs text-label-xs font-bold text-error bg-error-container px-1.5 py-0.5 rounded-full mt-0.5";
+
+      // Itemized breakdown update
+      bFreight.textContent = `${freightImpact >= 0 ? '+' : '-'}₹${Math.abs(freightImpact).toLocaleString('en-IN')}`;
+      bFreight.className = `font-label-md text-label-md ${freightImpact <= 0 ? 'text-error' : 'text-secondary'} font-bold tabular-nums shrink-0`;
+
+      bPrice.textContent = `${priceImpact >= 0 ? '+' : '-'}₹${Math.abs(priceImpact).toLocaleString('en-IN')}`;
+      bPrice.className = `font-label-md text-label-md ${priceImpact < 0 ? 'text-error' : 'text-secondary'} font-bold tabular-nums shrink-0`;
+
+      bStorage.textContent = storageImpact === 0 ? '₹0' : `-₹${Math.abs(storageImpact).toLocaleString('en-IN')}`;
+
+      // Stacked bar proportions
+      const absF = Math.abs(freightImpact) || 1;
+      const absP = Math.abs(priceImpact) || 1;
+      const absS = Math.abs(storageImpact) || 1;
+      const sum = absF + absP + absS;
+      barFreight.style.width = `${(absF / sum) * 100}%`;
+      barPrice.style.width = `${(absP / sum) * 100}%`;
+      barStorage.style.width = `${(absS / sum) * 100}%`;
+    }
+
+    [sFreight, sPrice, sStorage].forEach(slider => {
+      slider.addEventListener('input', recalculate);
+    });
+
+    // Preset Buttons
+    const pFuel = document.getElementById('preset-fuel');
+    const pCrash = document.getElementById('preset-crash');
+    const pHold = document.getElementById('preset-hold');
+    const pCustom = document.getElementById('preset-custom');
+    const presetButtons = [pFuel, pCrash, pHold, pCustom];
+
+    function setActivePreset(activeBtn) {
+      presetButtons.forEach(btn => {
+        btn.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+        btn.classList.add('bg-surface-container-high', 'text-on-surface-variant');
+      });
+      activeBtn.classList.remove('bg-surface-container-high', 'text-on-surface-variant');
+      activeBtn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+    }
+
+    pFuel.addEventListener('click', () => {
+      sFreight.value = 20;
+      sPrice.value = 0;
+      sStorage.value = 0;
+      setActivePreset(pFuel);
+      recalculate();
+    });
+
+    pCrash.addEventListener('click', () => {
+      sFreight.value = 0;
+      sPrice.value = -10;
+      sStorage.value = 1;
+      setActivePreset(pCrash);
+      recalculate();
+    });
+
+    pHold.addEventListener('click', () => {
+      sFreight.value = 0;
+      sPrice.value = 3;
+      sStorage.value = 5;
+      setActivePreset(pHold);
+      recalculate();
+    });
+
+    pCustom.addEventListener('click', () => {
+      sFreight.value = 15;
+      sPrice.value = -5;
+      sStorage.value = 3;
+      setActivePreset(pCustom);
+      recalculate();
+    });
+
+    // Reset button
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      sFreight.value = 0;
+      sPrice.value = 0;
+      sStorage.value = 0;
+      setActivePreset(pCustom);
+      recalculate();
+    });
+
+    recalculate();
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-bold"><div class="flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-xs text-label-xs mt-0.5">Dashboard</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="mandis" href="#"><span class="material-symbols-outlined text-[24px]">storefront</span><span class="font-label-xs text-label-xs mt-0.5">Mandis</span></a><a class="relative flex flex-col items-center justify-center -top-3 min-w-[60px] min-h-[56px] group" data-path="allocate" href="#"><div class="w-12 h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-[0_8px_16px_-4px_rgba(22,101,52,0.4)] group-active:scale-95 transition-transform"><span class="material-symbols-outlined text-[26px]">pie_chart</span></div><span class="font-label-xs text-label-xs text-primary font-bold mt-1">Allocate</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="ai-copilot" href="#"><span class="material-symbols-outlined text-[24px]">smart_toy</span><span class="font-label-xs text-label-xs mt-0.5">AI Copilot</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant transition-colors" data-path="profile" href="#"><span class="material-symbols-outlined text-[24px]">person</span><span class="font-label-xs text-label-xs mt-0.5">Profile</span></a></div></nav></body></html>

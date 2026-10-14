@@ -17,7 +17,7 @@ FASALYTICS is designed for **all of India and all agricultural commodities** (In
 
 - **Architecture supports everything; data decides capability.** Each commodity–market series is assigned a capability tier (Full / Limited / State-Level Intelligence / Insufficient Data) using measurable criteria and backtests, never a crop whitelist.
 - **Early validation** uses well-covered series (e.g. Potato and Onion in Maharashtra) only to prove the pipeline. They are examples, not limits.
-- **Honest data labelling:** the supplied datasets are *historical*. Mandi-, state- and national-level records are never blended, and historical data is never shown as a current price. See [docs/data-sources/PILOT_SELECTION.md](./docs/data-sources/PILOT_SELECTION.md) for dataset coverage by state.
+- **Honest data labelling:** the supplied datasets are *historical*. Mandi-, state- and national-level records are never blended, and historical data is never shown as a current price. See [docs/data-sources/DATASET_COVERAGE.md](./docs/data-sources/DATASET_COVERAGE.md) for dataset coverage by state.
 
 ### Key Capabilities
 - **Mandi Price & Arrival Tracking:** Source-tracked modal prices and volume arrivals across target mandis.
@@ -47,16 +47,26 @@ AgriSupply-IQ/
 │   └── migrations/             # PostgreSQL migrations                   (Milestone 8)
 ├── data/
 │   └── raw/                    # Original historical CSVs (git-ignored, read-only)
+│                               # Agriculture_price_dataset, merged_preprocessed_all_reports,
+│                               # crop_price_dataset, Wholesale-Price-Index-from-2012-to-2024
 ├── design/
-│   └── stitch/                 # Stitch asset area (originals move here in Milestone 4)
-├── docs/
-│   └── data-sources/           # Dataset coverage, provenance and limitations
-└── stitch_fasalytics_agritech_intelligence_platform/  # Exported Google Stitch UI (moves in Milestone 4)
-    ├── agriintelligence_market_risk_system/
-    ├── fasalytics_ai_copilot/
-    ├── fasalytics_farmer_dashboard/
-    ├── smart_harvest_allocation/
-    └── smart_mandi_comparison/
+│   └── stitch/
+│       ├── original/           # Immutable Google Stitch exports (do not edit)
+│       │   └── stitch_fasalytics_agritech_intelligence_platform/
+│       │       ├── agriintelligence_market_risk_system/   # DESIGN.md (design system)
+│       │       ├── fasalytics_farmer_dashboard/           # code.html + screen.png
+│       │       ├── smart_mandi_comparison/
+│       │       ├── smart_harvest_allocation/
+│       │       └── fasalytics_ai_copilot/
+│       ├── (Batch 2 exports currently at design/new-exports/: forecast, commodities,
+│       │    market explorer, what-if simulator)
+│       ├── SCREEN_MAP.md               # Screen inventory, checksums, defects
+│       ├── DESIGN_SYSTEM.md            # Extracted tokens and components
+│       ├── MISSING_SCREENS.md          # Gaps vs nationwide, all-crop scope
+│       └── REACT_INTEGRATION_PLAN.md   # Phase 7 conversion plan
+└── docs/
+    └── data-sources/
+        └── DATASET_COVERAGE.md  # Dataset coverage, provenance and limitations
 ```
 
 > `compose.yaml` is introduced in Milestone 9 (Docker Compose integration).
@@ -100,9 +110,9 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 - [x] UI/UX prototypes designed in Google Stitch
 - [x] Master engineering specification & roadmap ([PROJECT.md](./PROJECT.md))
 - [x] Phase 1 / Milestone 1: development environment verified
-- [x] Phase 1 / Milestone 2: historical datasets profiled ([coverage report](./docs/data-sources/PILOT_SELECTION.md))
+- [x] Phase 1 / Milestone 2: historical datasets profiled ([coverage report](./docs/data-sources/DATASET_COVERAGE.md))
 - [x] Phase 1 / Milestone 3: monorepo foundation, `.gitignore`, `.env.example`, raw data organised
-- [ ] Milestone 4: Google Stitch asset inventory and preservation
+- [x] Phase 1 / Milestone 4: Google Stitch assets preserved, inventoried and documented ([screen map](./design/stitch/SCREEN_MAP.md))
 - [ ] Core services & data pipeline implementation (not started)
 
 ---
