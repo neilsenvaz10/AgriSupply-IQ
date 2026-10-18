@@ -46,9 +46,11 @@ async function countApplied(pool) {
  * Applies pending migrations.
  *
  * @param {string} connectionString Migrator-role connection string.
+ * @param {{ migrationsFolder?: string }} [options] `migrationsFolder` is for tests that apply a
+ *   subset of the history (for example only the Phase 1 baseline); it defaults to ./migrations.
  * @returns {Promise<{ before: number, after: number, applied: number }>}
  */
-export async function runMigrations(connectionString) {
+export async function runMigrations(connectionString, options = {}) {
   // A single connection: the advisory lock below is per-session.
   const pool = new pg.Pool({ connectionString, max: 1, connectionTimeoutMillis: 10_000 });
   pool.on('error', () => undefined);
@@ -57,7 +59,7 @@ export async function runMigrations(connectionString) {
     try {
       const before = await countApplied(pool);
       await migrate(drizzle(pool), {
-        migrationsFolder: MIGRATIONS_FOLDER,
+        migrationsFolder: options.migrationsFolder ?? MIGRATIONS_FOLDER,
         migrationsSchema: MIGRATIONS_SCHEMA,
         migrationsTable: MIGRATIONS_TABLE,
       });

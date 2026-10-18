@@ -3,13 +3,15 @@
 PostgreSQL for FASALYTICS, managed with **Drizzle ORM** (JavaScript) and **drizzle-kit**
 migrations.
 
-> **Milestone 8 status: PostgreSQL setup only.** The database contains one neutral table
-> (`system_metadata`) that proves migrations, privileges and persistence work. It holds **no
-> agricultural data**. The commodity, market and observation tables, and all data ingestion,
-> belong to Phase 2.
-> The same `compose.yaml` also runs `web`, `api` and `intelligence` (Milestone 9). Since Milestone 10
-> the Express API connects with the application role only (`DATABASE_URL`, host `db:5432` inside
-> Compose); it never receives admin or migrator credentials. See the root README.
+> **Status.** Milestone 8 set up PostgreSQL; **Phase 2, Milestone 2.1 added the canonical
+> agricultural schema** (registries, source aliases, provenance and ingestion tracking, four
+> granularity-separated observation tables, quarantine and conflict tables). It is **structure only:
+> no agricultural data has been imported** and every registry and fact table is empty after
+> migration. The full design, rules and the plan for importing each dataset are in
+> [docs/CANONICAL_SCHEMA.md](./docs/CANONICAL_SCHEMA.md). Importers are Milestone 2.2.
+> The same `compose.yaml` also runs `web`, `api` and `intelligence`; the Express API connects with the
+> application role only (`DATABASE_URL`, host `db:5432` inside Compose), never with admin or migrator
+> credentials. See the root README.
 
 ## What runs where
 
@@ -42,17 +44,18 @@ and are never printed by the scripts.
 
 ## Commands (run in `database/`)
 
-| Command                                   | What it does                                                           |
-| ----------------------------------------- | ---------------------------------------------------------------------- |
-| `npm run db:up`                           | Start the container (`docker compose up -d --wait db`)                 |
-| `npm run db:down`                         | Stop and remove only the `db` container. **The data volume is kept.**  |
-| `npm run db:status` / `db:logs`           | Container state / last 100 log lines                                   |
-| `npm run db:generate`                     | Create a new migration from changes to `src/schema`                    |
-| `npm run db:check`                        | Check that the migration history is consistent                         |
-| `npm run db:migrate`                      | Apply pending migrations (repeatable; safe to run any number of times) |
-| `npm run db:verify`                       | Verify connections, migrations, data access and denied operations      |
-| `npm test`                                | Unit tests; integration tests run when the database is reachable       |
-| `npm run check` / `lint` / `format:check` | JSDoc type check, ESLint, Prettier                                     |
+| Command                                   | What it does                                                                  |
+| ----------------------------------------- | ----------------------------------------------------------------------------- |
+| `npm run db:up`                           | Start the container (`docker compose up -d --wait db`)                        |
+| `npm run db:down`                         | Stop and remove only the `db` container. **The data volume is kept.**         |
+| `npm run db:status` / `db:logs`           | Container state / last 100 log lines                                          |
+| `npm run db:generate`                     | Create a new migration from changes to `src/schema`                           |
+| `npm run db:check`                        | Check that the migration history is consistent                                |
+| `npm run db:migrate`                      | Apply pending migrations (repeatable; safe to run any number of times)        |
+| `npm run db:verify`                       | Verify connections, migrations, data access and denied operations (33 checks) |
+| `npm run test:disposable`                 | Full verification against a **throwaway** PostgreSQL container (see below)    |
+| `npm test`                                | Unit tests; integration tests run when the database is reachable              |
+| `npm run check` / `lint` / `format:check` | JSDoc type check, ESLint, Prettier                                            |
 
 From the repository root the equivalent compose commands are:
 
@@ -107,6 +110,26 @@ npm test                                      # database tests are SKIPPED if th
 REQUIRE_DB=1 npm test                         # FAIL instead of skip when the db is down
 REQUIRE_DB=1 DB_TEST_RESTART=1 npm test       # also stop/start the db container (data kept)
 ```
+
+## Migration history
+
+| Migration                                  | Content                                                                                                                                                       |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0000_initial_system_metadata`             | Phase 1: the neutral `system_metadata` table (never modified)                                                                                                 |
+| `0001_canonical_agricultural_schema`       | Phase 2.1: 21 tables (registries, aliases, units, sources, files, runs, rejections, conflicts, four fact tables, WPI series) with all constraints and indexes |
+| `0002_units_normalised_views_and_comments` | Phase 2.1: six physical units, two derived normalised views, read-only protection of unit conversions for the application role, table comments                |
+
+### Testing the schema without touching your data
+
+`npm run test:disposable` starts a uniquely named throwaway `postgres:17-alpine` container on a random
+loopback port with random credentials, applies only the Phase 1 baseline, stores a marker row, upgrades
+to the current schema (proving fresh migration, preservation and repeatability), then runs `db:check`,
+the migration runner again, `db:verify` and the whole test suite with `REQUIRE_DB=1`, and removes the
+container. It never uses `fasalytics-db` or the `fasalytics_pgdata` volume.
+
+Note: `npm test` run against your development database applies pending migrations first (as the
+Milestone 8 tests always have). Integration tests that need the canonical schema stop with an explicit
+"prerequisite missing: run `npm run db:migrate`" message when it is absent.
 
 ## Migrations
 

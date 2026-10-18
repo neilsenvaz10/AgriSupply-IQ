@@ -17,6 +17,6 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src", "*.config.js"],
+  "include": ["src", "scripts", "*.config.js"],
   "exclude": ["node_modules", "migrations", "coverage"]
 }
