@@ -20,13 +20,25 @@
  * @property {number} port Listening port (0 is allowed only when NODE_ENV=test).
  * @property {readonly string[]} corsOrigins Exact allowed browser origins (already expanded for
  *   loopback twins in non-production).
- * @property {string | null} databaseUrl Present only to know whether it is configured. Never log
- *   or return this value.
+ * @property {string | null} databaseUrl PostgreSQL connection string of the least-privilege
+ *   application role. Never log or return this value.
+ * @property {DatabasePoolConfig} databasePool Bounds for the connection pool and its probe.
  * @property {string | null} mlServiceUrl Base URL of the FastAPI service without trailing slash.
  * @property {number} mlServiceTimeoutMs
  * @property {number} requestTimeoutMs
  * @property {string} bodyLimit JSON / urlencoded body size limit.
  * @property {LogLevel} logLevel
+ */
+
+/**
+ * Connection pool and probe bounds (all in milliseconds except `max`).
+ *
+ * @typedef {object} DatabasePoolConfig
+ * @property {number} max Maximum simultaneous connections.
+ * @property {number} connectionTimeoutMs Longest wait to obtain/open a connection.
+ * @property {number} idleTimeoutMs Idle connections are closed after this long.
+ * @property {number} queryTimeoutMs Longest a single statement may run (client and server side).
+ * @property {number} healthTimeoutMs Overall budget of one `/health/dependencies` database probe.
  */
 
 /** Raised when configuration is invalid. `issues` name variables and rules, never values. */
@@ -47,6 +59,24 @@ function read(env, key) {
   if (value === undefined) return undefined;
   const trimmed = value.trim();
   return trimmed === '' ? undefined : trimmed;
+}
+
+function safeDecode(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+/**
+ * Guardrail, not authorisation (PostgreSQL enforces the real privileges): refuses obviously
+ * privileged role names so a migration/admin URL is not pasted into the API by mistake.
+ *
+ * @param {string} username
+ */
+function isPrivilegedRole(username) {
+  return /^postgres$|admin|migrator|superuser|^root$/i.test(username);
 }
 
 function readInt(env, key, fallback, min, max, issues) {
@@ -179,6 +209,11 @@ export function loadConfig(env = process.env) {
       const url = new URL(rawDb);
       if (url.protocol !== 'postgres:' && url.protocol !== 'postgresql:') {
         issues.push('DATABASE_URL must use the postgres:// or postgresql:// scheme.');
+      } else if (isPrivilegedRole(safeDecode(url.username))) {
+        // The API must use the least-privilege application role, never admin/migrator/superuser.
+        issues.push(
+          'DATABASE_URL must use the application role, not an administrative, migration or superuser role.',
+        );
       } else {
         databaseUrl = rawDb;
       }
@@ -186,6 +221,13 @@ export function loadConfig(env = process.env) {
       issues.push('DATABASE_URL must be a valid postgres:// URL.');
     }
   }
+  const databasePool = {
+    max: readInt(env, 'DB_POOL_MAX', 5, 1, 20, issues),
+    connectionTimeoutMs: readInt(env, 'DB_CONNECTION_TIMEOUT_MS', 3000, 100, 30000, issues),
+    idleTimeoutMs: readInt(env, 'DB_IDLE_TIMEOUT_MS', 30000, 1000, 600000, issues),
+    queryTimeoutMs: readInt(env, 'DB_QUERY_TIMEOUT_MS', 5000, 100, 60000, issues),
+    healthTimeoutMs: readInt(env, 'DB_HEALTH_TIMEOUT_MS', 2000, 100, 30000, issues),
+  };
   let mlServiceUrl = null;
   const rawMl = read(env, 'ML_SERVICE_URL');
   if (rawMl !== undefined) mlServiceUrl = parseHttpBaseUrl(rawMl, 'ML_SERVICE_URL', issues);
@@ -207,6 +249,7 @@ export function loadConfig(env = process.env) {
     port,
     corsOrigins,
     databaseUrl,
+    databasePool,
     mlServiceUrl,
     mlServiceTimeoutMs,
     requestTimeoutMs,

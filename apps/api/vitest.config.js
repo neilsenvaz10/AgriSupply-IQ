@@ -5,5 +5,6 @@ export default defineConfig({
     environment: 'node',
     include: ['src/**/*.test.js'],
     restoreMocks: true,
+    setupFiles: ['./src/test/databaseEnv.js'],
   },
 });

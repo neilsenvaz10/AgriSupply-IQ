@@ -141,17 +141,67 @@ models are loaded.
 | --- | --- | --- |
 | Express -> FastAPI (`ML_SERVICE_URL`) | `http://127.0.0.1:8000` (`8001` with the temporary local override) | `http://intelligence:8000` (set by `compose.yaml`; never `localhost`) |
 | Browser -> Express (`VITE_API_BASE_URL`) | `http://localhost:4000` | `http://localhost:4000`: the browser runs on the host, so this is never `http://api:4000` |
-| PostgreSQL (`DATABASE_URL`, Milestone 10) | `localhost:5433` | `db:5432` |
+| PostgreSQL (`DATABASE_URL`, application role) | `localhost:5433` | `db:5432` |
 | Bind addresses | `127.0.0.1` | `0.0.0.0` inside containers, published to host loopback only |
 
 Values in your git-ignored `.env` files apply to host processes only; the containers do not read
-them and receive no database credentials (the API connects to PostgreSQL in Milestone 10). Optional
+them. Only `api` receives a database URL: the application role at `db:5432`, built by
+`compose.yaml` from `database/.env`. Admin and migrator credentials never leave the `db` service,
+and migrations are never run at API startup. Optional
 overrides read from `database/.env` or your shell: `API_HOST_PORT`, `WEB_HOST_PORT`,
 `POSTGRES_HOST_PORT`, `API_CORS_ORIGINS`, `WEB_API_BASE_URL`, `LOG_LEVEL`.
 
 Host processes and containers cannot both own a port. Stop host-run Express (4000) and Vite (5173)
 before starting the stack. A host FastAPI on 8001 does not conflict, because the container's
 FastAPI is not published.
+
+### How Express talks to PostgreSQL and FastAPI
+
+Express (`apps/api`) owns one `pg` connection pool, created at startup and closed on shutdown
+(`src/database/pool.js`). It connects as `fasalytics_app` and refuses admin, migrator and superuser
+role names. The pool does not connect until first use, so the API starts and `/health` stays `200`
+even when PostgreSQL or FastAPI is down.
+
+| Variable | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `DB_POOL_MAX` | `5` | 1-20 | maximum simultaneous connections |
+| `DB_CONNECTION_TIMEOUT_MS` | `3000` | 100-30000 | longest wait to open or obtain a connection |
+| `DB_IDLE_TIMEOUT_MS` | `30000` | 1000-600000 | idle connections are closed after this |
+| `DB_QUERY_TIMEOUT_MS` | `5000` | 100-60000 | per-statement limit (client and server side) |
+| `DB_HEALTH_TIMEOUT_MS` | `2000` | 100-30000 | overall budget of one health probe |
+
+`GET /health/dependencies` (always HTTP 200; read `overall` and each `status`):
+
+| `postgres.status` | Meaning |
+| --- | --- |
+| `healthy` | a connection was borrowed and `SELECT 1` succeeded just now |
+| `unreachable` | the probe failed; `reason` is `connection_failed`, `timeout`, `authentication_failed` or `query_failed` |
+| `not_configured` | `DATABASE_URL` is not set |
+| `not_checked` | configured, but no pool was available to probe (in-process tests only) |
+
+`intelligence_service.status` keeps its earlier contract (`healthy`, or `unreachable` with `reason`
+`connection_failed`, `timeout`, `http_error` or `unexpected_response`). Messages are fixed text:
+passwords, connection strings and raw driver errors are never returned or logged. `overall` is
+`healthy` only when every dependency is healthy, `degraded` if any is unreachable, else `unknown`.
+With the database container stopped the probe typically reports `timeout` (the name `db` stops
+resolving) rather than `connection_failed`.
+
+### Testing outage and recovery safely
+
+These stop and start single containers; no volume is touched and nothing is deleted.
+
+```bash
+docker compose --env-file database/.env stop db            # PostgreSQL outage
+curl http://localhost:4000/health/dependencies             # postgres unreachable, overall degraded
+curl http://localhost:4000/health                          # still 200: liveness is independent
+docker compose --env-file database/.env start db           # recovery, same pool, no API restart
+docker compose --env-file database/.env stop intelligence  # FastAPI outage (start it again to recover)
+```
+
+Never use `down -v`. The API's database integration tests (`apps/api`, `npm test`) need the
+database running and migrated; without it they are reported as **skipped**. `REQUIRE_DB=1` turns
+that into a failure, and `DB_TEST_RESTART=1` also runs the disruptive outage/recovery test, which
+stops and restarts only the `db` container.
 
 ### Troubleshooting
 
@@ -182,6 +232,7 @@ FastAPI is not published.
 > **Local ports:** defaults are API `4000`, web `5173`, intelligence service `8000`. On the current
 > development machine the intelligence service temporarily runs on `8001` (port 8000 is occupied by
 > an unrelated process) via git-ignored `.env` overrides; see `services/intelligence/README.md`.
+- [x] Phase 1 / Milestone 10: Express connects to PostgreSQL through a bounded pool (application role) with a real `/health/dependencies` probe; Express to FastAPI probe preserved
 - [ ] Core services & data pipeline implementation (not started)
 
 ---

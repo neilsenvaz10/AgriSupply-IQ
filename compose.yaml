@@ -11,8 +11,8 @@
 # Database only (Milestone 8 workflow, unchanged):
 #   docker compose --env-file database/.env up -d --wait db
 #
-# Credentials come from database/.env (git-ignored). Only the db service receives them; the
-# application containers get no database credentials until Milestone 10.
+# Credentials come from database/.env (git-ignored). The db service receives the admin, migrator
+# and app credentials; the api service receives ONLY the application-role URL (db:5432).
 # Inside the network, services reach each other by name: web:5173, api:4000, intelligence:8000,
 # db:5432. Host-published ports are loopback only.
 
@@ -96,6 +96,10 @@ services:
       API_CORS_ORIGINS: ${API_CORS_ORIGINS:-http://localhost:5173}
       # Container-to-container: the service name, never localhost.
       ML_SERVICE_URL: http://intelligence:8000
+      # Least-privilege APPLICATION role only, on the container port of the db service (never
+      # localhost:5433, which is the host-published port). Admin and migrator credentials are
+      # deliberately not passed to this container; migrations are run explicitly, not at startup.
+      DATABASE_URL: postgresql://${DB_APP_USER:?set DB_APP_USER in database/.env}:${DB_APP_PASSWORD:?set DB_APP_PASSWORD in database/.env}@db:5432/${POSTGRES_DB:?set POSTGRES_DB in database/.env}
       ML_SERVICE_TIMEOUT_MS: "5000"
       LOG_LEVEL: ${LOG_LEVEL:-info}
     ports:

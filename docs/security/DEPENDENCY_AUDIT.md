@@ -113,3 +113,19 @@ Containers drop all Linux capabilities, set `no-new-privileges` and use an init 
 `intelligence` have read-only root filesystems. Base images are version-pinned but not
 digest-pinned: re-pull and re-audit before any deployment, and move to digests and a production
 web build then.
+
+## Milestone 10 addition: `pg` in `apps/api`
+
+| Item | Result |
+|---|---|
+| Added | `pg` ^8.23.1 (runtime), `@types/pg` ^8.23.1 (dev) in `apps/api` |
+| `npm audit` (`apps/api`, all and `--omit=dev`) | 0 vulnerabilities |
+| Existing findings (web, database) | unchanged; none were resolved or hidden |
+
+Runtime security measures for the connection: the API uses only the least-privilege application
+role (admin, migrator and superuser role names are rejected at startup), all queries are
+parameter-free fixed statements, connections/idle time/statement time are bounded, and credentials
+are never logged or returned. The application role's connection URL is visible to anyone who can
+run `docker inspect` on the `api` container, which is acceptable for local development only; use
+Docker/Compose secrets or the platform's secret store in any shared environment.
+

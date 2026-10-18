@@ -15,6 +15,8 @@ import { silentLogger } from './utils/logger.js';
  * @property {import('./utils/logger.js').Logger} [logger]
  * @property {typeof fetch} [fetchImpl] Injectable for tests so no real network call is made by
  *   the dependency probes.
+ * @property {import('./database/pool.js').PoolLike} [pool] The application connection pool used
+ *   by the PostgreSQL health probe. `createApp` never creates a pool itself.
  */
 
 /**
@@ -41,7 +43,10 @@ export function createApp(config, deps = {}) {
   app.use(requestTimeout(config.requestTimeoutMs));
   app.use(express.json({ limit: config.bodyLimit }));
   app.use(express.urlencoded({ extended: false, limit: config.bodyLimit }));
-  const probe = deps.fetchImpl ? { fetchImpl: deps.fetchImpl } : {};
+  const probe = {
+    ...(deps.fetchImpl ? { fetchImpl: deps.fetchImpl } : {}),
+    ...(deps.pool ? { pool: deps.pool } : {}),
+  };
   app.use('/health', createHealthRouter(config, probe));
   app.use('/api/v1', createV1Router());
   app.use(notFound);
