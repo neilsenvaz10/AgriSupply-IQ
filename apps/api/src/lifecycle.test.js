@@ -38,7 +38,10 @@ describe('startServer', () => {
           await res.json()
         );
       expect(res.status).toBe(200);
-      expect(body.dependencies.postgres.status).toBe('not_checked');
+      expect(body.dependencies.postgres).toMatchObject({
+        status: 'unreachable',
+        reason: 'connection_failed',
+      });
       expect(body.dependencies.intelligence_service).toMatchObject({
         status: 'unreachable',
         reason: 'connection_failed',

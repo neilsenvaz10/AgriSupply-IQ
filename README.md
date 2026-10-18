@@ -16,7 +16,8 @@ Instead of chasing the highest sticker price at a distant mandi, the platform ca
 FASALYTICS is designed for **all of India and all agricultural commodities** (India → State/UT → District → Mandi → Commodity → Variety). Nothing is hardcoded to a state or a crop; commodities and markets are discovered from data.
 
 - **Architecture supports everything; data decides capability.** Each commodity–market series is assigned a capability tier (Full / Limited / State-Level Intelligence / Insufficient Data) using measurable criteria and backtests, never a crop whitelist.
-- **Early validation** uses well-covered series (e.g. Potato and Onion in Maharashtra) only to prove the pipeline. They are examples, not limits.
+- **Early validation** uses well-covered series (e.g. Potato and Onion in Maharashtra) only to prove the pipeline. They are technical-validation examples, **not** the supported geographic or commodity scope, and must never be hardcoded in schemas, models, APIs or UI.
+- **Forecast eligibility is earned, not assumed.** No market-commodity series is offered a forecast unless it has sufficient historical data, adequate freshness and passes backtesting; everything else is labelled with a lower capability tier or shown as unavailable.
 - **Honest data labelling:** the supplied datasets are *historical*. Mandi-, state- and national-level records are never blended, and historical data is never shown as a current price. See [docs/data-sources/DATASET_COVERAGE.md](./docs/data-sources/DATASET_COVERAGE.md) for dataset coverage by state.
 
 ### Key Capabilities
@@ -108,6 +109,34 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 
 ---
 
+## Quick start from a fresh clone
+
+Requires Docker Desktop (running), Node.js >= 22.12, and (to run Python checks on your machine) Python 3.12
+with [uv](https://docs.astral.sh/uv/). This sequence was verified on a clean checkout (see Milestone 11).
+
+```bash
+# 1. Database credentials (git-ignored). Replace every change_me_* with a long random password,
+#    and use the same passwords in the two connection strings. Generate one with: openssl rand -hex 24
+cp database/.env.example database/.env
+
+# 2. Start everything and wait until healthy (builds the three images; creates the database volume)
+docker compose --env-file database/.env up -d --build --wait
+
+# 3. Apply the database migrations (explicit; the API never migrates at startup)
+cd database && npm ci && npm run db:migrate && npm run db:verify && cd ..
+
+# 4. Check it works
+curl http://localhost:4000/ready          # 200, status "ready"
+# open http://localhost:5173/status       # "Connected"
+```
+
+Run each part's checks from its folder (`apps/web`, `apps/api`, `database`: `npm ci`, then
+`npm run check`, `npm run lint`, `npm run format:check`, `npm test`; `services/intelligence`: see its README).
+The API's PostgreSQL integration tests also need `database/.env` and the running, migrated database
+(`REQUIRE_DB=1 npm test` makes a missing database a failure instead of a skip).
+
+---
+
 ## Running the full stack with Docker Compose
 
 Requires Docker Desktop (running) and a configured `database/.env` (see
@@ -141,17 +170,80 @@ models are loaded.
 | --- | --- | --- |
 | Express -> FastAPI (`ML_SERVICE_URL`) | `http://127.0.0.1:8000` (`8001` with the temporary local override) | `http://intelligence:8000` (set by `compose.yaml`; never `localhost`) |
 | Browser -> Express (`VITE_API_BASE_URL`) | `http://localhost:4000` | `http://localhost:4000`: the browser runs on the host, so this is never `http://api:4000` |
-| PostgreSQL (`DATABASE_URL`, Milestone 10) | `localhost:5433` | `db:5432` |
+| PostgreSQL (`DATABASE_URL`, application role) | `localhost:5433` | `db:5432` |
 | Bind addresses | `127.0.0.1` | `0.0.0.0` inside containers, published to host loopback only |
 
 Values in your git-ignored `.env` files apply to host processes only; the containers do not read
-them and receive no database credentials (the API connects to PostgreSQL in Milestone 10). Optional
+them. Only `api` receives a database URL: the application role at `db:5432`, built by
+`compose.yaml` from `database/.env`. Admin and migrator credentials never leave the `db` service,
+and migrations are never run at API startup. Optional
 overrides read from `database/.env` or your shell: `API_HOST_PORT`, `WEB_HOST_PORT`,
 `POSTGRES_HOST_PORT`, `API_CORS_ORIGINS`, `WEB_API_BASE_URL`, `LOG_LEVEL`.
 
 Host processes and containers cannot both own a port. Stop host-run Express (4000) and Vite (5173)
 before starting the stack. A host FastAPI on 8001 does not conflict, because the container's
 FastAPI is not published.
+
+### Liveness versus readiness
+
+| Endpoint | Meaning |
+| --- | --- |
+| Express `GET /health` | The API process is alive. Never affected by PostgreSQL or FastAPI. |
+| Express `GET /health/dependencies` | Probe results for PostgreSQL and FastAPI (always HTTP 200). |
+| Express `GET /ready` | `200` only if every *configured* dependency is healthy, otherwise `503` naming the blockers. |
+| FastAPI `GET /health` | The FastAPI process is alive. |
+| FastAPI `GET /ready` | `503` until validated forecasting models are loaded (the expected state in Phase 1). |
+
+Express `/ready` also echoes FastAPI's own model readiness as `forecasting_models` (informational, never
+inferred from FastAPI `/health`). Full contracts: [docs/api/README.md](./docs/api/README.md).
+
+### How Express talks to PostgreSQL and FastAPI
+
+Express (`apps/api`) owns one `pg` connection pool, created at startup and closed on shutdown
+(`src/database/pool.js`). It connects as `fasalytics_app` and refuses admin, migrator and superuser
+role names. The pool does not connect until first use, so the API starts and `/health` stays `200`
+even when PostgreSQL or FastAPI is down.
+
+| Variable | Default | Range | Meaning |
+| --- | --- | --- | --- |
+| `DB_POOL_MAX` | `5` | 1-20 | maximum simultaneous connections |
+| `DB_CONNECTION_TIMEOUT_MS` | `3000` | 100-30000 | longest wait to open or obtain a connection |
+| `DB_IDLE_TIMEOUT_MS` | `30000` | 1000-600000 | idle connections are closed after this |
+| `DB_QUERY_TIMEOUT_MS` | `5000` | 100-60000 | per-statement limit (client and server side) |
+| `DB_HEALTH_TIMEOUT_MS` | `2000` | 100-30000 | overall budget of one health probe |
+
+`GET /health/dependencies` (always HTTP 200; read `overall` and each `status`):
+
+| `postgres.status` | Meaning |
+| --- | --- |
+| `healthy` | a connection was borrowed and `SELECT 1` succeeded just now |
+| `unreachable` | the probe failed; `reason` is `connection_failed`, `timeout`, `authentication_failed` or `query_failed` |
+| `not_configured` | `DATABASE_URL` is not set |
+| `not_checked` | configured, but no pool was available to probe (in-process tests only) |
+
+`intelligence_service.status` keeps its earlier contract (`healthy`, or `unreachable` with `reason`
+`connection_failed`, `timeout`, `http_error` or `unexpected_response`). Messages are fixed text:
+passwords, connection strings and raw driver errors are never returned or logged. `overall` is
+`healthy` only when every dependency is healthy, `degraded` if any is unreachable, else `unknown`.
+With the database container stopped the probe typically reports `timeout` (the name `db` stops
+resolving) rather than `connection_failed`.
+
+### Testing outage and recovery safely
+
+These stop and start single containers; no volume is touched and nothing is deleted.
+
+```bash
+docker compose --env-file database/.env stop db            # PostgreSQL outage
+curl http://localhost:4000/health/dependencies             # postgres unreachable, overall degraded
+curl http://localhost:4000/health                          # still 200: liveness is independent
+docker compose --env-file database/.env start db           # recovery, same pool, no API restart
+docker compose --env-file database/.env stop intelligence  # FastAPI outage (start it again to recover)
+```
+
+Never use `down -v`. The API's database integration tests (`apps/api`, `npm test`) need the
+database running and migrated; without it they are reported as **skipped**. `REQUIRE_DB=1` turns
+that into a failure, and `DB_TEST_RESTART=1` also runs the disruptive outage/recovery test, which
+stops and restarts only the `db` container.
 
 ### Troubleshooting
 
@@ -164,6 +256,20 @@ FastAPI is not published.
 | Source edits do not appear in the web container | Only `apps/web/src` and `index.html` are mounted; rebuild for other files. API and intelligence changes need `up -d --build <service>`. |
 
 ---
+## Continuous integration and project policies
+
+- **CI:** [.github/workflows/ci.yml](./.github/workflows/ci.yml) runs web, API, Python, database (against a
+  disposable PostgreSQL created on the runner) and Docker jobs on pull requests and pushes to `main`. It
+  never contacts a developer or production database. Run the same checks locally with the commands in each
+  app's `package.json` / `pyproject.toml`.
+- **API contracts:** [docs/api/](./docs/api/README.md) (OpenAPI, verified by tests).
+- **Security:** [threat model](./docs/security/THREAT_MODEL.md),
+  [credential policy](./docs/security/CREDENTIAL_POLICY.md),
+  [dependency audit](./docs/security/DEPENDENCY_AUDIT.md).
+- **Repository and branch policy:** [docs/process/REPOSITORY_POLICY.md](./docs/process/REPOSITORY_POLICY.md).
+
+---
+
 ## Current Status
 
 - [x] Problem statement & requirements analysis
@@ -182,7 +288,9 @@ FastAPI is not published.
 > **Local ports:** defaults are API `4000`, web `5173`, intelligence service `8000`. On the current
 > development machine the intelligence service temporarily runs on `8001` (port 8000 is occupied by
 > an unrelated process) via git-ignored `.env` overrides; see `services/intelligence/README.md`.
-- [ ] Core services & data pipeline implementation (not started)
+- [x] Phase 1 / Milestone 10: Express connects to PostgreSQL through a bounded pool (application role) with a real `/health/dependencies` probe; Express to FastAPI probe preserved
+- [x] Phase 1 / Milestone 11: Phase 1 close-out: GitHub Actions CI, Express `GET /ready`, cross-service request ids, OpenAPI contracts, threat model, credential policy, repository policy, clean-checkout reproduction
+- [ ] Core services & data pipeline implementation (Phase 2 onwards, not started)
 
 ---
 

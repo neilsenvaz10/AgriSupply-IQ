@@ -1,0 +1,216 @@
+name: CI
+
+# Validates every part of the monorepo. Nothing here deploys, publishes or touches a real
+# environment. The only database is a throwaway PostgreSQL container created on the runner for the
+# duration of the job, with randomly generated credentials that are masked in the logs and
+# discarded with the runner. The developer's local database and any production database are never
+# contacted: the workflow has no access to their addresses or credentials.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege for the automatic GITHUB_TOKEN: read the repository, nothing else.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24.22" # matches the Docker images (engines: >=22.12)
+  PYTHON_VERSION: "3.12" # matches services/intelligence/.python-version
+  POSTGRES_IMAGE: postgres:17-alpine # same major version as compose.yaml
+
+jobs:
+  web:
+    name: Web (React, JavaScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
+
+  api:
+    name: API (Express, JavaScript) - unit and contract tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - run: npm run lint
+      - run: npm run format:check
+      # No database in this job: the PostgreSQL integration tests are skipped here and run, with
+      # REQUIRE_DB=1, in the "database" job below.
+      - run: npm test
+
+  intelligence:
+    name: Intelligence service (Python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: services/intelligence
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: services/intelligence/requirements.lock
+      # The lock file pins every package, including the development tools (pytest, Ruff).
+      - run: python -m pip install -r requirements.lock
+      - run: python -m ruff check .
+      - run: python -m ruff format --check .
+      - run: python -m pytest -q
+
+  database:
+    name: Database (Drizzle) and PostgreSQL integration (disposable CI database)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      REQUIRE_DB: "1" # a missing database FAILS the job instead of silently skipping tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            database/package-lock.json
+            apps/api/package-lock.json
+
+      - name: Start a disposable PostgreSQL with least-privilege roles
+        run: |
+          set -eu
+          admin_pw=$(openssl rand -hex 24)
+          migrator_pw=$(openssl rand -hex 24)
+          app_pw=$(openssl rand -hex 24)
+          for secret in "$admin_pw" "$migrator_pw" "$app_pw"; do echo "::add-mask::$secret"; done
+          app_url="postgresql://fasalytics_app:${app_pw}@127.0.0.1:5433/fasalytics"
+          {
+            echo "DATABASE_URL=${app_url}"
+            echo "TEST_DATABASE_URL=${app_url}"
+            echo "DATABASE_MIGRATION_URL=postgresql://fasalytics_migrator:${migrator_pw}@127.0.0.1:5433/fasalytics"
+          } >> "$GITHUB_ENV"
+          # The repository's own init script creates the migrator and app roles, exactly as in
+          # development. The data lives only in this container and disappears with the runner.
+          docker run -d --name ci-postgres \
+            -e POSTGRES_USER=fasalytics_admin -e POSTGRES_PASSWORD="$admin_pw" -e POSTGRES_DB=fasalytics \
+            -e DB_MIGRATOR_USER=fasalytics_migrator -e DB_MIGRATOR_PASSWORD="$migrator_pw" \
+            -e DB_APP_USER=fasalytics_app -e DB_APP_PASSWORD="$app_pw" \
+            -v "$PWD/database/init:/docker-entrypoint-initdb.d:ro" \
+            -p 127.0.0.1:5433:5432 "$POSTGRES_IMAGE" >/dev/null
+          # TCP check: the temporary server used during first-time initialisation has no TCP socket.
+          for _ in $(seq 1 60); do
+            if docker exec ci-postgres pg_isready -h 127.0.0.1 -U fasalytics_admin -d fasalytics >/dev/null 2>&1; then
+              echo "PostgreSQL is ready"; exit 0
+            fi
+            sleep 2
+          done
+          docker logs ci-postgres | sed -E 's#(://[^:@/]+):[^@/]*@#\1:[redacted]@#g' | tail -n 40
+          echo "PostgreSQL did not become ready" >&2
+          exit 1
+
+      - name: Guard - the database must be the disposable one on this runner
+        run: |
+          set -eu
+          for url in "$DATABASE_URL" "$DATABASE_MIGRATION_URL" "$TEST_DATABASE_URL"; do
+            case "$url" in
+              postgresql://*@127.0.0.1:5433/fasalytics) ;;
+              *) echo "refusing to run: a database URL does not point at the disposable CI database" >&2; exit 1 ;;
+            esac
+          done
+
+      - name: Database - install, check, lint, format
+        working-directory: database
+        run: |
+          npm ci --no-audit --no-fund
+          npm run check
+          npm run lint
+          npm run format:check
+          npm run db:check
+
+      - name: Database - migrate twice (must be repeatable) and verify privileges
+        working-directory: database
+        run: |
+          npm run db:migrate
+          npm run db:migrate
+          npm run db:verify
+
+      # DB_TEST_RESTART is not set: the three tests that restart the container need Docker
+      # Compose and the local stack, so they are skipped here (and reported as skipped).
+      - name: Database - tests
+        working-directory: database
+        run: npm test
+
+      - name: API - install, then tests including real PostgreSQL integration
+        working-directory: apps/api
+        run: |
+          npm ci --no-audit --no-fund
+          npm test
+
+      - name: Remove the disposable database
+        if: always()
+        run: docker rm -f ci-postgres >/dev/null 2>&1 || true
+
+  docker:
+    name: Docker Compose configuration and images
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate compose.yaml with throwaway placeholder values
+        run: |
+          set -eu
+          cat > "$RUNNER_TEMP/ci.env" <<'EOF'
+          POSTGRES_USER=ci_admin_placeholder
+          POSTGRES_PASSWORD=ci_placeholder_not_a_secret
+          POSTGRES_DB=fasalytics
+          DB_MIGRATOR_USER=ci_migrator_placeholder
+          DB_MIGRATOR_PASSWORD=ci_placeholder_not_a_secret
+          DB_APP_USER=ci_app_placeholder
+          DB_APP_PASSWORD=ci_placeholder_not_a_secret
+          EOF
+          docker compose --env-file "$RUNNER_TEMP/ci.env" config --quiet
+      - name: Build the application images (nothing is pushed)
+        run: |
+          set -eu
+          docker build --pull=false -t fasalytics-web:ci apps/web
+          docker build --pull=false -t fasalytics-api:ci apps/api
+          docker build --pull=false -t fasalytics-intelligence:ci services/intelligence

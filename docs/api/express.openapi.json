@@ -1,0 +1,241 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FASALYTICS Express API (operational endpoints)",
+    "version": "0.1.0",
+    "description": "Operational contract of the Express API gateway: liveness, dependency status and readiness. No agricultural endpoints exist yet. Contract tests in apps/api (src/contract/openapi.contract.test.js) compare live responses with this document.\n\n/health is LIVENESS only (the Express process is running; it never fails because PostgreSQL or FastAPI is down). /health/dependencies reports probe results and always answers HTTP 200. /ready is READINESS of the API: 200 only when every configured dependency is healthy, else 503. Forecasting-model readiness belongs to the intelligence service (its own GET /ready) and is only echoed, never inferred from its /health."
+  },
+  "servers": [
+    { "url": "http://localhost:4000", "description": "Host-published port (Docker Compose or `npm run dev`)" }
+  ],
+  "tags": [{ "name": "operations" }],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["operations"],
+        "summary": "Liveness",
+        "operationId": "getHealth",
+        "parameters": [{ "$ref": "#/components/parameters/RequestId" }],
+        "responses": {
+          "200": {
+            "description": "The Express process is running.",
+            "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/HealthResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/health/dependencies": {
+      "get": {
+        "tags": ["operations"],
+        "summary": "Dependency status (probe results)",
+        "operationId": "getDependencies",
+        "parameters": [{ "$ref": "#/components/parameters/RequestId" }],
+        "responses": {
+          "200": {
+            "description": "Always 200. Read `overall` and each dependency `status`. The request id is forwarded to the intelligence service.",
+            "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DependenciesResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": ["operations"],
+        "summary": "Readiness of the API",
+        "operationId": "getReady",
+        "parameters": [{ "$ref": "#/components/parameters/RequestId" }],
+        "responses": {
+          "200": {
+            "description": "Every configured dependency is healthy (dependencies that are not configured do not block).",
+            "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ReadyResponse" } }
+            }
+          },
+          "503": {
+            "description": "At least one configured dependency is unreachable or could not be verified; `blocking` names them.",
+            "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ReadyResponse" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "RequestId": {
+        "name": "X-Request-Id",
+        "in": "header",
+        "required": false,
+        "description": "Optional correlation id, 8-64 characters from A-Z a-z 0-9 . _ - . Anything else is replaced by a generated UUID.",
+        "schema": { "type": "string", "pattern": "^[A-Za-z0-9._-]{8,64}$" }
+      }
+    },
+    "headers": {
+      "RequestId": {
+        "description": "The accepted or generated correlation id (also sent to the intelligence service).",
+        "schema": { "type": "string", "pattern": "^[A-Za-z0-9._-]{8,64}$" }
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "service", "version", "uptime_seconds", "timestamp"],
+        "properties": {
+          "status": { "type": "string", "enum": ["ok"] },
+          "service": { "type": "string", "enum": ["fasalytics-api"] },
+          "version": { "type": "string" },
+          "uptime_seconds": { "type": "integer", "minimum": 0 },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      },
+      "DependencyReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "message"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "unreachable", "not_configured", "not_checked"]
+          },
+          "latencyMs": { "type": "integer", "minimum": 0 },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "timeout",
+              "connection_failed",
+              "http_error",
+              "unexpected_response",
+              "authentication_failed",
+              "query_failed"
+            ]
+          },
+          "httpStatus": { "type": "integer" },
+          "message": { "type": "string", "description": "Fixed text; never contains addresses or credentials." }
+        }
+      },
+      "DependenciesResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["service", "checked_at", "overall", "dependencies"],
+        "properties": {
+          "service": { "type": "string", "enum": ["fasalytics-api"] },
+          "checked_at": { "type": "string", "format": "date-time" },
+          "overall": { "type": "string", "enum": ["healthy", "degraded", "unknown"] },
+          "dependencies": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["postgres", "intelligence_service"],
+            "properties": {
+              "postgres": { "$ref": "#/components/schemas/DependencyReport" },
+              "intelligence_service": { "$ref": "#/components/schemas/DependencyReport" }
+            }
+          }
+        }
+      },
+      "ReadyDependency": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["required", "status", "message"],
+        "properties": {
+          "required": {
+            "type": "boolean",
+            "description": "true when the dependency is configured and therefore gates readiness."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "unreachable", "not_configured", "not_checked"]
+          },
+          "latencyMs": { "type": "integer", "minimum": 0 },
+          "reason": { "$ref": "#/components/schemas/DependencyReport/properties/reason" },
+          "httpStatus": { "type": "integer" },
+          "message": { "type": "string" }
+        }
+      },
+      "ModelsReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "message", "gates_readiness"],
+        "description": "The intelligence service's OWN /ready answer. `ready` only when it returns 200 with model_ready=true. Informational: it never gates the API's readiness.",
+        "properties": {
+          "status": { "type": "string", "enum": ["ready", "not_ready", "unknown"] },
+          "message": { "type": "string" },
+          "gates_readiness": { "type": "boolean", "enum": [false] }
+        }
+      },
+      "ReadyResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "service",
+          "version",
+          "checked_at",
+          "blocking",
+          "dependencies",
+          "forecasting_models"
+        ],
+        "properties": {
+          "status": { "type": "string", "enum": ["ready", "not_ready"] },
+          "service": { "type": "string", "enum": ["fasalytics-api"] },
+          "version": { "type": "string" },
+          "checked_at": { "type": "string", "format": "date-time" },
+          "blocking": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["postgres", "intelligence_service"] }
+          },
+          "dependencies": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["postgres", "intelligence_service"],
+            "properties": {
+              "postgres": { "$ref": "#/components/schemas/ReadyDependency" },
+              "intelligence_service": { "$ref": "#/components/schemas/ReadyDependency" }
+            }
+          },
+          "forecasting_models": { "$ref": "#/components/schemas/ModelsReport" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["error"],
+        "description": "Standard error body for every failure (never stack traces, paths or submitted values).",
+        "properties": {
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "message"],
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "BAD_REQUEST",
+                  "INVALID_JSON",
+                  "NOT_FOUND",
+                  "METHOD_NOT_ALLOWED",
+                  "PAYLOAD_TOO_LARGE",
+                  "REQUEST_TIMEOUT",
+                  "INTERNAL_ERROR"
+                ]
+              },
+              "message": { "type": "string" },
+              "requestId": { "type": "string", "pattern": "^[A-Za-z0-9._-]{8,64}$|^[0-9a-f-]{36}$" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

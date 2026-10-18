@@ -1,4 +1,5 @@
 import { createApp } from './app.js';
+import { createDatabasePool } from './database/pool.js';
 
 /**
  * @typedef {object} RunningServer
@@ -21,20 +22,33 @@ import { createApp } from './app.js';
  * Binds the app to `config.host:config.port`. Rejects if the port cannot be bound.
  *
  * @param {import('./config/env.js').AppConfig} config
- * @param {import('./app.js').AppDependencies} [deps]
+ * @param {import('./app.js').AppDependencies & {
+ *   createPool?: typeof createDatabasePool }} [deps] `pool` injects an externally owned pool
+ *   (the caller closes it); otherwise exactly one pool is created here when `DATABASE_URL` is
+ *   set, and closed by `close()` after in-flight requests finish.
  * @returns {Promise<RunningServer>}
  */
 export function startServer(config, deps = {}) {
-  const app = createApp(config, deps);
+  const { createPool = createDatabasePool, ...appDeps } = deps;
+  const owned =
+    appDeps.pool === undefined && config.databaseUrl !== null
+      ? createPool(config, appDeps.logger ? { logger: appDeps.logger } : {})
+      : undefined;
+  const app = createApp(config, owned ? { ...appDeps, pool: owned.pool } : appDeps);
   return new Promise((resolve, reject) => {
     const server = app.listen(config.port, config.host);
     // Bound slow clients (slowloris) and runaway requests.
     server.requestTimeout = config.requestTimeoutMs + 5000;
     server.headersTimeout = Math.min(10_000, server.requestTimeout);
     server.keepAliveTimeout = 5000;
-    server.once('error', reject);
+    /** @param {Error} error */
+    const onStartError = (error) => {
+      void owned?.close();
+      reject(error);
+    };
+    server.once('error', onStartError);
     server.once('listening', () => {
-      server.off('error', reject);
+      server.off('error', onStartError);
       // A TCP server bound with a port always reports an AddressInfo (not a pipe path or null).
       const address = /** @type {import('node:net').AddressInfo} */ (server.address());
       /** @type {Promise<void> | undefined} */
@@ -46,7 +60,7 @@ export function startServer(config, deps = {}) {
             forceTimer.unref();
             server.close(() => {
               clearTimeout(forceTimer);
-              done();
+              void (owned?.close() ?? Promise.resolve()).then(() => done());
             });
             server.closeIdleConnections();
           })

@@ -1,0 +1,228 @@
+{
+  "components": {
+    "schemas": {
+      "ApplicationStatus": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "available"
+        ],
+        "title": "ApplicationStatus",
+        "type": "object"
+      },
+      "ArtifactDirectoryStatus": {
+        "properties": {
+          "configured": {
+            "title": "Configured",
+            "type": "boolean"
+          },
+          "exists": {
+            "title": "Exists",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "configured",
+          "exists"
+        ],
+        "title": "ArtifactDirectoryStatus",
+        "type": "object"
+      },
+      "Capabilities": {
+        "description": "Each capability is True only when a real, validated model backs it.",
+        "properties": {
+          "allocation": {
+            "title": "Allocation",
+            "type": "boolean"
+          },
+          "forecasting": {
+            "title": "Forecasting",
+            "type": "boolean"
+          },
+          "risk_analysis": {
+            "title": "Risk Analysis",
+            "type": "boolean"
+          },
+          "scenario_simulation": {
+            "title": "Scenario Simulation",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "forecasting",
+          "risk_analysis",
+          "scenario_simulation",
+          "allocation"
+        ],
+        "title": "Capabilities",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "description": "Liveness: the FastAPI process is running. Says nothing about models.",
+        "properties": {
+          "service": {
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          },
+          "uptime_seconds": {
+            "title": "Uptime Seconds",
+            "type": "integer"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "version",
+          "uptime_seconds"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "ModelsStatus": {
+        "properties": {
+          "artifact_directory": {
+            "$ref": "#/components/schemas/ArtifactDirectoryStatus"
+          },
+          "loaded": {
+            "title": "Loaded",
+            "type": "boolean"
+          },
+          "loaded_count": {
+            "title": "Loaded Count",
+            "type": "integer"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loaded",
+          "loaded_count",
+          "artifact_directory",
+          "reason"
+        ],
+        "title": "ModelsStatus",
+        "type": "object"
+      },
+      "ReadinessResponse": {
+        "description": "Readiness for ML work, distinct from process liveness.",
+        "properties": {
+          "application": {
+            "$ref": "#/components/schemas/ApplicationStatus"
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/Capabilities"
+          },
+          "model_ready": {
+            "title": "Model Ready",
+            "type": "boolean"
+          },
+          "models": {
+            "$ref": "#/components/schemas/ModelsStatus"
+          },
+          "service": {
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ready",
+              "not_ready"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "version",
+          "model_ready",
+          "application",
+          "models",
+          "capabilities"
+        ],
+        "title": "ReadinessResponse",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Internal forecasting, risk, scenario and allocation service (foundation).",
+    "title": "FASALYTICS Intelligence Service",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Liveness",
+        "tags": [
+          "operations"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            },
+            "description": "Process up, ML not ready."
+          }
+        },
+        "summary": "Readiness for ML work",
+        "tags": [
+          "operations"
+        ]
+      }
+    }
+  }
+}

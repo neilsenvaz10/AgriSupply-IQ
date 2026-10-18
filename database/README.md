@@ -6,9 +6,10 @@ migrations.
 > **Milestone 8 status: PostgreSQL setup only.** The database contains one neutral table
 > (`system_metadata`) that proves migrations, privileges and persistence work. It holds **no
 > agricultural data**. The commodity, market and observation tables, and all data ingestion,
-> belong to Phase 2. The Express API does **not** connect to PostgreSQL yet (Milestone 10).
-> Since Milestone 9 the same `compose.yaml` also runs `web`, `api` and `intelligence`; see the
-> root README. The application containers receive no database credentials yet.
+> belong to Phase 2.
+> The same `compose.yaml` also runs `web`, `api` and `intelligence` (Milestone 9). Since Milestone 10
+> the Express API connects with the application role only (`DATABASE_URL`, host `db:5432` inside
+> Compose); it never receives admin or migrator credentials. See the root README.
 
 ## What runs where
 
@@ -80,7 +81,7 @@ privileges, so new migrations do not need extra GRANT statements.
 | Where the client runs                                                        | Host:port        | Variable                                                            |
 | ---------------------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------- |
 | **On your machine** (npm scripts, tests, Express or FastAPI started locally) | `localhost:5433` | `DATABASE_URL` (app role), `DATABASE_MIGRATION_URL` (migrator role) |
-| **In another container** on the Compose network (Milestone 9)                | `db:5432`        | same variables with host `db` and port `5432`                       |
+| **In another container** on the Compose network (the `api` service)          | `db:5432`        | `DATABASE_URL` only (app role), set by `compose.yaml`               |
 
 Examples (passwords are placeholders):
 
@@ -93,6 +94,19 @@ postgresql://fasalytics_app:<app password>@db:5432/fasalytics        # inside Do
 Inside a container `localhost` means that container itself, so use the service name `db` and
 the container port `5432`. URL-encode special characters in passwords (generated hex passwords
 need none). Applications use the **app** URL. Only the migration tooling uses the migrator URL.
+
+## Express API integration tests
+
+`apps/api` has PostgreSQL integration tests (connection, wrong credentials, unreachable database,
+pool timeout, connection release, query timeout, no DDL for the app role, graceful shutdown).
+Prerequisites: the database running and migrated (`npm run db:up`, `npm run db:migrate`) and
+`database/.env` present. Run from `apps/api`:
+
+```bash
+npm test                                      # database tests are SKIPPED if the db is down
+REQUIRE_DB=1 npm test                         # FAIL instead of skip when the db is down
+REQUIRE_DB=1 DB_TEST_RESTART=1 npm test       # also stop/start the db container (data kept)
+```
 
 ## Migrations
 

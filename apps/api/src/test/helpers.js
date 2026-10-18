@@ -11,6 +11,13 @@ export function testConfig(overrides = {}) {
     port: 0,
     corsOrigins: ['http://localhost:5173', 'http://127.0.0.1:5173'],
     databaseUrl: null,
+    databasePool: {
+      max: 2,
+      connectionTimeoutMs: 500,
+      idleTimeoutMs: 5000,
+      queryTimeoutMs: 1000,
+      healthTimeoutMs: 800,
+    },
     mlServiceUrl: null,
     mlServiceTimeoutMs: 1000,
     requestTimeoutMs: 15000,

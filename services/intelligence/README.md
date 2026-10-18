@@ -119,6 +119,17 @@ Environment variables (see `.env.example`). Real environment variables beat `.en
 Invalid values stop startup with exit code 1 and a message naming the **variable**, never the
 value. The service needs neither model files nor PostgreSQL to start.
 
+## Request ids and the API contract
+
+`X-Request-Id` (8-64 characters from `A-Za-z0-9._-`) is accepted from the caller, otherwise a UUID is
+generated. The Express API forwards its own request id on every probe, so one id follows a request across
+both services. The id is returned in the `X-Request-Id` header, in error bodies (`error.requestId`) and in
+every JSON log line. Unsafe or over-long ids are replaced, never echoed.
+
+The OpenAPI document is committed at `docs/api/intelligence.openapi.json`. After changing an endpoint or
+schema, regenerate it with `python scripts/export_openapi.py`; `tests/test_openapi_contract.py` fails while
+the file is stale.
+
 ## Running in Docker
 
 `docker compose --env-file database/.env up -d --build --wait intelligence` (or the whole stack;
