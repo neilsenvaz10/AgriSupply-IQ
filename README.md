@@ -2,6 +2,11 @@
 
 > AI-driven market and risk intelligence platform for agricultural supply chains.  
 > Built for **SYRUS 7.0 Hackathon** by **Team CodeSparks Innovators**.
+>
+> **Status:** Phase 1 (foundation) is implemented and verified locally; the first GitHub Actions run is
+> pending. The farmer-facing screens from the Stitch designs are built as **UI previews** (see
+> [apps/web/README.md](./apps/web/README.md)). No market data, models or forecasts exist yet: every
+> data-dependent screen says so. Phase 2 (data engineering) has not started.
 
 ---
 
@@ -36,45 +41,42 @@ FASALYTICS is designed for **all of India and all agricultural commodities** (In
 ```text
 AgriSupply-IQ/
 ├── PROJECT.md                  # Master blueprint, architecture specs & phased roadmap
-├── README.md                   # Project overview
+├── README.md                   # Project overview (this file)
+├── compose.yaml                # Docker Compose: web, api, intelligence, db (project "fasalytics")
 ├── .env.example                # Environment template (placeholders only; copy to .env)
 ├── .gitignore                  # Protects secrets, datasets, models and build output
+├── .github/workflows/ci.yml    # CI: web, api, intelligence, database (+ disposable PostgreSQL), docker
 ├── apps/
-│   ├── web/                    # React + Vite + JavaScript frontend      (Milestone 5, done)
-│   └── api/                    # Express + JavaScript backend            (Milestone 6, done)
+│   ├── web/                    # React + Vite + JavaScript frontend: 8 Stitch screens as UI previews,
+│   │                           #   profile placeholder, /status diagnostics (see apps/web/README.md)
+│   └── api/                    # Express + JavaScript gateway: /health, /health/dependencies, /ready,
+│                               #   bounded PostgreSQL pool (app role), request-id propagation
 ├── services/
-│   └── intelligence/           # Python 3.12 FastAPI service (Milestone 7, done): /health, /ready
-├── compose.yaml                # Docker Compose: database only for now   (Milestone 8; extended in 9)
-├── database/                   # PostgreSQL + Drizzle ORM (JavaScript)   (Milestone 8, done)
+│   └── intelligence/           # Python 3.12 FastAPI service: /health, /ready (no models yet)
+├── database/                   # PostgreSQL 17 + Drizzle ORM (JavaScript)
 │   ├── src/                    #   schema, migration runner, verification, tests
 │   ├── migrations/             #   generated SQL migrations (committed)
 │   ├── init/                   #   first-run role and privilege setup (least privilege)
 │   └── README.md               #   setup, roles, connection strings, persistence
 ├── data/
-│   └── raw/                    # Original historical CSVs (git-ignored, read-only)
+│   └── raw/                    # Original historical CSVs (git-ignored, read-only; not imported yet)
 │                               # Agriculture_price_dataset, merged_preprocessed_all_reports,
 │                               # crop_price_dataset, Wholesale-Price-Index-from-2012-to-2024
 ├── design/
 │   └── stitch/
 │       ├── original/           # Immutable Google Stitch exports (do not edit)
-│       │   └── stitch_fasalytics_agritech_intelligence_platform/
-│       │       ├── agriintelligence_market_risk_system/   # DESIGN.md (design system)
-│       │       ├── fasalytics_farmer_dashboard/           # code.html + screen.png
-│       │       ├── smart_mandi_comparison/
-│       │       ├── smart_harvest_allocation/
-│       │       └── fasalytics_ai_copilot/
-│       ├── (Batch 2 exports currently at design/stitch/new-exports/: forecast, commodities,
-│       │    market explorer, what-if simulator)
+│       ├── new-exports/        # Batch 2 exports: forecast, commodities, market explorer, what-if
 │       ├── SCREEN_MAP.md               # Screen inventory, checksums, defects
 │       ├── DESIGN_SYSTEM.md            # Extracted tokens and components
 │       ├── MISSING_SCREENS.md          # Gaps vs nationwide, all-crop scope
 │       └── REACT_INTEGRATION_PLAN.md   # Phase 7 conversion plan
 └── docs/
-    └── data-sources/
-        └── DATASET_COVERAGE.md  # Dataset coverage, provenance and limitations
+    ├── api/                    # OpenAPI contracts (Express, FastAPI) + liveness/readiness guide
+    ├── data-sources/           # DATASET_COVERAGE.md: coverage, provenance, limitations
+    ├── process/                # REPOSITORY_POLICY.md: branches, PRs, commits, CI gates
+    └── security/               # THREAT_MODEL.md, CREDENTIAL_POLICY.md, DEPENDENCY_AUDIT.md
 ```
 
-> `compose.yaml` currently defines only the `db` service (Milestone 8). Milestone 9 adds the web, api and intelligence services.
 
 ---
 
@@ -84,8 +86,8 @@ AgriSupply-IQ/
 |---|---|---|
 | **Frontend** | React, JavaScript (JSX), Vite, Tailwind CSS | Mobile-first responsive web app & PWA |
 | **Backend API** | Node.js, Express (JavaScript, ES modules) | Main application API, auth, business orchestration |
-| **Database** | PostgreSQL + Prisma / Drizzle | Relational data, mandi records, transaction logs |
-| **ML & Analytics** | Python, FastAPI, Pandas, scikit-learn, XGBoost | Price forecasting, arrival trends, risk scoring |
+| **Database** | PostgreSQL 17 + Drizzle ORM (JavaScript) | Relational data, mandi records, transaction logs |
+| **ML & Analytics** | Python 3.12, FastAPI (in place); Pandas, scikit-learn, XGBoost (planned, Phase 3) | Price forecasting, arrival trends, risk scoring |
 | **Optimization** | SciPy / PuLP | Constrained harvest allocation solver |
 | **AI Assistant** | Groq API (Function/Tool Calling) | Deterministic-tool grounded copilot & scenario queries |
 | **Auth** | Firebase Auth | Phone OTP and role-based access |
@@ -96,7 +98,7 @@ AgriSupply-IQ/
 
 The full engineering blueprint and stage-by-stage implementation guide is documented in [PROJECT.md](./PROJECT.md):
 
-- **Phase 1:** Foundation & environment (monorepo, services, database, Docker, local validation)
+- **Phase 1:** Foundation & environment (monorepo, services, database, Docker, local validation): **implemented; awaiting first CI run on GitHub**
 - **Phase 2:** Market data engineering (nationwide ingestion, normalisation, provenance, registries)
 - **Phase 3:** Multi-crop forecasting (generalised models, backtesting, uncertainty, eligibility)
 - **Phase 4:** Risk intelligence (volatility, price-drop, supply pressure, freshness, weather)
@@ -127,7 +129,7 @@ cd database && npm ci && npm run db:migrate && npm run db:verify && cd ..
 
 # 4. Check it works
 curl http://localhost:4000/ready          # 200, status "ready"
-# open http://localhost:5173/status       # "Connected"
+# open http://localhost:5173              # the Dashboard (UI preview); /status shows "Connected"
 ```
 
 Run each part's checks from its folder (`apps/web`, `apps/api`, `database`: `npm ci`, then
@@ -272,25 +274,36 @@ stops and restarts only the `db` container.
 
 ## Current Status
 
+**Phase 1: Foundation and development environment: implemented and verified locally.** Closing it formally
+needs the first successful GitHub Actions run (see [docs/process/REPOSITORY_POLICY.md](./docs/process/REPOSITORY_POLICY.md)).
+
 - [x] Problem statement & requirements analysis
 - [x] UI/UX prototypes designed in Google Stitch
 - [x] Master engineering specification & roadmap ([PROJECT.md](./PROJECT.md))
-- [x] Phase 1 / Milestone 1: development environment verified
-- [x] Phase 1 / Milestone 2: historical datasets profiled ([coverage report](./docs/data-sources/DATASET_COVERAGE.md))
-- [x] Phase 1 / Milestone 3: monorepo foundation, `.gitignore`, `.env.example`, raw data organised
-- [x] Phase 1 / Milestone 4: Google Stitch assets preserved, inventoried and documented ([screen map](./design/stitch/SCREEN_MAP.md))
-- [x] Phase 1 / Milestone 5: frontend foundation in `apps/web` (React + Vite + JavaScript + Tailwind v3, status page, JSDoc-typed API client)
-- [x] Phase 1 / Milestone 6: Express.js (JavaScript) API foundation in `apps/api` (`/health`, `/health/dependencies`, `/api/v1`)
-- [x] Phase 1 / Milestone 7: FastAPI intelligence service foundation in services/intelligence (infrastructure only: no models, no forecasts)
-- [x] Phase 1 / Milestone 8: PostgreSQL setup in `database/` (dedicated container, least-privilege roles, Drizzle migrations; one neutral table, no agricultural data)
-- [x] Phase 1 / Milestone 9: Docker Compose integration of `web`, `api`, `intelligence` and `db` (see [Running with Docker Compose](#running-the-full-stack-with-docker-compose))
+- [x] Milestone 1: development environment verified
+- [x] Milestone 2: historical datasets profiled ([coverage report](./docs/data-sources/DATASET_COVERAGE.md))
+- [x] Milestone 3: monorepo foundation, `.gitignore`, `.env.example`, raw data organised
+- [x] Milestone 4: Google Stitch assets preserved, inventoried and documented ([screen map](./design/stitch/SCREEN_MAP.md))
+- [x] Milestone 5: frontend foundation in `apps/web` (React + Vite + JavaScript + Tailwind v3, status page, JSDoc-typed API client)
+- [x] Milestone 6: Express.js (JavaScript) API foundation in `apps/api` (`/health`, `/health/dependencies`, `/api/v1`)
+- [x] Milestone 7: FastAPI intelligence service foundation (infrastructure only: no models, no forecasts)
+- [x] Milestone 8: PostgreSQL setup in `database/` (dedicated container, least-privilege roles, Drizzle migrations; one neutral table, no agricultural data)
+- [x] Milestone 9: Docker Compose integration of `web`, `api`, `intelligence` and `db` ([details](#running-the-full-stack-with-docker-compose))
+- [x] Milestone 10: Express connects to PostgreSQL through a bounded pool (application role) with a real `/health/dependencies` probe; Express to FastAPI probe preserved
+- [x] Milestone 11: Phase 1 close-out: GitHub Actions CI, Express `GET /ready`, cross-service request ids, OpenAPI contracts, threat model, credential policy, repository policy, clean-checkout reproduction
+- [x] Frontend integration sprint: all eight Stitch screens converted to responsive React pages (Dashboard is the landing page), plus a Profile placeholder and the System Status diagnostics page. UI previews only: no data, forecasts or recommendations are shown ([route map and data boundaries](./apps/web/README.md))
+- [ ] First GitHub Actions run passing on GitHub (required before formally closing Phase 1)
+- [ ] Phase 2: data discovery, ingestion, normalisation and storage (not started; no agricultural tables, no dataset imports, no market APIs yet)
+- [ ] Phases 3-10: forecasting, risk, mandi comparison, allocation, dashboard, AI copilot, accessibility, deployment (not started)
 
-> **Local ports:** defaults are API `4000`, web `5173`, intelligence service `8000`. On the current
-> development machine the intelligence service temporarily runs on `8001` (port 8000 is occupied by
-> an unrelated process) via git-ignored `.env` overrides; see `services/intelligence/README.md`.
-- [x] Phase 1 / Milestone 10: Express connects to PostgreSQL through a bounded pool (application role) with a real `/health/dependencies` probe; Express to FastAPI probe preserved
-- [x] Phase 1 / Milestone 11: Phase 1 close-out: GitHub Actions CI, Express `GET /ready`, cross-service request ids, OpenAPI contracts, threat model, credential policy, repository policy, clean-checkout reproduction
-- [ ] Core services & data pipeline implementation (Phase 2 onwards, not started)
+**Known limitations today:** no authentication, rate limiting or TLS (all ports are bound to loopback); the web
+container is a development server; base images are version-pinned, not digest-pinned; dependency audits are
+manual (see the [threat model](./docs/security/THREAT_MODEL.md) and [dependency audit](./docs/security/DEPENDENCY_AUDIT.md)).
+
+> **Local ports:** defaults are API `4000`, web `5173`, intelligence service `8000` (inside Compose only),
+> PostgreSQL `127.0.0.1:5433` (an unrelated PostgreSQL on host port 5432 is never used). On the current
+> development machine a host-run intelligence service temporarily uses `8001` via git-ignored `.env`
+> overrides; see `services/intelligence/README.md`.
 
 ---
 

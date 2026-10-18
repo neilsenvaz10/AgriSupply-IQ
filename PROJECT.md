@@ -4,8 +4,8 @@
 > **Hackathon:** SYRUS 7.0 | **Team:** CodeSparks Innovators  
 > **Domain:** Sustainability / Agriculture Technology  
 > **Document type:** Engineering specification, phased implementation plan, and improvement roadmap  
-> **Version:** 1.2 | **Updated:** 14 October 2026 (v1.2: nationwide, all-crop scope made a core architectural requirement; see §0.1)  
-> **Status:** Proposed architecture and implementation plan; not a statement of completed functionality.
+> **Version:** 1.3 | **Updated:** 18 October 2026 (v1.3: Phase 1 implementation status and recorded decisions added, §0.2; no requirement was changed. v1.2: nationwide, all-crop scope made a core architectural requirement, §0.1)  
+> **Status:** Proposed architecture and implementation plan. Sections other than §0.2 describe the design, not completed functionality. What has actually been built and verified is recorded only in §0.2.
 
 ---
 
@@ -41,6 +41,67 @@ FASALYTICS is a **nationwide, all-commodity platform**, not a Maharashtra or two
 - **No guaranteed profit claims.** All recommendations are estimates with risks, assumptions, and possible deviations.
 - **Build vertical slices.** Complete a real crop → market data → forecast → comparison → recommendation workflow before expanding channels.
 - **Stitch-first frontend.** When Google Stitch HTML/CSS/assets are supplied, treat them as the primary UI design source. Preserve their intended visual language while converting to maintainable React and connecting real services. Never claim exported HTML alone provides backend functionality.
+
+## 0.2 Implementation status and recorded decisions (updated 18 October 2026)
+
+This section is the only place that states what exists. Everything else in this document remains the
+design. "Verified" below means executed and observed, with results in the milestone reports.
+
+### Phase 1 (foundation): implemented and verified locally; first GitHub Actions run pending
+
+| Phase 1 task (§10) | State |
+|---|---|
+| 1. Early technical-validation series, journeys, priorities | Dataset profiling done (`docs/data-sources/DATASET_COVERAGE.md`). Potato and Onion in Maharashtra remain **technical-validation examples only**, never the supported scope. |
+| 2. Repository and branch policy | Written: `docs/process/REPOSITORY_POLICY.md`. GitHub branch protection must still be enabled by a maintainer. |
+| 3 / 3a. Initialise React, Express, FastAPI; inventory Stitch exports | Done. Originals preserved under `design/stitch/original/`; inventory, design tokens and gaps documented. |
+| 4. PostgreSQL, migrations, Docker Compose, `.env.example`, `.gitignore` | Done. PostgreSQL 17 in Compose with named volume `fasalytics_pgdata`; Drizzle migrations; least-privilege roles (admin, migrator, app). |
+| 5. Typed contracts, centralised validation, error responses | Done for the existing endpoints: OpenAPI 3.1 in `docs/api/` checked by tests; one error contract in both services; config validation names variables, never values. No body-accepting endpoint exists yet. |
+| 6. Formatting, linting, test runners, GitHub Actions | Done. ESLint/Prettier, Ruff, Vitest, pytest, JSDoc type checking. Workflow `.github/workflows/ci.yml` passes `actionlint` and its database job was simulated locally; **it has not run on GitHub yet**. |
+| 7. `/health`, `/ready`, cross-service request ID, CORS | Done. Express `/health` (liveness), `/health/dependencies`, `/ready` (200 only when configured dependencies are healthy); FastAPI `/health` and `/ready` (503 until validated models exist). `X-Request-Id` is validated and forwarded Express to FastAPI. |
+| 8. Threat model and credential policy | Written: `docs/security/THREAT_MODEL.md`, `CREDENTIAL_POLICY.md`; controls marked implemented or planned. |
+
+Phase 1 exit criteria: a clean checkout reproduces the environment (**verified** on an isolated copy with its
+own database, ports and volume) and a failed dependency gives an informative status (**verified** live for
+PostgreSQL and FastAPI outage and recovery). CI executing the tests on GitHub is the remaining criterion.
+
+### Frontend integration sprint (standalone, before Phase 2)
+
+The eight Stitch screens (Dashboard, Market Explorer, Commodities, Forecasting, Mandi Comparison, Harvest
+Allocation, What-If Simulator, AI Copilot) are converted into responsive React/JavaScript pages in
+`apps/web`, with a Profile placeholder and the System Status page kept as diagnostics. The Dashboard is the
+landing page. **They are UI previews:** layout, navigation, tokens and non-data interactions (menus, dialogs,
+tabs, accordions, input state, scenario levers) work; every price, forecast, comparison, allocation,
+simulation and assistant answer is an explicit "unavailable" state, because the ingestion pipeline, registries,
+models and engines do not exist. Sample values in the Stitch exports are never shown, selectors offer no
+placeholder commodity/state/market lists, and unavailable actions are disabled with a stated reason. Data
+enters each page through one hook in `apps/web/src/services/agri/index.js` so Phase 2+ can connect real
+Express endpoints without rewriting the pages. Route map, component inventory and per-screen API needs:
+`apps/web/README.md`.
+
+**Not started:** Phase 2 and later. There are no agricultural tables, no dataset imports (the four files in
+`data/raw/` are untouched), no market APIs, no models, no forecasts, no risk engine, no simulation and no AI copilot.
+
+### Decisions recorded during Phase 1
+
+| Topic | Decision |
+|---|---|
+| ORM / migrations (§5.1) | **Drizzle ORM + drizzle-kit**, JavaScript. The Express API uses `pg` directly with one bounded pool; no ORM is needed for its health probe. |
+| Languages | JavaScript/JSX (React) and JavaScript ES modules (Express) with JSDoc type checking via `tsc -p jsconfig.json`; Python only in `services/intelligence`. No TypeScript application files. |
+| Python tooling | Ruff for linting and formatting; **Black is not used** (§10 Phase 1 task 6 lists "Ruff/Black"). |
+| Database roles | `fasalytics_admin` (bootstrap only), `fasalytics_migrator` (migrations only), `fasalytics_app` (DML only; the only role the API may use). Migrations are explicit, never run at API startup. |
+| Network exposure | Only `web` (5173), `api` (4000) and `db` (host 5433) are published, all on `127.0.0.1`. FastAPI is reachable only inside the Compose network at `intelligence:8000`; Express uses that name, never localhost, inside Compose. An unrelated PostgreSQL on host port 5432 is never used. |
+| Readiness semantics | Express `/ready` reflects the API's dependencies. FastAPI model readiness is answered only by FastAPI `/ready` and echoed separately by Express (`forecasting_models`, never gating); it is never inferred from `/health`. |
+| Probe contract | PostgreSQL probe reports `healthy` only after `SELECT 1` succeeds; failures are `unreachable` with reason `timeout`, `connection_failed`, `authentication_failed` or `query_failed`. A stopped database container typically yields `timeout`. |
+| API contract format | OpenAPI 3.1 **JSON** in `docs/api/` (Express hand-written and contract-tested; FastAPI generated and staleness-tested), instead of the `openapi.yaml` suggested in Appendix B. |
+| Secrets in Docker | The API container receives the application-role `DATABASE_URL` as an environment variable (visible to local Docker users). Accepted for local development only; a secret store is required for any shared environment. |
+| Temporary local override | On the current development machine a host-run FastAPI uses port 8001 because 8000 is occupied by an unrelated process. This is a git-ignored local setting, not a project decision. |
+
+### Open items before closing Phase 1
+
+1. First successful GitHub Actions run on a pull request (all five jobs).
+2. Enable branch protection and required checks on `main` (a GitHub setting).
+3. Decide what to do about the reference PDF that was committed and then removed from the repository (it
+   remains in earlier Git history).
 
 ---
 
@@ -298,7 +359,7 @@ Training features must reflect what was *published/known at forecast time*. A hi
 | Charts | Recharts | Forecast, arrivals, risk visuals |
 | Main API | Node.js + Express (JavaScript, ES modules) | Auth, orchestration, public REST endpoints |
 | Database | PostgreSQL | Relational records, auditability, transactions |
-| ORM/migrations | Prisma or Drizzle (choose one) | Schema evolution and typed queries |
+| ORM/migrations | Drizzle ORM + drizzle-kit (chosen in Phase 1, see §0.2) | Schema evolution and typed queries |
 | ML API | Python + FastAPI + Pydantic | Validation, forecasting, optimization |
 | Modeling | Pandas, scikit-learn, XGBoost | Feature engineering and tabular time series |
 | Optimization | SciPy; optional OR-Tools/PuLP | Constrained allocation and routing decisions |
@@ -1115,9 +1176,9 @@ Use **real, dated source snapshots** if live APIs are unreliable. Explicitly lab
 - `docs/data-sources/SOURCE_REGISTER.md`: verified datasets, resource IDs, terms, update cadence.
 - `docs/architecture/ADR-001-stack.md`: why chosen technologies and alternatives.
 - `docs/model/MODEL_CARD.md`: dataset, targets, leakage prevention, metrics, limitations.
-- `docs/api/openapi.yaml`: machine-readable endpoint contracts.
+- `docs/api/`: machine-readable endpoint contracts. **Created** as OpenAPI JSON (`express.openapi.json`, `intelligence.openapi.json`) with a README; extend as endpoints are added.
 - `docs/optimization/ASSUMPTIONS.md`: cost functions, solver, constraints, scenario semantics.
-- `docs/security/THREAT_MODEL.md`: trust boundaries, threats and mitigations.
+- `docs/security/THREAT_MODEL.md`: trust boundaries, threats and mitigations. **Created** in Phase 1 (with `CREDENTIAL_POLICY.md`); keep it current as features land.
 - `docs/demo/DEMO_RUNBOOK.md`: deterministic demo data and recovery steps.
 
 ---

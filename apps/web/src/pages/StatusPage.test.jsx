@@ -26,8 +26,8 @@ function renderAt(path, fetchImpl, baseUrl = 'http://api.test') {
 const unreachable = () => vi.fn(() => Promise.reject(new TypeError('Failed to fetch')));
 
 describe('Status page', () => {
-  it('redirects the root path to the status page', async () => {
-    renderAt('/', unreachable());
+  it('is available at /status as the diagnostics screen', async () => {
+    renderAt('/status', unreachable());
     expect(await screen.findByRole('heading', { level: 1, name: 'System status' })).toBeVisible();
     expect(document.title).toBe('System status | FASALYTICS');
   });
@@ -92,8 +92,8 @@ describe('Status page', () => {
     const main = screen.getByRole('main');
     expect(main.textContent ?? '').not.toMatch(/₹|\/\s*Qtl|quintal|forecast|confidence/i);
   });
-  it('renders a not-found page for unknown and not-yet-built routes', async () => {
-    renderAt('/forecast', unreachable());
+  it('renders a not-found page for unknown routes', async () => {
+    renderAt('/no-such-page', unreachable());
     const main = await screen.findByRole('main');
     expect(within(main).getByRole('heading', { level: 1 })).toHaveTextContent('Page not found');
   });
