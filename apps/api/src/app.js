@@ -7,6 +7,7 @@ import { requestId } from './middleware/requestId.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { requestTimeout } from './middleware/requestTimeout.js';
 import { createHealthRouter } from './routes/health.routes.js';
+import { createReadyRouter } from './routes/ready.routes.js';
 import { createV1Router } from './routes/v1.routes.js';
 import { silentLogger } from './utils/logger.js';
 
@@ -48,6 +49,7 @@ export function createApp(config, deps = {}) {
     ...(deps.pool ? { pool: deps.pool } : {}),
   };
   app.use('/health', createHealthRouter(config, probe));
+  app.use('/ready', createReadyRouter(config, probe));
   app.use('/api/v1', createV1Router());
   app.use(notFound);
   app.use(errorHandler(logger));

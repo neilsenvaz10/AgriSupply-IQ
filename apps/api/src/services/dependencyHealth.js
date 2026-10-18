@@ -49,6 +49,8 @@
  * @typedef {object} ProbeOptions
  * @property {typeof fetch} [fetchImpl] Injectable for tests so no real network call is made.
  * @property {import('../database/pool.js').PoolLike} [pool] The application connection pool.
+ * @property {string} [requestId] Correlation id of the inbound request; forwarded to the
+ *   intelligence service as `X-Request-Id` so one id follows the request across services.
  */
 
 /** SQLSTATE / errno values meaning "the server is unreachable or not accepting connections". */
@@ -265,7 +267,10 @@ export async function checkIntelligenceService(config, options = {}) {
   try {
     const response = await doFetch(`${config.mlServiceUrl}/health`, {
       method: 'GET',
-      headers: { Accept: 'application/json' },
+      headers: {
+        Accept: 'application/json',
+        ...(options.requestId ? { 'X-Request-Id': options.requestId } : {}),
+      },
       redirect: 'manual',
       signal: controller.signal,
     });
@@ -311,6 +316,74 @@ export async function checkIntelligenceService(config, options = {}) {
       reason: 'connection_failed',
       message: 'The intelligence service could not be reached.',
     };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Forecasting-model readiness, reported by the intelligence service's own `GET /ready`.
+ * This is NOT inferred from `GET /health`: a live FastAPI process says nothing about whether
+ * validated models are loaded.
+ *
+ *  - ready:     200 and `model_ready: true`
+ *  - not_ready: 503 and `model_ready: false` (expected until models exist)
+ *  - unknown:   not configured, unreachable, or an unrecognised answer
+ *
+ * @typedef {object} ModelsReport
+ * @property {'ready' | 'not_ready' | 'unknown'} status
+ * @property {string} message Fixed text; never contains addresses or credentials.
+ */
+
+/**
+ * @param {Pick<import('../config/env.js').AppConfig, 'mlServiceUrl' | 'mlServiceTimeoutMs'>} config
+ * @param {ProbeOptions} [options]
+ * @returns {Promise<ModelsReport>}
+ */
+export async function checkIntelligenceModels(config, options = {}) {
+  if (config.mlServiceUrl === null) {
+    return { status: 'unknown', message: 'ML_SERVICE_URL is not set.' };
+  }
+  const doFetch = options.fetchImpl ?? globalThis.fetch;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), config.mlServiceTimeoutMs);
+  try {
+    const response = await doFetch(`${config.mlServiceUrl}/ready`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        ...(options.requestId ? { 'X-Request-Id': options.requestId } : {}),
+      },
+      redirect: 'manual',
+      signal: controller.signal,
+    });
+    if (response.status !== 200 && response.status !== 503) {
+      await response.body?.cancel().catch(() => undefined);
+      return { status: 'unknown', message: 'The intelligence service gave an unexpected answer.' };
+    }
+    const text = await readBoundedText(response, MAX_PROBE_BODY_BYTES);
+    const data = text === null ? null : JSON.parse(text);
+    const identified =
+      typeof data === 'object' &&
+      data !== null &&
+      data.service === EXPECTED_INTELLIGENCE_SERVICE &&
+      typeof data.model_ready === 'boolean';
+    if (!identified) {
+      return { status: 'unknown', message: 'The intelligence service gave an unexpected answer.' };
+    }
+    // Both the HTTP status and the body flag must agree before models count as ready.
+    if (response.status === 200 && data.model_ready === true) {
+      return {
+        status: 'ready',
+        message: 'The intelligence service reports validated models loaded.',
+      };
+    }
+    return {
+      status: 'not_ready',
+      message: 'The intelligence service is running but reports no validated forecasting models.',
+    };
+  } catch {
+    return { status: 'unknown', message: 'Model readiness could not be determined.' };
   } finally {
     clearTimeout(timer);
   }

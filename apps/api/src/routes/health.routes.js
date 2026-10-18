@@ -32,7 +32,10 @@ export function createHealthRouter(config, probe = {}) {
   router
     .route('/dependencies')
     .get(async (_req, res) => {
-      const dependencies = await checkDependencies(config, probe);
+      const dependencies = await checkDependencies(config, {
+        ...probe,
+        requestId: res.locals['requestId'],
+      });
       res.json({
         service: SERVICE_NAME,
         checked_at: new Date().toISOString(),

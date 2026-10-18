@@ -16,7 +16,8 @@ Instead of chasing the highest sticker price at a distant mandi, the platform ca
 FASALYTICS is designed for **all of India and all agricultural commodities** (India → State/UT → District → Mandi → Commodity → Variety). Nothing is hardcoded to a state or a crop; commodities and markets are discovered from data.
 
 - **Architecture supports everything; data decides capability.** Each commodity–market series is assigned a capability tier (Full / Limited / State-Level Intelligence / Insufficient Data) using measurable criteria and backtests, never a crop whitelist.
-- **Early validation** uses well-covered series (e.g. Potato and Onion in Maharashtra) only to prove the pipeline. They are examples, not limits.
+- **Early validation** uses well-covered series (e.g. Potato and Onion in Maharashtra) only to prove the pipeline. They are technical-validation examples, **not** the supported geographic or commodity scope, and must never be hardcoded in schemas, models, APIs or UI.
+- **Forecast eligibility is earned, not assumed.** No market-commodity series is offered a forecast unless it has sufficient historical data, adequate freshness and passes backtesting; everything else is labelled with a lower capability tier or shown as unavailable.
 - **Honest data labelling:** the supplied datasets are *historical*. Mandi-, state- and national-level records are never blended, and historical data is never shown as a current price. See [docs/data-sources/DATASET_COVERAGE.md](./docs/data-sources/DATASET_COVERAGE.md) for dataset coverage by state.
 
 ### Key Capabilities
@@ -108,6 +109,34 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 
 ---
 
+## Quick start from a fresh clone
+
+Requires Docker Desktop (running), Node.js >= 22.12, and (to run Python checks on your machine) Python 3.12
+with [uv](https://docs.astral.sh/uv/). This sequence was verified on a clean checkout (see Milestone 11).
+
+```bash
+# 1. Database credentials (git-ignored). Replace every change_me_* with a long random password,
+#    and use the same passwords in the two connection strings. Generate one with: openssl rand -hex 24
+cp database/.env.example database/.env
+
+# 2. Start everything and wait until healthy (builds the three images; creates the database volume)
+docker compose --env-file database/.env up -d --build --wait
+
+# 3. Apply the database migrations (explicit; the API never migrates at startup)
+cd database && npm ci && npm run db:migrate && npm run db:verify && cd ..
+
+# 4. Check it works
+curl http://localhost:4000/ready          # 200, status "ready"
+# open http://localhost:5173/status       # "Connected"
+```
+
+Run each part's checks from its folder (`apps/web`, `apps/api`, `database`: `npm ci`, then
+`npm run check`, `npm run lint`, `npm run format:check`, `npm test`; `services/intelligence`: see its README).
+The API's PostgreSQL integration tests also need `database/.env` and the running, migrated database
+(`REQUIRE_DB=1 npm test` makes a missing database a failure instead of a skip).
+
+---
+
 ## Running the full stack with Docker Compose
 
 Requires Docker Desktop (running) and a configured `database/.env` (see
@@ -154,6 +183,19 @@ overrides read from `database/.env` or your shell: `API_HOST_PORT`, `WEB_HOST_PO
 Host processes and containers cannot both own a port. Stop host-run Express (4000) and Vite (5173)
 before starting the stack. A host FastAPI on 8001 does not conflict, because the container's
 FastAPI is not published.
+
+### Liveness versus readiness
+
+| Endpoint | Meaning |
+| --- | --- |
+| Express `GET /health` | The API process is alive. Never affected by PostgreSQL or FastAPI. |
+| Express `GET /health/dependencies` | Probe results for PostgreSQL and FastAPI (always HTTP 200). |
+| Express `GET /ready` | `200` only if every *configured* dependency is healthy, otherwise `503` naming the blockers. |
+| FastAPI `GET /health` | The FastAPI process is alive. |
+| FastAPI `GET /ready` | `503` until validated forecasting models are loaded (the expected state in Phase 1). |
+
+Express `/ready` also echoes FastAPI's own model readiness as `forecasting_models` (informational, never
+inferred from FastAPI `/health`). Full contracts: [docs/api/README.md](./docs/api/README.md).
 
 ### How Express talks to PostgreSQL and FastAPI
 
@@ -214,6 +256,20 @@ stops and restarts only the `db` container.
 | Source edits do not appear in the web container | Only `apps/web/src` and `index.html` are mounted; rebuild for other files. API and intelligence changes need `up -d --build <service>`. |
 
 ---
+## Continuous integration and project policies
+
+- **CI:** [.github/workflows/ci.yml](./.github/workflows/ci.yml) runs web, API, Python, database (against a
+  disposable PostgreSQL created on the runner) and Docker jobs on pull requests and pushes to `main`. It
+  never contacts a developer or production database. Run the same checks locally with the commands in each
+  app's `package.json` / `pyproject.toml`.
+- **API contracts:** [docs/api/](./docs/api/README.md) (OpenAPI, verified by tests).
+- **Security:** [threat model](./docs/security/THREAT_MODEL.md),
+  [credential policy](./docs/security/CREDENTIAL_POLICY.md),
+  [dependency audit](./docs/security/DEPENDENCY_AUDIT.md).
+- **Repository and branch policy:** [docs/process/REPOSITORY_POLICY.md](./docs/process/REPOSITORY_POLICY.md).
+
+---
+
 ## Current Status
 
 - [x] Problem statement & requirements analysis
@@ -233,7 +289,8 @@ stops and restarts only the `db` container.
 > development machine the intelligence service temporarily runs on `8001` (port 8000 is occupied by
 > an unrelated process) via git-ignored `.env` overrides; see `services/intelligence/README.md`.
 - [x] Phase 1 / Milestone 10: Express connects to PostgreSQL through a bounded pool (application role) with a real `/health/dependencies` probe; Express to FastAPI probe preserved
-- [ ] Core services & data pipeline implementation (not started)
+- [x] Phase 1 / Milestone 11: Phase 1 close-out: GitHub Actions CI, Express `GET /ready`, cross-service request ids, OpenAPI contracts, threat model, credential policy, repository policy, clean-checkout reproduction
+- [ ] Core services & data pipeline implementation (Phase 2 onwards, not started)
 
 ---
 
