@@ -293,7 +293,8 @@ needs the first successful GitHub Actions run (see [docs/process/REPOSITORY_POLI
 - [x] Milestone 11: Phase 1 close-out: GitHub Actions CI, Express `GET /ready`, cross-service request ids, OpenAPI contracts, threat model, credential policy, repository policy, clean-checkout reproduction
 - [x] Frontend integration sprint: all eight Stitch screens converted to responsive React pages (Dashboard is the landing page), plus a Profile placeholder and the System Status diagnostics page. UI previews only: no data, forecasts or recommendations are shown ([route map and data boundaries](./apps/web/README.md))
 - [ ] First GitHub Actions run passing on GitHub (required before formally closing Phase 1)
-- [ ] Phase 2: data discovery, ingestion, normalisation and storage (not started; no agricultural tables, no dataset imports, no market APIs yet)
+- [x] Phase 2 / Milestone 2.1: nationwide canonical PostgreSQL schema and data-integrity foundation ([design](./database/docs/CANONICAL_SCHEMA.md)). Structure only: registries, aliases, provenance, ingestion tracking and four granularity-separated observation tables, tested on a disposable database. **No data imported yet.**
+- [ ] Phase 2 / Milestone 2.2 onwards: registries, importers for the four historical datasets, market APIs (not started)
 - [ ] Phases 3-10: forecasting, risk, mandi comparison, allocation, dashboard, AI copilot, accessibility, deployment (not started)
 
 **Known limitations today:** no authentication, rate limiting or TLS (all ports are bound to loopback); the web

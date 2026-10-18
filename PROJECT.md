@@ -78,7 +78,19 @@ enters each page through one hook in `apps/web/src/services/agri/index.js` so Ph
 Express endpoints without rewriting the pages. Route map, component inventory and per-screen API needs:
 `apps/web/README.md`.
 
-**Not started:** Phase 2 and later. There are no agricultural tables, no dataset imports (the four files in
+### Phase 2, Milestone 2.1: canonical database schema (structure only)
+
+The nationwide, all-commodity PostgreSQL schema is implemented and tested (`database/docs/CANONICAL_SCHEMA.md`):
+state/district/market/commodity/variety registries with source-scoped alias tables; data sources, file
+fingerprints, ingestion runs, a quarantine for rejected records and a table for conflicting records;
+and separate fact tables for mandi-daily, state-daily, national-monthly price and national-monthly WPI
+index observations (an index has no currency or unit, so it cannot be stored as a price). Constraints
+enforce non-negative values, price ordering, unit/currency pairing, valid dates and cross-entity
+consistency; idempotent re-imports skip exact duplicates and record conflicts instead of overwriting.
+The migrations insert **no agricultural data** (only six physical units); the registries are empty and the
+four historical datasets have **not** been imported. Importers are Milestone 2.2.
+
+**Not started:** data import, market APIs, forecasting and everything after Milestone 2.1. There are no agricultural tables, no dataset imports (the four files in
 `data/raw/` are untouched), no market APIs, no models, no forecasts, no risk engine, no simulation and no AI copilot.
 
 ### Decisions recorded during Phase 1

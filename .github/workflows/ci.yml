@@ -177,6 +177,12 @@ jobs:
         working-directory: database
         run: npm test
 
+      # Starts its own throwaway container (random port and credentials), applies only the Phase 1
+      # baseline, upgrades to the current schema and re-runs the checks. Proves a fresh upgrade.
+      - name: Database - fresh upgrade from the Phase 1 baseline (separate disposable container)
+        working-directory: database
+        run: npm run test:disposable
+
       - name: API - install, then tests including real PostgreSQL integration
         working-directory: apps/api
         run: |
