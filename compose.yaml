@@ -1,13 +1,27 @@
-# FASALYTICS Docker Compose: database only (Milestone 8).
-# Milestone 9 extends this file with the web, api and intelligence services.
+# FASALYTICS Docker Compose: local development stack (Milestone 9).
 #
-# Usage (from the repository root):
-#   docker compose --env-file database/.env up -d --wait db     # start and wait until healthy
-#   docker compose --env-file database/.env down                # stop; the volume is KEPT
-# or, from database/:  npm run db:up  /  npm run db:down
+#   web          http://localhost:5173   React + Vite          (browser -> web)
+#   api          http://localhost:4000   Express gateway       (browser -> api; api -> intelligence, db)
+#   intelligence (not published)         FastAPI               (reachable only inside the network)
+#   db           127.0.0.1:5433          PostgreSQL 17         (host tools only; apps use db:5432)
 #
-# Credentials come from database/.env (git-ignored). See database/.env.example.
+# Start / stop (from the repository root; the volume is KEPT on stop):
+#   docker compose --env-file database/.env up -d --build --wait
+#   docker compose --env-file database/.env stop            # or: down (never add -v)
+# Database only (Milestone 8 workflow, unchanged):
+#   docker compose --env-file database/.env up -d --wait db
+#
+# Credentials come from database/.env (git-ignored). Only the db service receives them; the
+# application containers get no database credentials until Milestone 10.
+# Inside the network, services reach each other by name: web:5173, api:4000, intelligence:8000,
+# db:5432. Host-published ports are loopback only.
 
+x-hardening: &hardening
+  init: true
+  cap_drop: [ALL]
+  security_opt:
+    - no-new-privileges:true
+  restart: "no"
 name: fasalytics
 
 services:
@@ -39,6 +53,102 @@ services:
       - no-new-privileges:true
     restart: "no"
 
+  intelligence:
+    <<: *hardening
+    build:
+      context: ./services/intelligence
+    image: fasalytics-intelligence:dev
+    container_name: fasalytics-intelligence
+    environment:
+      APP_ENV: development
+      ML_SERVICE_HOST: 0.0.0.0 # bind inside the container; NOT published to the host
+      ML_SERVICE_PORT: "8000"
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    expose:
+      - "8000"
+    healthcheck:
+      # /health = process alive. /ready intentionally returns 503 until validated models are
+      # loaded, so it is NOT used for liveness.
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/health', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  api:
+    <<: *hardening
+    build:
+      context: ./apps/api
+    image: fasalytics-api:dev
+    container_name: fasalytics-api
+    environment:
+      NODE_ENV: development
+      API_HOST: 0.0.0.0 # bind inside the container; published on host loopback only
+      API_PORT: "4000"
+      # The browser's origin (the host URL of the web app), not the Docker service name.
+      API_CORS_ORIGINS: ${API_CORS_ORIGINS:-http://localhost:5173}
+      # Container-to-container: the service name, never localhost.
+      ML_SERVICE_URL: http://intelligence:8000
+      ML_SERVICE_TIMEOUT_MS: "5000"
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "127.0.0.1:${API_HOST_PORT:-4000}:4000"
+    depends_on:
+      intelligence:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:4000/health').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  web:
+    <<: *hardening
+    build:
+      context: ./apps/web
+    image: fasalytics-web:dev
+    container_name: fasalytics-web
+    environment:
+      NODE_ENV: development
+      # Read by the BROWSER, so it is the host URL of the API, not http://api:4000.
+      VITE_API_BASE_URL: ${WEB_API_BASE_URL:-http://localhost:4000}
+      WEB_USE_POLLING: "true"
+    ports:
+      - "127.0.0.1:${WEB_HOST_PORT:-5173}:5173"
+    volumes:
+      # Live editing: source changes reload the browser. Read-only inside the container.
+      - ./apps/web/src:/app/src:ro
+      - ./apps/web/index.html:/app/index.html:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:5173/').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 volumes:
   pgdata:
     # Explicit name: unmistakably FASALYTICS, and distinct from any other project's volumes.

@@ -1,0 +1,7 @@
+# Runtime dependencies installed in the container image (constrained by requirements.lock, which
+# pins every transitive package). These pins MUST match [project].dependencies in pyproject.toml:
+# tests/test_dependencies.py enforces that.
+fastapi==0.143.1
+uvicorn==0.54.0
+pydantic==2.14.1
+pydantic-settings==2.16.0

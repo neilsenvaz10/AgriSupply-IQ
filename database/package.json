@@ -9,7 +9,7 @@
   },
   "scripts": {
     "db:up": "docker compose --env-file .env -f ../compose.yaml up -d --wait db",
-    "db:down": "docker compose --env-file .env -f ../compose.yaml down",
+    "db:down": "docker compose --env-file .env -f ../compose.yaml rm --stop --force db",
     "db:logs": "docker compose --env-file .env -f ../compose.yaml logs --tail 100 db",
     "db:status": "docker compose --env-file .env -f ../compose.yaml ps db",
     "db:generate": "drizzle-kit generate",

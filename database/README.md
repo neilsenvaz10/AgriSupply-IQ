@@ -7,6 +7,8 @@ migrations.
 > (`system_metadata`) that proves migrations, privileges and persistence work. It holds **no
 > agricultural data**. The commodity, market and observation tables, and all data ingestion,
 > belong to Phase 2. The Express API does **not** connect to PostgreSQL yet (Milestone 10).
+> Since Milestone 9 the same `compose.yaml` also runs `web`, `api` and `intelligence`; see the
+> root README. The application containers receive no database credentials yet.
 
 ## What runs where
 
@@ -42,7 +44,7 @@ and are never printed by the scripts.
 | Command                                   | What it does                                                           |
 | ----------------------------------------- | ---------------------------------------------------------------------- |
 | `npm run db:up`                           | Start the container (`docker compose up -d --wait db`)                 |
-| `npm run db:down`                         | Stop and remove the container. **The data volume is kept.**            |
+| `npm run db:down`                         | Stop and remove only the `db` container. **The data volume is kept.**  |
 | `npm run db:status` / `db:logs`           | Container state / last 100 log lines                                   |
 | `npm run db:generate`                     | Create a new migration from changes to `src/schema`                    |
 | `npm run db:check`                        | Check that the migration history is consistent                         |
@@ -55,7 +57,7 @@ From the repository root the equivalent compose commands are:
 
 ```bash
 docker compose --env-file database/.env up -d --wait db
-docker compose --env-file database/.env down
+docker compose --env-file database/.env rm --stop --force db   # removes only the db container
 ```
 
 ## Roles and privileges (least privilege)
@@ -105,7 +107,7 @@ need none). Applications use the **app** URL. Only the migration tooling uses th
 
 ## Persistence
 
-`docker compose down` removes the container but **keeps** the named volume, so data survives
+Removing the container (`db:down`, or `docker compose down`) **keeps** the named volume, so data survives
 `down`/`up` and container restarts. This is covered by the persistence tests:
 
 ```bash

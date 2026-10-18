@@ -119,6 +119,20 @@ Environment variables (see `.env.example`). Real environment variables beat `.en
 Invalid values stop startup with exit code 1 and a message naming the **variable**, never the
 value. The service needs neither model files nor PostgreSQL to start.
 
+## Running in Docker
+
+`docker compose --env-file database/.env up -d --build --wait intelligence` (or the whole stack;
+see the root README). The image uses `python:3.12.15-slim`, installs `requirements.txt` constrained
+by `requirements.lock`, runs as non-root user `10001` with a read-only root filesystem, and contains
+no `.env`, datasets or model artifacts. It binds `0.0.0.0:8000` **inside** the container and is
+**not published to the host**; Express reaches it at `http://intelligence:8000`. The container
+healthcheck calls `/health` (alive). `/ready` is deliberately not used: it returns 503 until
+validated models are loaded. To use it from the host, run it outside Docker (`python -m app`, port
+8000 or the temporary `8001` override) as described above.
+
+`requirements.txt` lists the runtime dependencies and must match `pyproject.toml`
+(`tests/test_dependencies.py` enforces this).
+
 ## Reliability and security
 
 - No CORS middleware: this is an internal service.

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import pytest
 
-from app.config import ConfigurationError, Settings, load_settings
+from app.config import ConfigurationError, Settings, _find_repo_root, load_settings
 
 ENV_VARS = (
     "APP_ENV",
@@ -115,3 +115,14 @@ def test_all_problems_are_reported_together(monkeypatch: pytest.MonkeyPatch) -> 
         load_settings(_env_file=None)
 
     assert len(caught.value.issues) == 2
+
+
+def test_repo_root_is_two_levels_above_the_service_in_the_repository() -> None:
+    assert _find_repo_root(PurePosixPath("/work/fasalytics/services/intelligence")) == Path(
+        "/work/fasalytics"
+    )
+
+
+def test_repo_root_falls_back_to_the_service_dir_in_a_shallow_container_path() -> None:
+    """In the container image the service is at /app, which has no grandparent directory."""
+    assert _find_repo_root(PurePosixPath("/app")) == Path("/app")

@@ -68,7 +68,7 @@ describe.runIf(enabled)('persistence (disruptive; DB_TEST_RESTART=1)', () => {
   });
 
   it('keeps data after the container is removed and created again (named volume)', async () => {
-    compose(['down']); // removes the container and network, NOT the volume
+    compose(['rm', '--stop', '--force', 'db']); // removes only the db container, NOT the volume
     compose(['up', '-d', '--wait', 'db']);
     await waitUntilQueryable(appUrl);
 

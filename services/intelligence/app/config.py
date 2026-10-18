@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import re
 from functools import lru_cache
-from pathlib import Path
+from pathlib import Path, PurePath
 from typing import Annotated, Literal
 
 from pydantic import Field, ValidationError, field_validator
@@ -20,8 +20,20 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 SERVICE_NAME = "fasalytics-intelligence"
 SERVICE_VERSION = "0.1.0"
 
+
+def _find_repo_root(service_dir: PurePath) -> Path:
+    """Repository root for resolving relative paths and the shared ``.env``.
+
+    In the repository the service lives at ``<repo>/services/intelligence``, so the root is two
+    levels up. In a container image the service sits at a shallow path such as ``/app`` where
+    there is no such parent; then the service directory itself is used.
+    """
+    parents = service_dir.parents
+    return Path(parents[1] if len(parents) > 1 else service_dir)
+
+
 _SERVICE_DIR = Path(__file__).resolve().parents[1]
-_REPO_ROOT = _SERVICE_DIR.parents[1]
+_REPO_ROOT = _find_repo_root(_SERVICE_DIR)
 
 AppEnv = Literal["development", "test", "production"]
 LogLevel = Literal["silent", "critical", "error", "warning", "info", "debug"]

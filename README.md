@@ -108,6 +108,62 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 
 ---
 
+## Running the full stack with Docker Compose
+
+Requires Docker Desktop (running) and a configured `database/.env` (see
+[database/README.md](./database/README.md)). Run everything from the repository root.
+
+```bash
+docker compose --env-file database/.env up -d --build --wait    # build, start, wait until healthy
+docker compose --env-file database/.env ps                      # status and health
+docker compose --env-file database/.env logs -f api             # follow logs (api, web, intelligence, db)
+docker compose --env-file database/.env stop                    # stop; containers and data are kept
+docker compose --env-file database/.env down                    # remove containers; the data volume is KEPT
+docker compose --env-file database/.env up -d --build --wait api   # rebuild and restart one service
+```
+
+Never add `-v` to `down`: that deletes the `fasalytics_pgdata` volume and all database data.
+
+| Service        | Inside the Compose network | Published on the host | Notes |
+| -------------- | -------------------------- | --------------------- | ----- |
+| `web`          | `web:5173`                 | `127.0.0.1:5173`      | Open <http://localhost:5173>. Source in `apps/web/src` is mounted for live reload. |
+| `api`          | `api:4000`                 | `127.0.0.1:4000`      | The browser calls this. Health: `/health`, `/health/dependencies`. |
+| `intelligence` | `intelligence:8000`        | **not published**     | Only `api` talks to it. Liveness is `/health`; `/ready` returns 503 until models exist (by design). |
+| `db`           | `db:5432`                  | `127.0.0.1:5433`      | Host tools only. The unrelated PostgreSQL on host port 5432 is never used. |
+
+Startup order is enforced with health conditions: `db` and `intelligence` become healthy, then
+`api`, then `web`. The `intelligence` healthcheck only proves the process is alive; it does not mean
+models are loaded.
+
+### Host-based versus containerized configuration
+
+| Setting | Processes on your machine (`npm run dev`, `python -m app`) | Inside Compose |
+| --- | --- | --- |
+| Express -> FastAPI (`ML_SERVICE_URL`) | `http://127.0.0.1:8000` (`8001` with the temporary local override) | `http://intelligence:8000` (set by `compose.yaml`; never `localhost`) |
+| Browser -> Express (`VITE_API_BASE_URL`) | `http://localhost:4000` | `http://localhost:4000`: the browser runs on the host, so this is never `http://api:4000` |
+| PostgreSQL (`DATABASE_URL`, Milestone 10) | `localhost:5433` | `db:5432` |
+| Bind addresses | `127.0.0.1` | `0.0.0.0` inside containers, published to host loopback only |
+
+Values in your git-ignored `.env` files apply to host processes only; the containers do not read
+them and receive no database credentials (the API connects to PostgreSQL in Milestone 10). Optional
+overrides read from `database/.env` or your shell: `API_HOST_PORT`, `WEB_HOST_PORT`,
+`POSTGRES_HOST_PORT`, `API_CORS_ORIGINS`, `WEB_API_BASE_URL`, `LOG_LEVEL`.
+
+Host processes and containers cannot both own a port. Stop host-run Express (4000) and Vite (5173)
+before starting the stack. A host FastAPI on 8001 does not conflict, because the container's
+FastAPI is not published.
+
+### Troubleshooting
+
+| Symptom | Fix |
+| --- | --- |
+| `port is already allocated` / `address already in use` | Stop the host process using 4000 or 5173 (`Get-NetTCPConnection -LocalPort 4000`), or set `API_HOST_PORT` / `WEB_HOST_PORT`. If you change `API_HOST_PORT`, set `WEB_API_BASE_URL` to match. |
+| Status page shows API unreachable | `docker compose ... ps`; read `logs api`. Open the page at `http://localhost:5173` (the CORS allowlist). |
+| `intelligence_service` is `unreachable` | `logs intelligence`; the API reports this honestly and keeps running. |
+| `set POSTGRES_USER in database/.env` | Pass `--env-file database/.env` on every compose command. |
+| Source edits do not appear in the web container | Only `apps/web/src` and `index.html` are mounted; rebuild for other files. API and intelligence changes need `up -d --build <service>`. |
+
+---
 ## Current Status
 
 - [x] Problem statement & requirements analysis
@@ -121,7 +177,7 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 - [x] Phase 1 / Milestone 6: Express.js (JavaScript) API foundation in `apps/api` (`/health`, `/health/dependencies`, `/api/v1`)
 - [x] Phase 1 / Milestone 7: FastAPI intelligence service foundation in services/intelligence (infrastructure only: no models, no forecasts)
 - [x] Phase 1 / Milestone 8: PostgreSQL setup in `database/` (dedicated container, least-privilege roles, Drizzle migrations; one neutral table, no agricultural data)
-- [ ] Milestone 9: Docker Compose integration of all services
+- [x] Phase 1 / Milestone 9: Docker Compose integration of `web`, `api`, `intelligence` and `db` (see [Running with Docker Compose](#running-the-full-stack-with-docker-compose))
 
 > **Local ports:** defaults are API `4000`, web `5173`, intelligence service `8000`. On the current
 > development machine the intelligence service temporarily runs on `8001` (port 8000 is occupied by

@@ -99,3 +99,17 @@ replaces the deprecated loader, and keep `drizzle-kit` a dev dependency.
 
 Other database-security measures (least-privilege roles, loopback-only port, secret redaction) are
 described in `database/README.md`.
+
+## Container images (Milestone 9)
+
+| Image | Base (pinned) | Dependencies | Runs as |
+|---|---|---|---|
+| `fasalytics-web:dev` | `node:24.22-slim` | `npm ci` from `package-lock.json` (includes dev tooling; development image) | `node` (uid 1000) |
+| `fasalytics-api:dev` | `node:24.22-slim` | `npm ci --omit=dev` (runtime dependencies only: 0 known vulnerabilities) | `node` (uid 1000) |
+| `fasalytics-intelligence:dev` | `python:3.12.15-slim` | `requirements.txt` constrained by `requirements.lock` | `fasalytics` (uid 10001) |
+
+No `.env`, credentials, datasets or model artifacts are copied into any image (`.dockerignore`).
+Containers drop all Linux capabilities, set `no-new-privileges` and use an init process; `api` and
+`intelligence` have read-only root filesystems. Base images are version-pinned but not
+digest-pinned: re-pull and re-audit before any deployment, and move to digests and a production
+web build then.

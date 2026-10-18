@@ -8,6 +8,8 @@ export default defineConfig({
     host: 'localhost',
     port: 5173,
     strictPort: true,
+    // File events do not cross Docker Desktop bind mounts; the web container sets this to true.
+    watch: process.env.WEB_USE_POLLING === 'true' ? { usePolling: true } : undefined,
   },
   preview: {
     host: 'localhost',
