@@ -1,0 +1,42 @@
+{
+  "name": "@fasalytics/database",
+  "private": true,
+  "version": "0.1.0",
+  "description": "FASALYTICS PostgreSQL: Drizzle schema, migrations, migration runner and verification (JavaScript, ES modules)",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "db:up": "docker compose --env-file .env -f ../compose.yaml up -d --wait db",
+    "db:down": "docker compose --env-file .env -f ../compose.yaml down",
+    "db:logs": "docker compose --env-file .env -f ../compose.yaml logs --tail 100 db",
+    "db:status": "docker compose --env-file .env -f ../compose.yaml ps db",
+    "db:generate": "drizzle-kit generate",
+    "db:check": "drizzle-kit check",
+    "db:migrate": "node src/migrate.js",
+    "db:verify": "node src/verify.js",
+    "check": "tsc -p jsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.4",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.13.1",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.4"
+  }
+}

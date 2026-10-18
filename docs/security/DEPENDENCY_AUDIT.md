@@ -60,3 +60,42 @@ All reached through the direct dev dependency `tailwindcss@3.4.19`, used only by
 2. Decide on **Tailwind CSS 4** or accept dev-tooling-only exposure.
 3. Re-run `npm audit` in both workspaces in CI and fail on new high/critical runtime findings.
 4. Pin and review lock files (`package-lock.json`) for both workspaces.
+
+## Findings: `services/intelligence` (Python)
+
+| Item | Result |
+|---|---|
+| Audited | 15 October 2026 with `pip-audit` against the fully pinned `requirements.lock` (27 packages) |
+| Known vulnerabilities | **0** ("No known vulnerabilities found") |
+| Scope | FastAPI 0.143.1, Uvicorn 0.54.0, Pydantic 2.14.1, pydantic-settings 2.16.0 and dev tools (pytest, httpx2, Ruff) |
+| Heavy ML libraries | None installed (no pandas, scikit-learn, XGBoost, PyTorch or TensorFlow) |
+
+Notes:
+- `pip-audit` was run with `--no-deps`; hashes are not pinned in `requirements.lock` (it pins exact versions only).
+- Starlette 1.8 deprecates `httpx` for its test client, so the dev dependency is `httpx2` (the package Starlette itself imports).
+- Re-run the audit whenever `requirements.lock` changes and before deployment.
+
+## Findings: `database` (Drizzle, pg)
+
+| Item | Result |
+|---|---|
+| Audited | 18 October 2026 with `npm audit` |
+| Total | 4 moderate, 0 high, 0 critical |
+| **Runtime dependencies** (`npm audit --omit=dev`) | **0** (drizzle-orm 0.45.4, pg 8.23.1) |
+| Non-breaking remediation | None (`npm audit fix --dry-run` changes 0 packages) |
+
+All four findings are in the **development-only** `drizzle-kit` CLI (0.31.11), through a nested old
+`esbuild` (0.18.20, via `@esbuild-kit/esm-loader`):
+
+| Package | Severity | Issue | Relevant? |
+|---|---|---|---|
+| `esbuild` <= 0.24.2 | moderate | GHSA-67mh-4wv8-2f99: any website can send requests to esbuild's own development server and read the response | **No.** `drizzle-kit` uses esbuild only to load config/schema files; it never starts esbuild's dev server. Nothing here listens on a network port. |
+| `@esbuild-kit/core-utils`, `@esbuild-kit/esm-loader` | moderate | via `esbuild` (the loader is also deprecated upstream in favour of `tsx`) | Same |
+| `drizzle-kit` | moderate | via the above | Same |
+
+npm suggests "fixing" this by downgrading `drizzle-kit` to 0.18.1, which is not a real remediation
+(an older release with other limitations), so it was not applied. Re-check when `drizzle-kit`
+replaces the deprecated loader, and keep `drizzle-kit` a dev dependency.
+
+Other database-security measures (least-privilege roles, loopback-only port, secret redaction) are
+described in `database/README.md`.

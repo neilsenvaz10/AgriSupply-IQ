@@ -1,0 +1,45 @@
+# FASALYTICS Docker Compose: database only (Milestone 8).
+# Milestone 9 extends this file with the web, api and intelligence services.
+#
+# Usage (from the repository root):
+#   docker compose --env-file database/.env up -d --wait db     # start and wait until healthy
+#   docker compose --env-file database/.env down                # stop; the volume is KEPT
+# or, from database/:  npm run db:up  /  npm run db:down
+#
+# Credentials come from database/.env (git-ignored). See database/.env.example.
+
+name: fasalytics
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: fasalytics-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in database/.env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in database/.env}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in database/.env}
+      # Read by database/init/01-roles-and-privileges.sh on first initialisation only.
+      DB_MIGRATOR_USER: ${DB_MIGRATOR_USER:?set DB_MIGRATOR_USER in database/.env}
+      DB_MIGRATOR_PASSWORD: ${DB_MIGRATOR_PASSWORD:?set DB_MIGRATOR_PASSWORD in database/.env}
+      DB_APP_USER: ${DB_APP_USER:?set DB_APP_USER in database/.env}
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD:?set DB_APP_PASSWORD in database/.env}
+    ports:
+      # Loopback only: the database is not exposed to the network. Host 5433 -> container 5432.
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    restart: "no"
+
+volumes:
+  pgdata:
+    # Explicit name: unmistakably FASALYTICS, and distinct from any other project's volumes.
+    name: fasalytics_pgdata

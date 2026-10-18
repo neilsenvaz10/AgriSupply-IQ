@@ -25,7 +25,10 @@ export function testConfig(overrides = {}) {
  * @param {unknown} [body]
  * @returns {Response}
  */
-export function okResponse(status = 200, body = { status: 'ok' }) {
+export function okResponse(
+  status = 200,
+  body = { status: 'ok', service: 'fasalytics-intelligence', version: '0.1.0' },
+) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { 'Content-Type': 'application/json' },

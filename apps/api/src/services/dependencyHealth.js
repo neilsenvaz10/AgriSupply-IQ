@@ -9,7 +9,15 @@
  * @typedef {'healthy' | 'unreachable' | 'not_configured' | 'not_checked'} DependencyStatus
  */
 
-/** @typedef {'timeout' | 'connection_failed' | 'http_error'} FailureReason */
+/**
+ * Why a probe failed.
+ *  - timeout:             no answer within the configured time.
+ *  - connection_failed:   nothing could be reached at the configured address.
+ *  - http_error:          the service answered with a non-2xx status.
+ *  - unexpected_response: something answered 2xx, but not as the intelligence service.
+ *
+ * @typedef {'timeout' | 'connection_failed' | 'http_error' | 'unexpected_response'} FailureReason
+ */
 
 /**
  * @typedef {object} DependencyReport
@@ -55,9 +63,63 @@ export function checkPostgres(config) {
     message: 'A database address is configured, but no database probe is implemented yet.',
   };
 }
+/** The `service` value the FastAPI intelligence service reports from `GET /health`. */
+export const EXPECTED_INTELLIGENCE_SERVICE = 'fasalytics-intelligence';
+
+/** A health document is tiny; anything larger is not a health response. */
+const MAX_PROBE_BODY_BYTES = 16 * 1024;
+
+/**
+ * Reads at most `maxBytes` of the body as text. Returns null if the body is larger.
+ *
+ * @param {Response} response
+ * @param {number} maxBytes
+ * @returns {Promise<string | null>}
+ */
+async function readBoundedText(response, maxBytes) {
+  const reader = response.body?.getReader();
+  if (!reader) return '';
+  /** @type {Uint8Array[]} */
+  const chunks = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel().catch(() => undefined);
+      return null;
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+/**
+ * True only for the intelligence service's own health document. A different service that
+ * happens to answer 200 on this port (for example `{"status":"ok"}`) does NOT qualify.
+ *
+ * @param {string} text
+ * @returns {boolean}
+ */
+function isIntelligenceHealth(text) {
+  try {
+    const data = JSON.parse(text);
+    return (
+      typeof data === 'object' &&
+      data !== null &&
+      data.status === 'ok' &&
+      data.service === EXPECTED_INTELLIGENCE_SERVICE
+    );
+  } catch {
+    return false;
+  }
+}
+
 /**
  * FastAPI intelligence service: bounded HTTP probe of `GET {ML_SERVICE_URL}/health`.
- * Redirects are not followed, the body is discarded, and the timeout is enforced.
+ * Redirects are not followed, the timeout and the body size are enforced, and the answer must
+ * identify itself as the FASALYTICS intelligence service before it counts as healthy.
  *
  * @param {Pick<import('../config/env.js').AppConfig, 'mlServiceUrl' | 'mlServiceTimeoutMs'>} config
  * @param {ProbeOptions} [options]
@@ -83,21 +145,32 @@ export async function checkIntelligenceService(config, options = {}) {
       redirect: 'manual',
       signal: controller.signal,
     });
-    // Release the connection; the body is not used.
-    await response.body?.cancel().catch(() => undefined);
-    if (response.status >= 200 && response.status < 300) {
+    if (response.status < 200 || response.status >= 300) {
+      // Release the connection; the body is not used.
+      await response.body?.cancel().catch(() => undefined);
       return {
-        status: 'healthy',
+        status: 'unreachable',
         latencyMs: elapsed(),
-        message: 'The intelligence service answered its health check.',
+        reason: 'http_error',
+        httpStatus: response.status,
+        message: 'The intelligence service responded with an unsuccessful status.',
+      };
+    }
+
+    const text = await readBoundedText(response, MAX_PROBE_BODY_BYTES);
+    if (text === null || !isIntelligenceHealth(text)) {
+      return {
+        status: 'unreachable',
+        latencyMs: elapsed(),
+        reason: 'unexpected_response',
+        message:
+          'A service answered, but it did not identify as the FASALYTICS intelligence service.',
       };
     }
     return {
-      status: 'unreachable',
+      status: 'healthy',
       latencyMs: elapsed(),
-      reason: 'http_error',
-      httpStatus: response.status,
-      message: 'The intelligence service responded with an unsuccessful status.',
+      message: 'The intelligence service answered its health check.',
     };
   } catch {
     if (timedOut) {

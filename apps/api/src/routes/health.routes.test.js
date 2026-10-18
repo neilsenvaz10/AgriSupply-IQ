@@ -142,6 +142,63 @@ describe('GET /health/dependencies', () => {
   });
 });
 
+describe('GET /health/dependencies: identity of the intelligence service', () => {
+  /** @param {Response} response */
+  async function statusFor(response) {
+    const fetchImpl = vi.fn(/** @type {typeof fetch} */ (() => Promise.resolve(response)));
+    const app = createApp(testConfig({ mlServiceUrl: 'http://ml:8000' }), { fetchImpl });
+    const res = await request(app).get('/health/dependencies');
+    return res.body.dependencies.intelligence_service;
+  }
+
+  it('does not accept a different service that merely answers 200 with {"status":"ok"}', async () => {
+    const report = await statusFor(okResponse(200, { status: 'ok' }));
+
+    expect(report).toMatchObject({ status: 'unreachable', reason: 'unexpected_response' });
+  });
+
+  it('does not accept a service that reports another name', async () => {
+    const report = await statusFor(okResponse(200, { status: 'ok', service: 'something-else' }));
+
+    expect(report.status).toBe('unreachable');
+    expect(report.reason).toBe('unexpected_response');
+  });
+
+  it('does not accept a response whose status is not ok', async () => {
+    const report = await statusFor(
+      okResponse(200, { status: 'degraded', service: 'fasalytics-intelligence' }),
+    );
+
+    expect(report.reason).toBe('unexpected_response');
+  });
+
+  it('does not accept a non-JSON body', async () => {
+    const report = await statusFor(new Response('<html>hello</html>', { status: 200 }));
+
+    expect(report.reason).toBe('unexpected_response');
+  });
+
+  it('does not accept an oversized body', async () => {
+    const huge = { status: 'ok', service: 'fasalytics-intelligence', pad: 'x'.repeat(40_000) };
+    const report = await statusFor(okResponse(200, huge));
+
+    expect(report.reason).toBe('unexpected_response');
+  });
+
+  it('accepts the real FastAPI health document', async () => {
+    const report = await statusFor(
+      okResponse(200, {
+        status: 'ok',
+        service: 'fasalytics-intelligence',
+        version: '0.1.0',
+        uptime_seconds: 5,
+      }),
+    );
+
+    expect(report.status).toBe('healthy');
+  });
+});
+
 describe('GET /api/v1/health', () => {
   it('exposes the versioned health route and no agricultural data', async () => {
     const app = createApp(testConfig());

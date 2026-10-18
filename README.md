@@ -42,9 +42,13 @@ AgriSupply-IQ/
 │   ├── web/                    # React + Vite + JavaScript frontend      (Milestone 5, done)
 │   └── api/                    # Express + JavaScript backend            (Milestone 6, done)
 ├── services/
-│   └── intelligence/           # Python 3.12 FastAPI ML service          (Milestone 7)
-├── database/
-│   └── migrations/             # PostgreSQL migrations                   (Milestone 8)
+│   └── intelligence/           # Python 3.12 FastAPI service (Milestone 7, done): /health, /ready
+├── compose.yaml                # Docker Compose: database only for now   (Milestone 8; extended in 9)
+├── database/                   # PostgreSQL + Drizzle ORM (JavaScript)   (Milestone 8, done)
+│   ├── src/                    #   schema, migration runner, verification, tests
+│   ├── migrations/             #   generated SQL migrations (committed)
+│   ├── init/                   #   first-run role and privilege setup (least privilege)
+│   └── README.md               #   setup, roles, connection strings, persistence
 ├── data/
 │   └── raw/                    # Original historical CSVs (git-ignored, read-only)
 │                               # Agriculture_price_dataset, merged_preprocessed_all_reports,
@@ -69,7 +73,7 @@ AgriSupply-IQ/
         └── DATASET_COVERAGE.md  # Dataset coverage, provenance and limitations
 ```
 
-> `compose.yaml` is introduced in Milestone 9 (Docker Compose integration).
+> `compose.yaml` currently defines only the `db` service (Milestone 8). Milestone 9 adds the web, api and intelligence services.
 
 ---
 
@@ -115,7 +119,13 @@ The full engineering blueprint and stage-by-stage implementation guide is docume
 - [x] Phase 1 / Milestone 4: Google Stitch assets preserved, inventoried and documented ([screen map](./design/stitch/SCREEN_MAP.md))
 - [x] Phase 1 / Milestone 5: frontend foundation in `apps/web` (React + Vite + JavaScript + Tailwind v3, status page, JSDoc-typed API client)
 - [x] Phase 1 / Milestone 6: Express.js (JavaScript) API foundation in `apps/api` (`/health`, `/health/dependencies`, `/api/v1`)
-- [ ] Milestone 7: FastAPI intelligence service foundation
+- [x] Phase 1 / Milestone 7: FastAPI intelligence service foundation in services/intelligence (infrastructure only: no models, no forecasts)
+- [x] Phase 1 / Milestone 8: PostgreSQL setup in `database/` (dedicated container, least-privilege roles, Drizzle migrations; one neutral table, no agricultural data)
+- [ ] Milestone 9: Docker Compose integration of all services
+
+> **Local ports:** defaults are API `4000`, web `5173`, intelligence service `8000`. On the current
+> development machine the intelligence service temporarily runs on `8001` (port 8000 is occupied by
+> an unrelated process) via git-ignored `.env` overrides; see `services/intelligence/README.md`.
 - [ ] Core services & data pipeline implementation (not started)
 
 ---
