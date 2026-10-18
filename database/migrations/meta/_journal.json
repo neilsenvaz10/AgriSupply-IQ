@@ -8,6 +8,20 @@
       "when": 1792323618894,
       "tag": "0000_initial_system_metadata",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792332333270,
+      "tag": "0001_canonical_agricultural_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792332335175,
+      "tag": "0002_units_normalised_views_and_comments",
+      "breakpoints": true
     }
   ]
 }

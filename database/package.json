@@ -21,7 +21,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:disposable": "node scripts/test-disposable.js"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",
