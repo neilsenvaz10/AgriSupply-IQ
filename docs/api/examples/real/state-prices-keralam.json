@@ -1,0 +1,113 @@
+{
+  "_about": "REAL RESPONSE captured from the FASALYTICS development database (imported historical records, importer 2.2.1). Not a fixture.",
+  "request": "GET /api/v1/state-prices?state_id=741af001-8ddc-4c6a-a5f4-e5f423b36fd4&from=2025-01-01&to=2025-01-31&limit=2",
+  "captured_at": "2026-10-19T17:42:21Z",
+  "response": {
+    "pagination": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "WyIyMDI1LTAxLTAxIiwiMDU3NDQxYzEtMzdhNC00Nzc2LTljNjgtNWMzMmI4OTc0YzYzIl0"
+    },
+    "data": [
+      {
+        "id": "029511a8-d585-43e7-88b7-21c98b2c419d",
+        "granularity": "state_daily",
+        "observed_date": "2025-01-01",
+        "state": {
+          "id": "741af001-8ddc-4c6a-a5f4-e5f423b36fd4",
+          "name": "KERALA",
+          "mapping_status": "provisional",
+          "mapping_note": "Mapped to Kerala by a reviewed decision. The official rename (Kerala (Alteration of Name) Act 2026) is known only from press reports; the gazette was not retrieved and the 2022 reference lists KERALA. Confirm before treating as verified."
+        },
+        "commodity": {
+          "id": "e8bc9a24-64a0-459b-aa42-0c3928fcd09c",
+          "name": "Garlic"
+        },
+        "modal_price": 32100.71,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "price_unit_dimension": "mass",
+        "source_price_unit_label": "Rs./Quintal",
+        "arrival_quantity": 5.66,
+        "arrival_unit": "tonne",
+        "arrival_unit_dimension": "mass",
+        "source_arrival_unit_label": "Metric Tonnes",
+        "unit_basis": "source_stated",
+        "source_labels": {
+          "state": "Keralam",
+          "commodity": "Garlic",
+          "commodity_group": "Vegetables",
+          "report": "All Type of Report (All Grades) for 01-Jan-2025 to 30-Apr-2025 | All_Type_of_Report_(All_Grades)_04-07-2026_03-43-54_PM.csv#25654"
+        },
+        "provenance": {
+          "source_code": "state_daily_prices_arrivals_historical",
+          "source_file_id": "1383a994-98f1-4116-bdeb-5aca2a4c005f",
+          "ingestion_run_id": "583a8bfc-11ed-4cd7-9193-9d88cd44c905",
+          "source_row_number": 476726,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      },
+      {
+        "id": "057441c1-37a4-4776-9c68-5c32b8974c63",
+        "granularity": "state_daily",
+        "observed_date": "2025-01-01",
+        "state": {
+          "id": "741af001-8ddc-4c6a-a5f4-e5f423b36fd4",
+          "name": "KERALA",
+          "mapping_status": "provisional",
+          "mapping_note": "Mapped to Kerala by a reviewed decision. The official rename (Kerala (Alteration of Name) Act 2026) is known only from press reports; the gazette was not retrieved and the 2022 reference lists KERALA. Confirm before treating as verified."
+        },
+        "commodity": {
+          "id": "d5799167-5152-4698-ba63-cbfda810f7cc",
+          "name": "Cauliflower"
+        },
+        "modal_price": 3929.87,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "price_unit_dimension": "mass",
+        "source_price_unit_label": "Rs./Quintal",
+        "arrival_quantity": 17.54,
+        "arrival_unit": "tonne",
+        "arrival_unit_dimension": "mass",
+        "source_arrival_unit_label": "Metric Tonnes",
+        "unit_basis": "source_stated",
+        "source_labels": {
+          "state": "Keralam",
+          "commodity": "Cauliflower",
+          "commodity_group": "Vegetables",
+          "report": "All Type of Report (All Grades) for 01-Jan-2025 to 30-Apr-2025 | All_Type_of_Report_(All_Grades)_04-07-2026_03-43-54_PM.csv#25645"
+        },
+        "provenance": {
+          "source_code": "state_daily_prices_arrivals_historical",
+          "source_file_id": "1383a994-98f1-4116-bdeb-5aca2a4c005f",
+          "ingestion_run_id": "583a8bfc-11ed-4cd7-9193-9d88cd44c905",
+          "source_row_number": 476717,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "state_daily",
+      "unit_note": "Units are stated by the source per row and are mixed (quintal, bundle and unit for prices; tonne, bundle and nos for arrivals). Count units are never converted to mass.",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "window": {
+        "from": "2025-01-01",
+        "to": "2025-01-31"
+      },
+      "separation": "State-level rows only: they describe a state as a whole and must not be read as the price in any mandi."
+    }
+  }
+}

@@ -6,8 +6,9 @@ migrations.
 > **Status.** Milestone 8 set up PostgreSQL; **Phase 2, Milestone 2.1 added the canonical
 > agricultural schema** (registries, source aliases, provenance and ingestion tracking, four
 > granularity-separated observation tables, quarantine and conflict tables). It is **structure only:
-> no agricultural data has been imported** and every registry and fact table is empty after
-> migration. The full design, rules and the plan for importing each dataset are in
+> no agricultural data is created by the migrations** and every registry and fact table is empty after
+> migration (the development database has since received the Milestone 2.2 import, see
+> [docs/INGESTION.md](./docs/INGESTION.md)). The full design, rules and the plan for importing each dataset are in
 > [docs/CANONICAL_SCHEMA.md](./docs/CANONICAL_SCHEMA.md). Importers are Milestone 2.2.
 > The same `compose.yaml` also runs `web`, `api` and `intelligence`; the Express API connects with the
 > application role only (`DATABASE_URL`, host `db:5432` inside Compose), never with admin or migrator

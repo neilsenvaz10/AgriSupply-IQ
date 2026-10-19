@@ -200,16 +200,17 @@ describe('GET /health/dependencies: identity of the intelligence service', () =>
 });
 
 describe('GET /api/v1/health', () => {
-  it('exposes the versioned health route and no agricultural data', async () => {
+  it('exposes the versioned health route and no forecast, prediction or live-price endpoint', async () => {
     const app = createApp(testConfig());
     const res = await request(app).get('/api/v1/health');
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ status: 'ok', service: 'fasalytics-api', apiVersion: 'v1' });
+    // Historical read-only market data exists (Milestone 2.3A); forecasts and live prices do not.
     for (const path of [
-      '/api/v1/commodities',
-      '/api/v1/markets',
       '/api/v1/prices',
+      '/api/v1/live-prices',
       '/api/v1/forecasts',
+      '/api/v1/predictions',
     ]) {
       expect((await request(app).get(path)).status).toBe(404);
     }

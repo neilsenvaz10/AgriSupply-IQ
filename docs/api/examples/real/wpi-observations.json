@@ -1,0 +1,60 @@
+{
+  "_about": "REAL RESPONSE captured from the FASALYTICS development database (imported historical records, importer 2.2.1). Not a fixture.",
+  "request": "GET /api/v1/wpi/observations?series_id=72889cce-9bb8-4aee-89f4-81ffc5bd9b8e&limit=2",
+  "captured_at": "2026-10-19T17:42:21Z",
+  "response": {
+    "series": {
+      "id": "72889cce-9bb8-4aee-89f4-81ffc5bd9b8e",
+      "item_label": "Wheat"
+    },
+    "pagination": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "WyIyMDEyLTA1LTAxIiwiYTYzYWNkZGQtNzJkNS00MmIxLTkyYmQtYWIyZjEwOGQ5NjJkIl0"
+    },
+    "data": [
+      {
+        "id": "cfc07c2f-1072-4291-b24a-e097f39eb252",
+        "granularity": "wpi_monthly_index",
+        "period_month": "2012-04-01",
+        "index_value": 104.6,
+        "value_kind": "index",
+        "provenance": {
+          "source_code": "wpi_national_monthly_historical",
+          "source_file_id": "e7cfb260-59ab-4647-8e36-f11fde61ef43",
+          "ingestion_run_id": "9c437439-c4a8-4a50-8fa5-cd34bbf9cfbe",
+          "source_row_number": 6004,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      },
+      {
+        "id": "a63acddd-72d5-42b1-92bd-ab2f108d962d",
+        "granularity": "wpi_monthly_index",
+        "period_month": "2012-05-01",
+        "index_value": 105.4,
+        "value_kind": "index",
+        "provenance": {
+          "source_code": "wpi_national_monthly_historical",
+          "source_file_id": "e7cfb260-59ab-4647-8e36-f11fde61ef43",
+          "ingestion_run_id": "9c437439-c4a8-4a50-8fa5-cd34bbf9cfbe",
+          "source_row_number": 6017,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "wpi_monthly_index",
+      "unit_note": "Index values with no currency or unit. They are not prices.",
+      "separation": "Index values (dimensionless). They are not prices and carry no currency or unit."
+    }
+  }
+}

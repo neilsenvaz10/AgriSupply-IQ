@@ -1,81 +1,16 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { createApp } from '../app.js';
 import { testConfig } from '../test/helpers.js';
+import { document, validate } from '../test/openapi.js';
 
 /**
  * Contract tests: live responses must satisfy docs/api/express.openapi.json. The validator below
  * implements only the JSON Schema subset the document uses (type, enum, required, properties,
  * additionalProperties, items, pattern, minimum, $ref), so no extra dependency is needed.
  */
-
-const document = JSON.parse(
-  readFileSync(
-    fileURLToPath(new URL('../../../../docs/api/express.openapi.json', import.meta.url)),
-    'utf8',
-  ),
-);
-
-/** @param {string} ref */
-function resolve(ref) {
-  return ref
-    .replace(/^#\//, '')
-    .split('/')
-    .reduce((node, key) => node[key], document);
-}
-
-/**
- * @param {any} schema
- * @param {unknown} value
- * @param {string} where
- * @returns {string[]} violations
- */
-function validate(schema, value, where = '$') {
-  if (schema.$ref) return validate(resolve(schema.$ref), value, where);
-  const errors = [];
-  if (schema.enum && !schema.enum.includes(value)) errors.push(`${where}: not in enum`);
-  switch (schema.type) {
-    case 'object': {
-      if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-        return [...errors, `${where}: expected object`];
-      }
-      const record = /** @type {Record<string, unknown>} */ (value);
-      for (const key of schema.required ?? []) {
-        if (!(key in record)) errors.push(`${where}.${key}: missing`);
-      }
-      for (const [key, v] of Object.entries(record)) {
-        const sub = schema.properties?.[key];
-        if (sub) errors.push(...validate(sub, v, `${where}.${key}`));
-        else if (schema.additionalProperties === false) errors.push(`${where}.${key}: not allowed`);
-      }
-      break;
-    }
-    case 'array':
-      if (!Array.isArray(value)) return [...errors, `${where}: expected array`];
-      value.forEach((item, i) => errors.push(...validate(schema.items, item, `${where}[${i}]`)));
-      break;
-    case 'string':
-      if (typeof value !== 'string') return [...errors, `${where}: expected string`];
-      if (schema.pattern && !new RegExp(schema.pattern).test(value))
-        errors.push(`${where}: pattern`);
-      if (schema.format === 'date-time' && Number.isNaN(Date.parse(value)))
-        errors.push(`${where}: date-time`);
-      break;
-    case 'integer':
-      if (!Number.isInteger(value)) return [...errors, `${where}: expected integer`];
-      if (schema.minimum !== undefined && /** @type {number} */ (value) < schema.minimum)
-        errors.push(`${where}: minimum`);
-      break;
-    case 'boolean':
-      if (typeof value !== 'boolean') errors.push(`${where}: expected boolean`);
-      break;
-    default:
-      break;
-  }
-  return errors;
-}
 
 /** @param {string} path @param {string} status */
 function responseSchema(path, status) {
@@ -118,8 +53,13 @@ const appWith = (pool, extra = {}) =>
   );
 
 describe('docs/api/express.openapi.json', () => {
-  it('documents exactly the operational endpoints', () => {
-    expect(Object.keys(document.paths).sort()).toEqual([
+  it('documents the operational endpoints and only GET historical endpoints under /api/v1', () => {
+    const paths = Object.keys(document.paths);
+    expect(paths).toEqual(expect.arrayContaining(['/health', '/health/dependencies', '/ready']));
+    for (const path of paths.filter((p) => p.startsWith('/api/v1/'))) {
+      expect(Object.keys(document.paths[path])).toEqual(['get']);
+    }
+    expect(paths.filter((p) => !p.startsWith('/api/v1/')).sort()).toEqual([
       '/health',
       '/health/dependencies',
       '/ready',
@@ -164,6 +104,38 @@ describe('docs/api/express.openapi.json', () => {
       await request(app).post('/health').send({}),
     ]) {
       expect(validate({ $ref: '#/components/schemas/ErrorResponse' }, res.body)).toEqual([]);
+    }
+  });
+});
+
+describe('real example responses in docs/api/examples/real', () => {
+  const dir = fileURLToPath(new URL('../../../../docs/api/examples/real/', import.meta.url));
+  /** @type {Record<string, string>} */
+  const PATHS = {
+    'states-kerala': '/api/v1/states',
+    'geography-unresolved': '/api/v1/geography/unresolved',
+    'commodity-wheat': '/api/v1/commodities',
+    'market-unresolved-district': '/api/v1/markets/{id}',
+    'mandi-prices': '/api/v1/mandi-prices',
+    'state-prices-keralam': '/api/v1/state-prices',
+    'national-prices': '/api/v1/national-prices',
+    'wpi-observations': '/api/v1/wpi/observations',
+    coverage: '/api/v1/coverage',
+    sources: '/api/v1/sources',
+  };
+
+  it('every example is a documented real capture that satisfies its schema', () => {
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
+    expect(files.map((f) => f.replace('.json', '')).sort()).toEqual(Object.keys(PATHS).sort());
+    for (const file of files) {
+      const example = JSON.parse(readFileSync(`${dir}${file}`, 'utf8'));
+      expect(example._about, file).toMatch(/^REAL RESPONSE captured from/);
+      const schema =
+        document.paths[PATHS[file.replace('.json', '')]].get.responses['200'].content[
+          'application/json'
+        ].schema;
+      expect(validate(schema, example.response), file).toEqual([]);
+      expect(example.response.meta.is_live, file).toBe(false);
     }
   });
 });

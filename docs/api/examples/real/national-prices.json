@@ -1,0 +1,88 @@
+{
+  "_about": "REAL RESPONSE captured from the FASALYTICS development database (imported historical records, importer 2.2.1). Not a fixture.",
+  "request": "GET /api/v1/national-prices?commodity_id=30e94149-3299-4aa6-90b3-4b7bafc45b91&limit=2",
+  "captured_at": "2026-10-19T17:42:21Z",
+  "response": {
+    "pagination": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "WyJXaGVhdCIsIjIwMTAtMDItMDEiLCI4OGVlZDI1Yy03YzA5LTQ2NjUtOTM3Yy0wMTNkZTBhNDRjMzYiXQ"
+    },
+    "data": [
+      {
+        "id": "b514c14c-3b50-4eba-b92e-e8320009e54e",
+        "granularity": "national_monthly",
+        "period_month": "2010-01-01",
+        "country_code": "IN",
+        "commodity": {
+          "id": "30e94149-3299-4aa6-90b3-4b7bafc45b91",
+          "name": "Wheat"
+        },
+        "avg_min_price": 1347.39,
+        "avg_max_price": 1521.63,
+        "avg_modal_price": 1424.16,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "source_price_unit_label": null,
+        "unit_basis": "assumed_from_documentation",
+        "source_reported_change": null,
+        "source_reported_change_status": "unconfirmed_not_for_modelling",
+        "source_calculation_type": "Monthly",
+        "source_labels": {
+          "commodity": "Wheat"
+        },
+        "provenance": {
+          "source_code": "national_monthly_prices_historical",
+          "source_file_id": "a3ffd35d-af31-42a6-9d84-b84fea293786",
+          "ingestion_run_id": "be7a7551-0775-44ae-a44f-171835a9c654",
+          "source_row_number": 366,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      },
+      {
+        "id": "88eed25c-7c09-4665-937c-013de0a44c36",
+        "granularity": "national_monthly",
+        "period_month": "2010-02-01",
+        "country_code": "IN",
+        "commodity": {
+          "id": "30e94149-3299-4aa6-90b3-4b7bafc45b91",
+          "name": "Wheat"
+        },
+        "avg_min_price": 1283.93,
+        "avg_max_price": 1459.36,
+        "avg_modal_price": 1364.98,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "source_price_unit_label": null,
+        "unit_basis": "assumed_from_documentation",
+        "source_reported_change": -59.18,
+        "source_reported_change_status": "unconfirmed_not_for_modelling",
+        "source_calculation_type": "Monthly",
+        "source_labels": {
+          "commodity": "Wheat"
+        },
+        "provenance": {
+          "source_code": "national_monthly_prices_historical",
+          "source_file_id": "a3ffd35d-af31-42a6-9d84-b84fea293786",
+          "ingestion_run_id": "be7a7551-0775-44ae-a44f-171835a9c654",
+          "source_row_number": 365,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "national_monthly",
+      "unit_note": "Prices are assumed to be INR per quintal (unit_basis \"assumed_from_documentation\"); the source file states no unit. The source \"change\" value is unconfirmed and not for modelling.",
+      "separation": "National monthly averages only (India). Not a mandi or state price."
+    }
+  }
+}
