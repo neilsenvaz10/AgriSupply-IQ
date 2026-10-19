@@ -1,0 +1,54 @@
+{
+  "_about": "REAL RESPONSE captured from the FASALYTICS development database (imported historical records, importer 2.2.1). Not a fixture.",
+  "request": "GET /api/v1/geography/unresolved",
+  "captured_at": "2026-10-19T17:42:21Z",
+  "response": {
+    "data": {
+      "states": [
+        {
+          "source_code": "mandi_daily_prices_historical",
+          "source_label": "Gao",
+          "status": "unresolved",
+          "rows_quarantined": 4,
+          "note": "reviewed decision: not a recognised state name; its 4 rows carry district north goa which exists only under GOA in the 2022 LGD mirror (supports Goa) but that is inference from a second unverified label so it is NOT applied; owner decision needed"
+        }
+      ],
+      "districts": [
+        {
+          "source_state_label": "Uttar Pradesh",
+          "source_district_label": "bulandshahar",
+          "status": "unresolved",
+          "observations": 10713,
+          "markets": 9
+        },
+        {
+          "source_state_label": "Uttar Pradesh",
+          "source_district_label": "badaun",
+          "status": "unresolved",
+          "observations": 7341,
+          "markets": 8
+        },
+        {
+          "source_state_label": "Haryana",
+          "source_district_label": "yamuna nagar",
+          "status": "unresolved",
+          "observations": 6052,
+          "markets": 6
+        }
+      ]
+    },
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "registry",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "market_verification": "Market identities are created from source labels. No authoritative market list exists, so every market is \"unverified\".",
+      "note": "Labels the sources used that could not be mapped to a reference identity. They are reported, never guessed."
+    }
+  }
+}

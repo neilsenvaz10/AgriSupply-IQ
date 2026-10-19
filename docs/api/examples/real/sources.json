@@ -1,0 +1,60 @@
+{
+  "_about": "REAL RESPONSE captured from the FASALYTICS development database (imported historical records, importer 2.2.1). Not a fixture.",
+  "request": "GET /api/v1/sources",
+  "captured_at": "2026-10-19T17:42:21Z",
+  "_trimmed": "data shortened from 5 to 1 rows for this document",
+  "response": {
+    "data": [
+      {
+        "code": "lgd-github-mirror-2022-12",
+        "name": "Geographic reference: lgd-github-mirror-2022-12",
+        "source_type": "other",
+        "publisher": null,
+        "description": "Status: provisional-historical. Reference date: 2022-12. Licence: Government Open Data License - India (GODL-India). A third-party mirror of the Local Government Directory as of December 2022. It is NOT a verified current (2026) LGD registry: states, union territories and districts created, merged or renamed after 2022 are missing or differ, and the file could not be compared with the official portal (it requires an image captcha). Treat every resolution against it as provisional.",
+        "granularity": null,
+        "files": [
+          {
+            "id": "34b84c3f-e38b-4709-a64a-6dac4822c556",
+            "file_name": "1-state.csv",
+            "sha256": "e355f4179744d36813031fa75e08e2e72e9b1009b7c3e4604031ffb909eef500",
+            "size_bytes": 1493,
+            "registered_at": "2026-10-19T17:13:00.643Z"
+          },
+          {
+            "id": "4c777201-35c2-41b4-9057-4920f24d4e72",
+            "file_name": "2-district.csv",
+            "sha256": "3adf79c6ad6037eb90ccb1f02c7a39d32e21d5f1368c913fdd975db2d53fc2d7",
+            "size_bytes": 26161,
+            "registered_at": "2026-10-19T17:13:00.643Z"
+          }
+        ],
+        "initial_load": {
+          "importer_version": "2.2.1",
+          "finished_at": "2026-10-19T17:13:00.659Z",
+          "rows_read": 36,
+          "accepted": 36,
+          "exact_duplicates": 0,
+          "conflicts": 0,
+          "quarantined": 0
+        },
+        "runs_total": 2,
+        "last_completed_run_at": "2026-10-19T17:13:00.701Z",
+        "observations": null,
+        "assumptions": [
+          {
+            "code": "reference_is_provisional",
+            "statement": "A third-party mirror of the Local Government Directory as of December 2022. It is NOT a verified current (2026) LGD registry: states, union territories and districts created, merged or renamed after 2022 are missing or differ, and the file could not be compared with the official portal (it requires an image captcha). Treat every resolution against it as provisional.",
+            "evidence_reference": "database/reference/lgd/manifest.json"
+          }
+        ]
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "provenance",
+      "note": "initial_load sums the first completed load of each source (an interrupted attempt and its resume count as one). Later runs only re-checked the same files."
+    }
+  }
+}

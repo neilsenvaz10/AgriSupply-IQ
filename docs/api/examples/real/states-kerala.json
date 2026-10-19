@@ -1,0 +1,42 @@
+{
+  "_about": "REAL RESPONSE captured from the FASALYTICS development database (imported historical records, importer 2.2.1). Not a fixture.",
+  "request": "GET /api/v1/states?q=kerala",
+  "captured_at": "2026-10-19T17:42:21Z",
+  "response": {
+    "pagination": {
+      "limit": 100,
+      "has_more": false,
+      "next_cursor": null
+    },
+    "data": [
+      {
+        "id": "741af001-8ddc-4c6a-a5f4-e5f423b36fd4",
+        "name": "KERALA",
+        "kind": "state",
+        "lgd_code": "32",
+        "source_labels": [
+          {
+            "source_code": "state_daily_prices_arrivals_historical",
+            "source_label": "Keralam",
+            "resolution_status": "resolved",
+            "mapping_basis": "reviewed_decision",
+            "mapping_status": "provisional",
+            "note": "Mapped to Kerala by a reviewed decision. The official rename (Kerala (Alteration of Name) Act 2026) is known only from press reports; the gazette was not retrieved and the 2022 reference lists KERALA. Confirm before treating as verified."
+          }
+        ]
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "registry",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "market_verification": "Market identities are created from source labels. No authoritative market list exists, so every market is \"unverified\"."
+    }
+  }
+}

@@ -1,22 +1,24 @@
 # API contracts
 
-The contracts below document the **existing** operational endpoints. No agricultural endpoints exist yet.
+The Express contract documents the operational endpoints (`/health`, `/health/dependencies`, `/ready`) and the
+read-only **historical** market endpoints under `/api/v1` (Milestone 2.3A; see
+[historical-market-api.md](./historical-market-api.md)). There are no forecast, live-price or write endpoints.
 Both documents are OpenAPI 3.1 JSON and are checked by tests, so they cannot silently drift from the code.
 
-| Service | Contract | How it is kept correct |
-| --- | --- | --- |
-| Express API (`/health`, `/health/dependencies`, `/ready`) | [express.openapi.json](./express.openapi.json) | `apps/api/src/contract/openapi.contract.test.js` validates live responses (healthy, degraded, unconfigured) against the schemas |
-| FastAPI intelligence service (`/health`, `/ready`) | [intelligence.openapi.json](./intelligence.openapi.json) | Generated from the application; `services/intelligence/tests/test_openapi_contract.py` fails if the file is stale. Regenerate with `python scripts/export_openapi.py` in `services/intelligence` |
+| Service                                                   | Contract                                                 | How it is kept correct                                                                                                                                                                           |
+| --------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Express API (`/health`, `/health/dependencies`, `/ready`) | [express.openapi.json](./express.openapi.json)           | `apps/api/src/contract/openapi.contract.test.js` validates live responses (healthy, degraded, unconfigured) against the schemas                                                                  |
+| FastAPI intelligence service (`/health`, `/ready`)        | [intelligence.openapi.json](./intelligence.openapi.json) | Generated from the application; `services/intelligence/tests/test_openapi_contract.py` fails if the file is stale. Regenerate with `python scripts/export_openapi.py` in `services/intelligence` |
 
 ## Three different questions
 
-| Endpoint | Question it answers | Fails (non-2xx) when |
-| --- | --- | --- |
-| Express `GET /health` | Is the Express process alive? | Never because of PostgreSQL or FastAPI |
-| Express `GET /health/dependencies` | What did the probes just find? | Never (always 200; read `overall` and each `status`) |
-| Express `GET /ready` | Can the API do its job right now? | **503** when a *configured* dependency (PostgreSQL, intelligence service) is not healthy |
-| FastAPI `GET /health` | Is the FastAPI process alive? | Never because of models |
-| FastAPI `GET /ready` | Are validated forecasting models loaded? | **503** until models exist (the case in Phase 1, by design) |
+| Endpoint                           | Question it answers                      | Fails (non-2xx) when                                                                     |
+| ---------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Express `GET /health`              | Is the Express process alive?            | Never because of PostgreSQL or FastAPI                                                   |
+| Express `GET /health/dependencies` | What did the probes just find?           | Never (always 200; read `overall` and each `status`)                                     |
+| Express `GET /ready`               | Can the API do its job right now?        | **503** when a _configured_ dependency (PostgreSQL, intelligence service) is not healthy |
+| FastAPI `GET /health`              | Is the FastAPI process alive?            | Never because of models                                                                  |
+| FastAPI `GET /ready`               | Are validated forecasting models loaded? | **503** until models exist (the case in Phase 1, by design)                              |
 
 ### Express readiness is not model readiness
 

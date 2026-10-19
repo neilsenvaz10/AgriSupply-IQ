@@ -1,27 +1,50 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "FASALYTICS Express API (operational endpoints)",
-    "version": "0.1.0",
-    "description": "Operational contract of the Express API gateway: liveness, dependency status and readiness. No agricultural endpoints exist yet. Contract tests in apps/api (src/contract/openapi.contract.test.js) compare live responses with this document.\n\n/health is LIVENESS only (the Express process is running; it never fails because PostgreSQL or FastAPI is down). /health/dependencies reports probe results and always answers HTTP 200. /ready is READINESS of the API: 200 only when every configured dependency is healthy, else 503. Forecasting-model readiness belongs to the intelligence service (its own GET /ready) and is only echoed, never inferred from its /health."
+    "title": "FASALYTICS Express API (operational and historical market endpoints)",
+    "version": "0.2.0",
+    "description": "Operational endpoints (/health, /health/dependencies, /ready) and the read-only HISTORICAL market endpoints under /api/v1 (Milestone 2.3A). All /api/v1 data endpoints are GET-only and return historical snapshot data: every response carries meta.is_live = false. Four granularities are kept strictly separate: mandi-daily, state-daily, national-monthly and the national monthly WPI index. No forecasts, live data or write operations exist. Contract tests compare live responses with this document."
   },
   "servers": [
-    { "url": "http://localhost:4000", "description": "Host-published port (Docker Compose or `npm run dev`)" }
+    {
+      "url": "http://localhost:4000",
+      "description": "Host-published port (Docker Compose or `npm run dev`)"
+    }
   ],
-  "tags": [{ "name": "operations" }],
+  "tags": [
+    {
+      "name": "operations"
+    },
+    {
+      "name": "historical-market",
+      "description": "Read-only historical market data (Milestone 2.3A)."
+    }
+  ],
   "paths": {
     "/health": {
       "get": {
         "tags": ["operations"],
         "summary": "Liveness",
         "operationId": "getHealth",
-        "parameters": [{ "$ref": "#/components/parameters/RequestId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "The Express process is running.",
-            "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/HealthResponse" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
             }
           }
         }
@@ -32,14 +55,24 @@
         "tags": ["operations"],
         "summary": "Dependency status (probe results)",
         "operationId": "getDependencies",
-        "parameters": [{ "$ref": "#/components/parameters/RequestId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Always 200. Read `overall` and each dependency `status`. The request id is forwarded to the intelligence service.",
-            "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/DependenciesResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/DependenciesResponse"
+                }
               }
             }
           }
@@ -51,23 +84,1237 @@
         "tags": ["operations"],
         "summary": "Readiness of the API",
         "operationId": "getReady",
-        "parameters": [{ "$ref": "#/components/parameters/RequestId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Every configured dependency is healthy (dependencies that are not configured do not block).",
-            "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ReadyResponse" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyResponse"
+                }
+              }
             }
           },
           "503": {
             "description": "At least one configured dependency is unreachable or could not be verified; `blocking` names them.",
-            "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ReadyResponse" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyResponse"
+                }
+              }
             }
           }
         }
+      }
+    },
+    "/api/v1/states": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "States and union territories with their source labels",
+        "operationId": "listStates",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "description": "Filter by kind.",
+            "schema": {
+              "type": "string",
+              "enum": ["state", "union_territory"]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Case-insensitive name contains.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Registry from the provisional December 2022 LGD mirror. source_labels lists source spellings that differ from the canonical name; Keralam is mapping_status \"provisional\"."
+      }
+    },
+    "/api/v1/districts": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Districts (provisional 2022 reference)",
+        "operationId": "listDistricts",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "state_id",
+            "in": "query",
+            "required": false,
+            "description": "Filter by state.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Name contains.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistrictList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/geography/unresolved": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Labels that could not be mapped to a reference identity",
+        "operationId": "getUnresolvedGeography",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnresolvedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Unresolved state labels (Gao) and the 49 unresolved district labels, with the number of observations they cover. Reported, never guessed. Cached up to 10 minutes."
+      }
+    },
+    "/api/v1/commodities": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Commodity catalog with observed coverage per granularity",
+        "operationId": "listCommodities",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Name contains.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "group",
+            "in": "query",
+            "required": false,
+            "description": "Exact commodity group.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommodityList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/commodities/{id}": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "One commodity and its varieties",
+        "operationId": "getCommodity",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Commodity id.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommodityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such resource (NOT_FOUND).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/markets": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Market directory with verification status",
+        "operationId": "listMarkets",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "state_id",
+            "in": "query",
+            "required": false,
+            "description": "Filter by state.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "district_id",
+            "in": "query",
+            "required": false,
+            "description": "Filter by district.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "district_status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by whether the district was resolved.",
+            "schema": {
+              "type": "string",
+              "enum": ["resolved", "unresolved"]
+            }
+          },
+          {
+            "name": "verification_status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by verification status.",
+            "schema": {
+              "type": "string",
+              "enum": ["unverified", "verified"]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Name contains.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Every market is currently \"unverified\": identities come from source labels and no authoritative market list exists. source_district_label is the label the file used when the district is unresolved."
+      }
+    },
+    "/api/v1/markets/{id}": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "One market with its observed mandi-price coverage",
+        "operationId": "getMarket",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Market id.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such resource (NOT_FOUND).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/mandi-prices": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Historical mandi-level daily prices",
+        "operationId": "listMandiPrices",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "market_id",
+            "in": "query",
+            "required": false,
+            "description": "Market.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "commodity_id",
+            "in": "query",
+            "required": false,
+            "description": "Commodity.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "state_id",
+            "in": "query",
+            "required": false,
+            "description": "State of the market.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "description": "First day (YYYY-MM-DD).",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "description": "Last day (YYYY-MM-DD). The window may span at most 366 days.",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MandiPriceList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "At least one of market_id, commodity_id, state_id is required. Prices are assumed INR per quintal (unit_basis assumed_from_documentation). A missing mandi price is never filled from state or national data. The source has no arrivals."
+      }
+    },
+    "/api/v1/state-prices": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Historical state-level daily prices and arrivals",
+        "operationId": "listStatePrices",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "state_id",
+            "in": "query",
+            "required": false,
+            "description": "State.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "commodity_id",
+            "in": "query",
+            "required": false,
+            "description": "Commodity.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "description": "First day (YYYY-MM-DD).",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "description": "Last day (YYYY-MM-DD). The window may span at most 366 days.",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatePriceList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "At least one of state_id, commodity_id is required. Units are stated per row by the source and are mixed (quintal, bundle, unit prices; tonne, bundle, nos arrivals). Count units are never converted to mass. These rows describe a state as a whole, not any mandi."
+      }
+    },
+    "/api/v1/national-prices": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Historical national monthly average prices",
+        "operationId": "listNationalPrices",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "commodity_id",
+            "in": "query",
+            "required": false,
+            "description": "Commodity.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "First month (YYYY-MM).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "Last month (YYYY-MM).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NationalPriceList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "National (India) monthly averages, assumed INR per quintal. source_reported_change is unconfirmed and not for modelling."
+      }
+    },
+    "/api/v1/wpi/series": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Wholesale Price Index series",
+        "operationId": "listWpiSeries",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Item label contains.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WpiSeriesList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/wpi/observations": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Wholesale Price Index values of one series",
+        "operationId": "listWpiObservations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "series_id",
+            "in": "query",
+            "required": true,
+            "description": "WPI series.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "First month (YYYY-MM).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "Last month (YYYY-MM).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WpiObservationList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such resource (NOT_FOUND).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Index values only. They are not prices and have no currency or unit."
+      }
+    },
+    "/api/v1/sources": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Data sources, files, load counters, assumptions and freshness",
+        "operationId": "listSources",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Provenance and freshness: file names and SHA-256, the first completed load, the observed date range per source and the recorded assumptions. Cached up to 10 minutes."
+      }
+    },
+    "/api/v1/coverage": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Coverage summary",
+        "operationId": "getCoverage",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoverageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Observation counts and date ranges per granularity, registry sizes, geography verification counts and measurement units. Cached up to 10 minutes."
       }
     }
   },
@@ -78,26 +1325,52 @@
         "in": "header",
         "required": false,
         "description": "Optional correlation id, 8-64 characters from A-Z a-z 0-9 . _ - . Anything else is replaced by a generated UUID.",
-        "schema": { "type": "string", "pattern": "^[A-Za-z0-9._-]{8,64}$" }
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]{8,64}$"
+        }
       }
     },
     "headers": {
       "RequestId": {
         "description": "The accepted or generated correlation id (also sent to the intelligence service).",
-        "schema": { "type": "string", "pattern": "^[A-Za-z0-9._-]{8,64}$" }
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]{8,64}$"
+        }
       }
     },
     "schemas": {
       "HealthResponse": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["status", "service", "version", "uptime_seconds", "timestamp"],
+        "required": [
+          "status",
+          "service",
+          "version",
+          "uptime_seconds",
+          "timestamp"
+        ],
         "properties": {
-          "status": { "type": "string", "enum": ["ok"] },
-          "service": { "type": "string", "enum": ["fasalytics-api"] },
-          "version": { "type": "string" },
-          "uptime_seconds": { "type": "integer", "minimum": 0 },
-          "timestamp": { "type": "string", "format": "date-time" }
+          "status": {
+            "type": "string",
+            "enum": ["ok"]
+          },
+          "service": {
+            "type": "string",
+            "enum": ["fasalytics-api"]
+          },
+          "version": {
+            "type": "string"
+          },
+          "uptime_seconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "DependencyReport": {
@@ -109,7 +1382,10 @@
             "type": "string",
             "enum": ["healthy", "unreachable", "not_configured", "not_checked"]
           },
-          "latencyMs": { "type": "integer", "minimum": 0 },
+          "latencyMs": {
+            "type": "integer",
+            "minimum": 0
+          },
           "reason": {
             "type": "string",
             "enum": [
@@ -121,8 +1397,13 @@
               "query_failed"
             ]
           },
-          "httpStatus": { "type": "integer" },
-          "message": { "type": "string", "description": "Fixed text; never contains addresses or credentials." }
+          "httpStatus": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string",
+            "description": "Fixed text; never contains addresses or credentials."
+          }
         }
       },
       "DependenciesResponse": {
@@ -130,16 +1411,29 @@
         "additionalProperties": false,
         "required": ["service", "checked_at", "overall", "dependencies"],
         "properties": {
-          "service": { "type": "string", "enum": ["fasalytics-api"] },
-          "checked_at": { "type": "string", "format": "date-time" },
-          "overall": { "type": "string", "enum": ["healthy", "degraded", "unknown"] },
+          "service": {
+            "type": "string",
+            "enum": ["fasalytics-api"]
+          },
+          "checked_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "overall": {
+            "type": "string",
+            "enum": ["healthy", "degraded", "unknown"]
+          },
           "dependencies": {
             "type": "object",
             "additionalProperties": false,
             "required": ["postgres", "intelligence_service"],
             "properties": {
-              "postgres": { "$ref": "#/components/schemas/DependencyReport" },
-              "intelligence_service": { "$ref": "#/components/schemas/DependencyReport" }
+              "postgres": {
+                "$ref": "#/components/schemas/DependencyReport"
+              },
+              "intelligence_service": {
+                "$ref": "#/components/schemas/DependencyReport"
+              }
             }
           }
         }
@@ -157,10 +1451,19 @@
             "type": "string",
             "enum": ["healthy", "unreachable", "not_configured", "not_checked"]
           },
-          "latencyMs": { "type": "integer", "minimum": 0 },
-          "reason": { "$ref": "#/components/schemas/DependencyReport/properties/reason" },
-          "httpStatus": { "type": "integer" },
-          "message": { "type": "string" }
+          "latencyMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reason": {
+            "$ref": "#/components/schemas/DependencyReport/properties/reason"
+          },
+          "httpStatus": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
         }
       },
       "ModelsReport": {
@@ -169,9 +1472,17 @@
         "required": ["status", "message", "gates_readiness"],
         "description": "The intelligence service's OWN /ready answer. `ready` only when it returns 200 with model_ready=true. Informational: it never gates the API's readiness.",
         "properties": {
-          "status": { "type": "string", "enum": ["ready", "not_ready", "unknown"] },
-          "message": { "type": "string" },
-          "gates_readiness": { "type": "boolean", "enum": [false] }
+          "status": {
+            "type": "string",
+            "enum": ["ready", "not_ready", "unknown"]
+          },
+          "message": {
+            "type": "string"
+          },
+          "gates_readiness": {
+            "type": "boolean",
+            "enum": [false]
+          }
         }
       },
       "ReadyResponse": {
@@ -187,24 +1498,44 @@
           "forecasting_models"
         ],
         "properties": {
-          "status": { "type": "string", "enum": ["ready", "not_ready"] },
-          "service": { "type": "string", "enum": ["fasalytics-api"] },
-          "version": { "type": "string" },
-          "checked_at": { "type": "string", "format": "date-time" },
+          "status": {
+            "type": "string",
+            "enum": ["ready", "not_ready"]
+          },
+          "service": {
+            "type": "string",
+            "enum": ["fasalytics-api"]
+          },
+          "version": {
+            "type": "string"
+          },
+          "checked_at": {
+            "type": "string",
+            "format": "date-time"
+          },
           "blocking": {
             "type": "array",
-            "items": { "type": "string", "enum": ["postgres", "intelligence_service"] }
+            "items": {
+              "type": "string",
+              "enum": ["postgres", "intelligence_service"]
+            }
           },
           "dependencies": {
             "type": "object",
             "additionalProperties": false,
             "required": ["postgres", "intelligence_service"],
             "properties": {
-              "postgres": { "$ref": "#/components/schemas/ReadyDependency" },
-              "intelligence_service": { "$ref": "#/components/schemas/ReadyDependency" }
+              "postgres": {
+                "$ref": "#/components/schemas/ReadyDependency"
+              },
+              "intelligence_service": {
+                "$ref": "#/components/schemas/ReadyDependency"
+              }
             }
           },
-          "forecasting_models": { "$ref": "#/components/schemas/ModelsReport" }
+          "forecasting_models": {
+            "$ref": "#/components/schemas/ModelsReport"
+          }
         }
       },
       "ErrorResponse": {
@@ -222,17 +1553,1550 @@
                 "type": "string",
                 "enum": [
                   "BAD_REQUEST",
+                  "INVALID_PARAMETER",
                   "INVALID_JSON",
                   "NOT_FOUND",
                   "METHOD_NOT_ALLOWED",
                   "PAYLOAD_TOO_LARGE",
                   "REQUEST_TIMEOUT",
+                  "DEPENDENCY_TIMEOUT",
+                  "DEPENDENCY_UNREACHABLE",
                   "INTERNAL_ERROR"
                 ]
               },
-              "message": { "type": "string" },
-              "requestId": { "type": "string", "pattern": "^[A-Za-z0-9._-]{8,64}$|^[0-9a-f-]{36}$" }
+              "message": {
+                "type": "string"
+              },
+              "requestId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._-]{8,64}$|^[0-9a-f-]{36}$"
+              }
             }
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["limit", "has_more", "next_cursor"],
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "type": ["string", "null"],
+            "description": "Opaque; pass back as ?cursor= to get the next page. null on the last page."
+          }
+        },
+        "description": "Keyset (cursor) pagination: stable order, constant cost on every page."
+      },
+      "DataMeta": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["data_status", "is_live", "notice", "granularity"],
+        "properties": {
+          "data_status": {
+            "type": "string",
+            "enum": ["historical_snapshot"]
+          },
+          "is_live": {
+            "type": "boolean"
+          },
+          "notice": {
+            "type": "string"
+          },
+          "granularity": {
+            "type": "string"
+          }
+        },
+        "description": "Present on every response. is_live is always false: the data are historical records loaded from static files, never live or current market data."
+      },
+      "Provenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_code",
+          "source_file_id",
+          "ingestion_run_id",
+          "source_row_number",
+          "is_historical_snapshot",
+          "is_synthetic",
+          "quality_status",
+          "quality_flags"
+        ],
+        "properties": {
+          "source_code": {
+            "type": "string"
+          },
+          "source_file_id": {
+            "type": ["string", "null"]
+          },
+          "ingestion_run_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "source_row_number": {
+            "type": ["integer", "null"]
+          },
+          "is_historical_snapshot": {
+            "type": "boolean"
+          },
+          "is_synthetic": {
+            "type": "boolean"
+          },
+          "quality_status": {
+            "type": "string"
+          },
+          "quality_flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Ref": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "StateMapping": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "mapping_status"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "mapping_status": {
+            "type": "string",
+            "enum": ["resolved", "provisional"]
+          },
+          "mapping_note": {
+            "type": "string"
+          }
+        }
+      },
+      "StateSourceLabel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_code",
+          "source_label",
+          "resolution_status",
+          "mapping_basis",
+          "mapping_status",
+          "note"
+        ],
+        "properties": {
+          "source_code": {
+            "type": "string"
+          },
+          "source_label": {
+            "type": "string"
+          },
+          "resolution_status": {
+            "type": "string"
+          },
+          "mapping_basis": {
+            "type": "string",
+            "enum": ["reviewed_decision", "exact_normalised_match"]
+          },
+          "mapping_status": {
+            "type": "string",
+            "enum": ["resolved", "provisional"]
+          },
+          "note": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "State": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "kind", "lgd_code", "source_labels"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["state", "union_territory"]
+          },
+          "lgd_code": {
+            "type": ["string", "null"]
+          },
+          "source_labels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StateSourceLabel"
+            }
+          }
+        }
+      },
+      "District": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "lgd_code", "state", "reference_status"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "lgd_code": {
+            "type": ["string", "null"]
+          },
+          "state": {
+            "$ref": "#/components/schemas/Ref"
+          },
+          "reference_status": {
+            "type": "string",
+            "enum": ["provisional-historical"]
+          }
+        }
+      },
+      "CommodityCoverage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["observations", "first_date", "last_date"],
+        "properties": {
+          "observations": {
+            "type": "integer"
+          },
+          "first_date": {
+            "type": ["string", "null"]
+          },
+          "last_date": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "Commodity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "commodity_group", "coverage"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "commodity_group": {
+            "type": ["string", "null"]
+          },
+          "coverage": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["mandi_daily", "state_daily", "national_monthly"],
+            "properties": {
+              "mandi_daily": {
+                "$ref": "#/components/schemas/CommodityCoverage"
+              },
+              "state_daily": {
+                "$ref": "#/components/schemas/CommodityCoverage"
+              },
+              "national_monthly": {
+                "$ref": "#/components/schemas/CommodityCoverage"
+              }
+            }
+          }
+        }
+      },
+      "CommodityDetail": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "commodity_group", "coverage", "varieties"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "commodity_group": {
+            "type": ["string", "null"]
+          },
+          "coverage": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["mandi_daily", "state_daily", "national_monthly"],
+            "properties": {
+              "mandi_daily": {
+                "$ref": "#/components/schemas/CommodityCoverage"
+              },
+              "state_daily": {
+                "$ref": "#/components/schemas/CommodityCoverage"
+              },
+              "national_monthly": {
+                "$ref": "#/components/schemas/CommodityCoverage"
+              }
+            }
+          },
+          "varieties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ref"
+            }
+          }
+        }
+      },
+      "Market": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "state",
+          "district",
+          "district_status",
+          "source_district_label",
+          "verification_status",
+          "government_market_code",
+          "classification"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/Ref"
+          },
+          "district": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["id", "name"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "district_status": {
+            "type": "string",
+            "enum": ["resolved", "unresolved"]
+          },
+          "source_district_label": {
+            "type": ["string", "null"]
+          },
+          "verification_status": {
+            "type": "string",
+            "enum": ["unverified", "verified"]
+          },
+          "government_market_code": {
+            "type": ["string", "null"]
+          },
+          "classification": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "MarketDetail": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "state",
+          "district",
+          "district_status",
+          "source_district_label",
+          "verification_status",
+          "government_market_code",
+          "classification",
+          "coverage"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/Ref"
+          },
+          "district": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["id", "name"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "district_status": {
+            "type": "string",
+            "enum": ["resolved", "unresolved"]
+          },
+          "source_district_label": {
+            "type": ["string", "null"]
+          },
+          "verification_status": {
+            "type": "string",
+            "enum": ["unverified", "verified"]
+          },
+          "government_market_code": {
+            "type": ["string", "null"]
+          },
+          "classification": {
+            "type": ["string", "null"]
+          },
+          "coverage": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["mandi_daily"],
+            "properties": {
+              "mandi_daily": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "observations",
+                  "first_date",
+                  "last_date",
+                  "commodities"
+                ],
+                "properties": {
+                  "observations": {
+                    "type": "integer"
+                  },
+                  "first_date": {
+                    "type": ["string", "null"]
+                  },
+                  "last_date": {
+                    "type": ["string", "null"]
+                  },
+                  "commodities": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MandiPrice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "granularity",
+          "observed_date",
+          "market",
+          "state",
+          "district",
+          "commodity",
+          "variety",
+          "grade",
+          "min_price",
+          "max_price",
+          "modal_price",
+          "price_currency",
+          "price_unit",
+          "source_price_unit_label",
+          "unit_basis",
+          "source_labels",
+          "provenance"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "granularity": {
+            "type": "string",
+            "enum": ["mandi_daily"]
+          },
+          "observed_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "market": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "name",
+              "verification_status",
+              "district_status"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "verification_status": {
+                "type": "string"
+              },
+              "district_status": {
+                "type": "string",
+                "enum": ["resolved", "unresolved"]
+              }
+            }
+          },
+          "state": {
+            "$ref": "#/components/schemas/StateMapping"
+          },
+          "district": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["id", "name"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "commodity": {
+            "$ref": "#/components/schemas/Ref"
+          },
+          "variety": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": {
+              "id": {
+                "type": ["string", "null"]
+              },
+              "label": {
+                "type": ["string", "null"]
+              }
+            }
+          },
+          "grade": {
+            "type": ["string", "null"]
+          },
+          "min_price": {
+            "type": ["number", "null"]
+          },
+          "max_price": {
+            "type": ["number", "null"]
+          },
+          "modal_price": {
+            "type": ["number", "null"]
+          },
+          "price_currency": {
+            "type": "string"
+          },
+          "price_unit": {
+            "type": "string"
+          },
+          "source_price_unit_label": {
+            "type": ["string", "null"]
+          },
+          "unit_basis": {
+            "type": "string",
+            "enum": ["assumed_from_documentation", "source_stated"]
+          },
+          "source_labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["state", "district", "market", "commodity"],
+            "properties": {
+              "state": {
+                "type": "string"
+              },
+              "district": {
+                "type": "string"
+              },
+              "market": {
+                "type": "string"
+              },
+              "commodity": {
+                "type": "string"
+              }
+            }
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        }
+      },
+      "StatePrice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "granularity",
+          "observed_date",
+          "state",
+          "commodity",
+          "modal_price",
+          "price_currency",
+          "price_unit",
+          "price_unit_dimension",
+          "source_price_unit_label",
+          "arrival_quantity",
+          "arrival_unit",
+          "arrival_unit_dimension",
+          "source_arrival_unit_label",
+          "unit_basis",
+          "source_labels",
+          "provenance"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "granularity": {
+            "type": "string",
+            "enum": ["state_daily"]
+          },
+          "observed_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "state": {
+            "$ref": "#/components/schemas/StateMapping"
+          },
+          "commodity": {
+            "$ref": "#/components/schemas/Ref"
+          },
+          "modal_price": {
+            "type": ["number", "null"]
+          },
+          "price_currency": {
+            "type": ["string", "null"]
+          },
+          "price_unit": {
+            "type": ["string", "null"]
+          },
+          "price_unit_dimension": {
+            "type": ["string", "null"]
+          },
+          "source_price_unit_label": {
+            "type": ["string", "null"]
+          },
+          "arrival_quantity": {
+            "type": ["number", "null"]
+          },
+          "arrival_unit": {
+            "type": ["string", "null"]
+          },
+          "arrival_unit_dimension": {
+            "type": ["string", "null"]
+          },
+          "source_arrival_unit_label": {
+            "type": ["string", "null"]
+          },
+          "unit_basis": {
+            "type": "string",
+            "enum": ["source_stated"]
+          },
+          "source_labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["state", "commodity", "commodity_group", "report"],
+            "properties": {
+              "state": {
+                "type": "string"
+              },
+              "commodity": {
+                "type": "string"
+              },
+              "commodity_group": {
+                "type": ["string", "null"]
+              },
+              "report": {
+                "type": ["string", "null"]
+              }
+            }
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        }
+      },
+      "NationalPrice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "granularity",
+          "period_month",
+          "country_code",
+          "commodity",
+          "avg_min_price",
+          "avg_max_price",
+          "avg_modal_price",
+          "price_currency",
+          "price_unit",
+          "source_price_unit_label",
+          "unit_basis",
+          "source_reported_change",
+          "source_reported_change_status",
+          "source_calculation_type",
+          "source_labels",
+          "provenance"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "granularity": {
+            "type": "string",
+            "enum": ["national_monthly"]
+          },
+          "period_month": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "country_code": {
+            "type": "string"
+          },
+          "commodity": {
+            "$ref": "#/components/schemas/Ref"
+          },
+          "avg_min_price": {
+            "type": ["number", "null"]
+          },
+          "avg_max_price": {
+            "type": ["number", "null"]
+          },
+          "avg_modal_price": {
+            "type": ["number", "null"]
+          },
+          "price_currency": {
+            "type": "string"
+          },
+          "price_unit": {
+            "type": "string"
+          },
+          "source_price_unit_label": {
+            "type": ["string", "null"]
+          },
+          "unit_basis": {
+            "type": "string",
+            "enum": ["assumed_from_documentation"]
+          },
+          "source_reported_change": {
+            "type": ["number", "null"]
+          },
+          "source_reported_change_status": {
+            "type": "string",
+            "enum": ["unconfirmed_not_for_modelling"]
+          },
+          "source_calculation_type": {
+            "type": ["string", "null"]
+          },
+          "source_labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["commodity"],
+            "properties": {
+              "commodity": {
+                "type": "string"
+              }
+            }
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        }
+      },
+      "WpiSeries": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "item_label",
+          "commodity_id",
+          "base_description",
+          "value_kind",
+          "first_month",
+          "last_month",
+          "observations"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "item_label": {
+            "type": "string"
+          },
+          "commodity_id": {
+            "type": ["string", "null"]
+          },
+          "base_description": {
+            "type": ["string", "null"]
+          },
+          "value_kind": {
+            "type": "string",
+            "enum": ["index"]
+          },
+          "first_month": {
+            "type": ["string", "null"]
+          },
+          "last_month": {
+            "type": ["string", "null"]
+          },
+          "observations": {
+            "type": "integer"
+          }
+        }
+      },
+      "WpiObservation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "granularity",
+          "period_month",
+          "index_value",
+          "value_kind",
+          "provenance"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "granularity": {
+            "type": "string",
+            "enum": ["wpi_monthly_index"]
+          },
+          "period_month": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "index_value": {
+            "type": "number"
+          },
+          "value_kind": {
+            "type": "string",
+            "enum": ["index"]
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "description": "A dimensionless index value. It is not a price and has no currency or unit."
+      },
+      "Source": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "name",
+          "source_type",
+          "publisher",
+          "description",
+          "granularity",
+          "files",
+          "initial_load",
+          "runs_total",
+          "last_completed_run_at",
+          "observations",
+          "assumptions"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "source_type": {
+            "type": "string"
+          },
+          "publisher": {
+            "type": ["string", "null"]
+          },
+          "description": {
+            "type": ["string", "null"]
+          },
+          "granularity": {
+            "type": ["string", "null"]
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "file_name",
+                "sha256",
+                "size_bytes",
+                "registered_at"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                "file_name": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "size_bytes": {
+                  "type": "integer"
+                },
+                "registered_at": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "initial_load": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": [
+              "importer_version",
+              "finished_at",
+              "rows_read",
+              "accepted",
+              "exact_duplicates",
+              "conflicts",
+              "quarantined"
+            ],
+            "properties": {
+              "importer_version": {
+                "type": "string"
+              },
+              "finished_at": {
+                "type": "string"
+              },
+              "rows_read": {
+                "type": "integer"
+              },
+              "accepted": {
+                "type": "integer"
+              },
+              "exact_duplicates": {
+                "type": "integer"
+              },
+              "conflicts": {
+                "type": "integer"
+              },
+              "quarantined": {
+                "type": "integer"
+              }
+            }
+          },
+          "runs_total": {
+            "type": "integer"
+          },
+          "last_completed_run_at": {
+            "type": ["string", "null"]
+          },
+          "observations": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["count", "first_date", "last_date"],
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "first_date": {
+                "type": "string"
+              },
+              "last_date": {
+                "type": "string"
+              }
+            }
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["code", "statement", "evidence_reference"],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "statement": {
+                  "type": "string"
+                },
+                "evidence_reference": {
+                  "type": ["string", "null"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unresolved": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["states", "districts"],
+        "properties": {
+          "states": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_code",
+                "source_label",
+                "status",
+                "rows_quarantined",
+                "note"
+              ],
+              "properties": {
+                "source_code": {
+                  "type": "string"
+                },
+                "source_label": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["unresolved"]
+                },
+                "rows_quarantined": {
+                  "type": "integer"
+                },
+                "note": {
+                  "type": ["string", "null"]
+                }
+              }
+            }
+          },
+          "districts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_state_label",
+                "source_district_label",
+                "status",
+                "observations",
+                "markets"
+              ],
+              "properties": {
+                "source_state_label": {
+                  "type": "string"
+                },
+                "source_district_label": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["unresolved"]
+                },
+                "observations": {
+                  "type": "integer"
+                },
+                "markets": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CoverageSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["granularities", "registry", "geography", "units"],
+        "properties": {
+          "granularities": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mandi_daily",
+              "state_daily",
+              "national_monthly",
+              "wpi_monthly_index"
+            ],
+            "properties": {
+              "mandi_daily": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "observations",
+                  "first_date",
+                  "last_date",
+                  "markets",
+                  "states",
+                  "commodities"
+                ],
+                "properties": {
+                  "observations": {
+                    "type": "integer"
+                  },
+                  "first_date": {
+                    "type": ["string", "null"]
+                  },
+                  "last_date": {
+                    "type": ["string", "null"]
+                  },
+                  "markets": {
+                    "type": "integer"
+                  },
+                  "states": {
+                    "type": "integer"
+                  },
+                  "commodities": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "state_daily": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "observations",
+                  "first_date",
+                  "last_date",
+                  "states",
+                  "commodities"
+                ],
+                "properties": {
+                  "observations": {
+                    "type": "integer"
+                  },
+                  "first_date": {
+                    "type": ["string", "null"]
+                  },
+                  "last_date": {
+                    "type": ["string", "null"]
+                  },
+                  "states": {
+                    "type": "integer"
+                  },
+                  "commodities": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "national_monthly": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "observations",
+                  "first_month",
+                  "last_month",
+                  "commodities"
+                ],
+                "properties": {
+                  "observations": {
+                    "type": "integer"
+                  },
+                  "first_month": {
+                    "type": ["string", "null"]
+                  },
+                  "last_month": {
+                    "type": ["string", "null"]
+                  },
+                  "commodities": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "wpi_monthly_index": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "observations",
+                  "first_month",
+                  "last_month",
+                  "series"
+                ],
+                "properties": {
+                  "observations": {
+                    "type": "integer"
+                  },
+                  "first_month": {
+                    "type": ["string", "null"]
+                  },
+                  "last_month": {
+                    "type": ["string", "null"]
+                  },
+                  "series": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "registry": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "states",
+              "districts",
+              "markets",
+              "commodities",
+              "varieties"
+            ],
+            "properties": {
+              "states": {
+                "type": "integer"
+              },
+              "districts": {
+                "type": "integer"
+              },
+              "markets": {
+                "type": "integer"
+              },
+              "commodities": {
+                "type": "integer"
+              },
+              "varieties": {
+                "type": "integer"
+              }
+            }
+          },
+          "geography": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "markets_unverified",
+              "markets_with_unresolved_district",
+              "mandi_observations_in_unresolved_district_markets",
+              "unresolved_district_labels",
+              "unresolved_state_labels"
+            ],
+            "properties": {
+              "markets_unverified": {
+                "type": "integer"
+              },
+              "markets_with_unresolved_district": {
+                "type": "integer"
+              },
+              "mandi_observations_in_unresolved_district_markets": {
+                "type": "integer"
+              },
+              "unresolved_district_labels": {
+                "type": "integer"
+              },
+              "unresolved_state_labels": {
+                "type": "integer"
+              }
+            }
+          },
+          "units": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["code", "label", "dimension", "kg_per_unit"],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "dimension": {
+                  "type": "string",
+                  "enum": ["mass", "count"]
+                },
+                "kg_per_unit": {
+                  "type": ["number", "null"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "StateList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "pagination", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/State"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "DistrictList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "pagination", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/District"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "CommodityList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "pagination", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Commodity"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "MarketList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "pagination", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Market"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "MandiPriceList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "pagination", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MandiPrice"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "StatePriceList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "pagination", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatePrice"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "NationalPriceList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "pagination", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NationalPrice"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "WpiSeriesList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "pagination", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WpiSeries"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "WpiObservationList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["series", "data", "pagination", "meta"],
+        "properties": {
+          "series": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "item_label"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              },
+              "item_label": {
+                "type": "string"
+              }
+            }
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WpiObservation"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "CommodityResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CommodityDetail"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "MarketResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MarketDetail"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "SourceList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "UnresolvedResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Unresolved"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "CoverageResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CoverageSummary"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
           }
         }
       }

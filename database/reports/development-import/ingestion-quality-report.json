@@ -1,0 +1,1258 @@
+{
+  "generatedAt": "2026-10-19T17:23:46.079Z",
+  "generator": "database/src/ingest/report.js",
+  "target": {
+    "host": "localhost",
+    "port": "5433",
+    "database": "fasalytics"
+  },
+  "notice": "Historical records only: nothing here is a current market price, and historical coverage is not proven forecast eligibility (that needs backtesting, Phase 3).",
+  "reference": {
+    "manifestSummary": {
+      "referenceSet": "lgd-github-mirror-2022-12",
+      "status": "provisional-historical",
+      "referenceDate": "2022-12",
+      "licence": "Government Open Data License - India (GODL-India)",
+      "retrievedAt": "2026-10-18T15:19:39Z",
+      "authority": {
+        "origin": "Local Government Directory (LGD), Ministry of Panchayati Raj, Government of India; hosted by the National Informatics Centre (https://lgdirectory.gov.in)",
+        "mirror": "https://github.com/planemad/india-local-government-directory (administrative/ folder), community maintained, not an official publication"
+      }
+    },
+    "loadedSets": [
+      {
+        "source": "lgd-github-mirror-2022-12",
+        "statesIntroduced": 36,
+        "districtsIntroduced": 763
+      }
+    ],
+    "totals": {
+      "states": 36,
+      "districts": 763
+    },
+    "caution": "PROVISIONAL: a third-party mirror of LGD as of December 2022. It is not a verified current registry; post-2022 districts stay unresolved."
+  },
+  "datasets": {
+    "D": {
+      "dataset": "D",
+      "title": "Dataset D: Wholesale Price Index (national, monthly)",
+      "sourceCode": "wpi_national_monthly_historical",
+      "granularity": "national WPI index x month (index numbers, not prices)",
+      "imported": true,
+      "limitations": [
+        "Index numbers, not prices. The index base period is not stated in the file (left NULL).",
+        "Items are not linked to the commodity registry (a reviewed, separate step).",
+        "National monthly series: context only, not for daily forecasting."
+      ],
+      "runs": [
+        {
+          "runId": "9c437439-c4a8-4a50-8fa5-cd34bbf9cfbe",
+          "status": "succeeded",
+          "importerVersion": "2.2.1",
+          "startedAt": "2026-10-19T17:13:01.526Z",
+          "finishedAt": "2026-10-19T17:13:02.032Z",
+          "file": {
+            "name": "Wholesale-Price-Index-from-2012-to-2024.csv",
+            "sha256": "7a91dcabcaf2398ae10c631f1d4bdb98b4888c8e9480a7295be17bb5d080601e",
+            "bytes": 58844
+          },
+          "inputRows": 6273,
+          "accepted": 6273,
+          "exactDuplicatesSkipped": 0,
+          "conflictsRetained": 0,
+          "quarantined": 0,
+          "lastCommittedRow": 6273,
+          "resumedFromRunId": null,
+          "errorSummary": null,
+          "reconciled": true
+        },
+        {
+          "runId": "693cd2c3-8262-4809-8156-c0a893abb0fe",
+          "status": "succeeded",
+          "importerVersion": "2.2.1",
+          "startedAt": "2026-10-19T17:19:45.389Z",
+          "finishedAt": "2026-10-19T17:19:45.829Z",
+          "file": {
+            "name": "Wholesale-Price-Index-from-2012-to-2024.csv",
+            "sha256": "7a91dcabcaf2398ae10c631f1d4bdb98b4888c8e9480a7295be17bb5d080601e",
+            "bytes": 58844
+          },
+          "inputRows": 6273,
+          "accepted": 0,
+          "exactDuplicatesSkipped": 6273,
+          "conflictsRetained": 0,
+          "quarantined": 0,
+          "lastCommittedRow": 6273,
+          "resumedFromRunId": null,
+          "errorSummary": null,
+          "reconciled": true
+        }
+      ],
+      "latestCompletedRun": {
+        "runId": "693cd2c3-8262-4809-8156-c0a893abb0fe",
+        "status": "succeeded",
+        "importerVersion": "2.2.1",
+        "startedAt": "2026-10-19T17:19:45.389Z",
+        "finishedAt": "2026-10-19T17:19:45.829Z",
+        "file": {
+          "name": "Wholesale-Price-Index-from-2012-to-2024.csv",
+          "sha256": "7a91dcabcaf2398ae10c631f1d4bdb98b4888c8e9480a7295be17bb5d080601e",
+          "bytes": 58844
+        },
+        "inputRows": 6273,
+        "accepted": 0,
+        "exactDuplicatesSkipped": 6273,
+        "conflictsRetained": 0,
+        "quarantined": 0,
+        "lastCommittedRow": 6273,
+        "resumedFromRunId": null,
+        "errorSummary": null,
+        "reconciled": true
+      },
+      "initialLoad": {
+        "runIds": ["9c437439-c4a8-4a50-8fa5-cd34bbf9cfbe"],
+        "runsInChain": 1,
+        "note": "A single run.",
+        "file": {
+          "name": "Wholesale-Price-Index-from-2012-to-2024.csv",
+          "sha256": "7a91dcabcaf2398ae10c631f1d4bdb98b4888c8e9480a7295be17bb5d080601e",
+          "bytes": 58844
+        },
+        "inputRows": 6273,
+        "accepted": 6273,
+        "exactDuplicatesSkipped": 0,
+        "conflictsRetained": 0,
+        "quarantined": 0,
+        "reconciled": true
+      },
+      "laterRuns": 1,
+      "quarantineByReason": {},
+      "topQuarantineDetails": [],
+      "loaded": {
+        "observations": 6273,
+        "firstMonth": "2012-04-01",
+        "lastMonth": "2024-12-01",
+        "distinctSeries": 41,
+        "geography": "India (national) only"
+      },
+      "missingValues": {
+        "note": "a month with no value is absent, never filled"
+      },
+      "perSeriesMonths": [
+        {
+          "item": "Bajra",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Barley",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Castorseed",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Cotton",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Cotton (Meal/Cake)",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Cotton Oil",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Gram",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Groundnut",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Groundnut Oil",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Jowar",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Jute",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Lentil",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Linseed",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Maize",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Mesta",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Moong",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Nigerseed",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Onion",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Paddy",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Palm oil",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Peas",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Potato",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Ragi",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Rajma",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Rapeseed & Mustard",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Rapeseed & Mustard (Meal/Cake)",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Rapeseed & Mustard Oil",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Rice",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Safflower",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Sesamum",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Soya oil",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Soybean",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Sugarcane",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Sunflower",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Sunflower oil",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Tobacco",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Tomato",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Tur",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Urad",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Wheat",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "item": "Wheat Atta",
+          "months": 153,
+          "first": "2012-04-01",
+          "last": "2024-12-01",
+          "missingMonthsInRange": 0
+        }
+      ],
+      "coverageGaps": [],
+      "indexNotice": "These are index numbers. They are stored in wpi_observations only and are never rupee prices.",
+      "unitAssumptions": []
+    },
+    "C": {
+      "dataset": "C",
+      "title": "Dataset C: national monthly commodity prices",
+      "sourceCode": "national_monthly_prices_historical",
+      "granularity": "India x commodity x month (monthly averages)",
+      "imported": true,
+      "limitations": [
+        "The price unit is not stated: INR per quintal is an assumption.",
+        "The meaning of the \"change\" column is unconfirmed; it is stored as reported and must not be used for modelling.",
+        "National monthly averages: unusable for daily mandi forecasting."
+      ],
+      "runs": [
+        {
+          "runId": "be7a7551-0775-44ae-a44f-171835a9c654",
+          "status": "succeeded_with_rejections",
+          "importerVersion": "2.2.1",
+          "startedAt": "2026-10-19T17:13:02.218Z",
+          "finishedAt": "2026-10-19T17:13:02.582Z",
+          "file": {
+            "name": "crop_price_dataset.csv",
+            "sha256": "7ab839feaafae49b933d762cd632d872b2f2289fc001124bda2d3c69ea671ab5",
+            "bytes": 194179
+          },
+          "inputRows": 2810,
+          "accepted": 2800,
+          "exactDuplicatesSkipped": 0,
+          "conflictsRetained": 0,
+          "quarantined": 10,
+          "lastCommittedRow": 2810,
+          "resumedFromRunId": null,
+          "errorSummary": null,
+          "reconciled": true
+        },
+        {
+          "runId": "abbc698d-5d29-43a2-aa48-f83f9f10647f",
+          "status": "succeeded_with_rejections",
+          "importerVersion": "2.2.1",
+          "startedAt": "2026-10-19T17:19:46.018Z",
+          "finishedAt": "2026-10-19T17:19:46.284Z",
+          "file": {
+            "name": "crop_price_dataset.csv",
+            "sha256": "7ab839feaafae49b933d762cd632d872b2f2289fc001124bda2d3c69ea671ab5",
+            "bytes": 194179
+          },
+          "inputRows": 2810,
+          "accepted": 0,
+          "exactDuplicatesSkipped": 2800,
+          "conflictsRetained": 0,
+          "quarantined": 10,
+          "lastCommittedRow": 2810,
+          "resumedFromRunId": null,
+          "errorSummary": null,
+          "reconciled": true
+        }
+      ],
+      "latestCompletedRun": {
+        "runId": "abbc698d-5d29-43a2-aa48-f83f9f10647f",
+        "status": "succeeded_with_rejections",
+        "importerVersion": "2.2.1",
+        "startedAt": "2026-10-19T17:19:46.018Z",
+        "finishedAt": "2026-10-19T17:19:46.284Z",
+        "file": {
+          "name": "crop_price_dataset.csv",
+          "sha256": "7ab839feaafae49b933d762cd632d872b2f2289fc001124bda2d3c69ea671ab5",
+          "bytes": 194179
+        },
+        "inputRows": 2810,
+        "accepted": 0,
+        "exactDuplicatesSkipped": 2800,
+        "conflictsRetained": 0,
+        "quarantined": 10,
+        "lastCommittedRow": 2810,
+        "resumedFromRunId": null,
+        "errorSummary": null,
+        "reconciled": true
+      },
+      "initialLoad": {
+        "runIds": ["be7a7551-0775-44ae-a44f-171835a9c654"],
+        "runsInChain": 1,
+        "note": "A single run.",
+        "file": {
+          "name": "crop_price_dataset.csv",
+          "sha256": "7ab839feaafae49b933d762cd632d872b2f2289fc001124bda2d3c69ea671ab5",
+          "bytes": 194179
+        },
+        "inputRows": 2810,
+        "accepted": 2800,
+        "exactDuplicatesSkipped": 0,
+        "conflictsRetained": 0,
+        "quarantined": 10,
+        "reconciled": true
+      },
+      "laterRuns": 1,
+      "quarantineByReason": {
+        "price_ordering_violation": 10
+      },
+      "topQuarantineDetails": [
+        {
+          "reason": "price_ordering_violation",
+          "detail": "min, modal and max prices are not in order",
+          "rows": 10
+        }
+      ],
+      "loaded": {
+        "observations": 2800,
+        "firstMonth": "2010-01-01",
+        "lastMonth": "2025-03-01",
+        "distinctCommodities": 16,
+        "geography": "India (national) only"
+      },
+      "missingValues": {
+        "sourceReportedChangeMissing": 15
+      },
+      "quality": {
+        "flagged": 0,
+        "flagCounts": {}
+      },
+      "perCommodityMonths": [
+        {
+          "commodity": "Barley (Jau)",
+          "months": 178,
+          "first": "2010-03-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 3
+        },
+        {
+          "commodity": "Coconut",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "commodity": "Coffee",
+          "months": 181,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 2
+        },
+        {
+          "commodity": "Cotton",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "commodity": "Ginger(Dry)",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "commodity": "Groundnut",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "commodity": "Jowar(Sorghum)",
+          "months": 182,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 1
+        },
+        {
+          "commodity": "Maize",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "commodity": "Millets",
+          "months": 169,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 14
+        },
+        {
+          "commodity": "Rice",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "commodity": "Sugar",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "commodity": "Sugarcane",
+          "months": 154,
+          "first": "2010-02-01",
+          "last": "2025-02-01",
+          "missingMonthsInRange": 27
+        },
+        {
+          "commodity": "Sunflower",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "commodity": "Tea",
+          "months": 106,
+          "first": "2010-01-01",
+          "last": "2022-10-01",
+          "missingMonthsInRange": 48
+        },
+        {
+          "commodity": "Turmeric",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        },
+        {
+          "commodity": "Wheat",
+          "months": 183,
+          "first": "2010-01-01",
+          "last": "2025-03-01",
+          "missingMonthsInRange": 0
+        }
+      ],
+      "coverageGaps": [
+        {
+          "commodity": "Barley (Jau)",
+          "missingMonthsInRange": 3
+        },
+        {
+          "commodity": "Coffee",
+          "missingMonthsInRange": 2
+        },
+        {
+          "commodity": "Jowar(Sorghum)",
+          "missingMonthsInRange": 1
+        },
+        {
+          "commodity": "Millets",
+          "missingMonthsInRange": 14
+        },
+        {
+          "commodity": "Sugarcane",
+          "missingMonthsInRange": 27
+        },
+        {
+          "commodity": "Tea",
+          "missingMonthsInRange": 48
+        }
+      ],
+      "unitAssumptions": [
+        {
+          "code": "change_column_meaning_unconfirmed",
+          "statement": "The meaning of the \"change\" column (absolute or percentage, and its base) is unconfirmed. It is stored as reported and must not be used for modelling.",
+          "evidence": "docs/data-sources/DATASET_COVERAGE.md; database/docs/CANONICAL_SCHEMA.md section 12"
+        },
+        {
+          "code": "price_unit_inr_per_quintal",
+          "statement": "The file states no price unit or currency. Prices are taken as Indian rupees (INR) per quintal. This is an assumption, not a fact stated by the source.",
+          "evidence": "docs/data-sources/DATASET_COVERAGE.md (dataset C description) and the project owner's Milestone 2.2 instruction; not stated in the source file"
+        }
+      ]
+    },
+    "A": {
+      "dataset": "A",
+      "title": "Dataset A: mandi-level daily prices",
+      "sourceCode": "mandi_daily_prices_historical",
+      "granularity": "market x commodity x variety x grade x day (prices; no arrivals)",
+      "imported": true,
+      "limitations": [
+        "No arrivals and no market identifiers in the source; markets are identified by source labels and created as unverified.",
+        "The price unit is not stated: INR per quintal is an assumption (see unit assumptions).",
+        "Markets whose district is unresolved are identified by the source district label; they are not merged with any other market.",
+        "Commodity coverage is uneven in time (per-commodity windows below); gaps are real absences and are never filled."
+      ],
+      "runs": [
+        {
+          "runId": "905a9358-de12-486d-a6e8-be6405878bff",
+          "status": "succeeded_with_rejections",
+          "importerVersion": "2.2.1",
+          "startedAt": "2026-10-19T17:13:02.877Z",
+          "finishedAt": "2026-10-19T17:14:34.866Z",
+          "file": {
+            "name": "Agriculture_price_dataset.csv",
+            "sha256": "156d7f6357e7b90c8ab4ad8b0ce6baf94b2a99d952024148bd980d8a748410cb",
+            "bytes": 55212516
+          },
+          "inputRows": 737392,
+          "accepted": 735461,
+          "exactDuplicatesSkipped": 0,
+          "conflictsRetained": 0,
+          "quarantined": 1931,
+          "lastCommittedRow": 737392,
+          "resumedFromRunId": null,
+          "errorSummary": null,
+          "reconciled": true
+        },
+        {
+          "runId": "966f5bf6-5582-4f73-9fd3-bd658134db77",
+          "status": "succeeded_with_rejections",
+          "importerVersion": "2.2.1",
+          "startedAt": "2026-10-19T17:19:46.615Z",
+          "finishedAt": "2026-10-19T17:20:39.937Z",
+          "file": {
+            "name": "Agriculture_price_dataset.csv",
+            "sha256": "156d7f6357e7b90c8ab4ad8b0ce6baf94b2a99d952024148bd980d8a748410cb",
+            "bytes": 55212516
+          },
+          "inputRows": 737392,
+          "accepted": 0,
+          "exactDuplicatesSkipped": 735461,
+          "conflictsRetained": 0,
+          "quarantined": 1931,
+          "lastCommittedRow": 737392,
+          "resumedFromRunId": null,
+          "errorSummary": null,
+          "reconciled": true
+        }
+      ],
+      "latestCompletedRun": {
+        "runId": "966f5bf6-5582-4f73-9fd3-bd658134db77",
+        "status": "succeeded_with_rejections",
+        "importerVersion": "2.2.1",
+        "startedAt": "2026-10-19T17:19:46.615Z",
+        "finishedAt": "2026-10-19T17:20:39.937Z",
+        "file": {
+          "name": "Agriculture_price_dataset.csv",
+          "sha256": "156d7f6357e7b90c8ab4ad8b0ce6baf94b2a99d952024148bd980d8a748410cb",
+          "bytes": 55212516
+        },
+        "inputRows": 737392,
+        "accepted": 0,
+        "exactDuplicatesSkipped": 735461,
+        "conflictsRetained": 0,
+        "quarantined": 1931,
+        "lastCommittedRow": 737392,
+        "resumedFromRunId": null,
+        "errorSummary": null,
+        "reconciled": true
+      },
+      "initialLoad": {
+        "runIds": ["905a9358-de12-486d-a6e8-be6405878bff"],
+        "runsInChain": 1,
+        "note": "A single run.",
+        "file": {
+          "name": "Agriculture_price_dataset.csv",
+          "sha256": "156d7f6357e7b90c8ab4ad8b0ce6baf94b2a99d952024148bd980d8a748410cb",
+          "bytes": 55212516
+        },
+        "inputRows": 737392,
+        "accepted": 735461,
+        "exactDuplicatesSkipped": 0,
+        "conflictsRetained": 0,
+        "quarantined": 1931,
+        "reconciled": true
+      },
+      "laterRuns": 1,
+      "quarantineByReason": {
+        "price_ordering_violation": 1248,
+        "invalid_value": 679,
+        "unmapped_entity": 4
+      },
+      "topQuarantineDetails": [
+        {
+          "reason": "price_ordering_violation",
+          "detail": "min, modal and max prices are not in order",
+          "rows": 1248
+        },
+        {
+          "reason": "invalid_value",
+          "detail": "max price is zero (non-positive prices are quarantined)",
+          "rows": 564
+        },
+        {
+          "reason": "invalid_value",
+          "detail": "min price is zero (non-positive prices are quarantined)",
+          "rows": 114
+        },
+        {
+          "reason": "unmapped_entity",
+          "detail": "state=Gao",
+          "rows": 4
+        },
+        {
+          "reason": "invalid_value",
+          "detail": "modal price is zero (non-positive prices are quarantined)",
+          "rows": 1
+        }
+      ],
+      "loaded": {
+        "observations": 735461,
+        "firstDate": "2023-06-06",
+        "lastDate": "2025-06-11",
+        "distinctObservationDays": 737,
+        "distinctResolvedStates": 25,
+        "distinctResolvedDistricts": 325,
+        "distinctSourceStateLabels": 28,
+        "distinctSourceDistrictLabels": 372,
+        "distinctMandis": 1610,
+        "distinctCommodities": 5,
+        "distinctVarieties": 107,
+        "observationsWithUnresolvedDistrict": 86427
+      },
+      "missingValues": {
+        "varietyUnspecified": 225917,
+        "gradeMissing": 0,
+        "minPriceMissing": 0,
+        "maxPriceMissing": 0,
+        "modalPriceMissing": 0,
+        "arrivals": "never provided by this source"
+      },
+      "quality": {
+        "flagged": 0,
+        "flagCounts": {}
+      },
+      "unitBasis": {
+        "assumedFromDocumentation": 735461,
+        "sourceStated": 0
+      },
+      "perCommodityWindows": [
+        {
+          "commodity": "Potato",
+          "observations": 326924,
+          "first": "2023-06-06",
+          "last": "2025-06-11",
+          "daysWithData": 737
+        },
+        {
+          "commodity": "Onion",
+          "observations": 297894,
+          "first": "2023-06-06",
+          "last": "2025-06-11",
+          "daysWithData": 647
+        },
+        {
+          "commodity": "Wheat",
+          "observations": 76289,
+          "first": "2023-06-06",
+          "last": "2024-02-06",
+          "daysWithData": 246
+        },
+        {
+          "commodity": "Tomato",
+          "observations": 26573,
+          "first": "2023-06-06",
+          "last": "2023-11-06",
+          "daysWithData": 154
+        },
+        {
+          "commodity": "Rice",
+          "observations": 7781,
+          "first": "2025-04-06",
+          "last": "2025-06-06",
+          "daysWithData": 62
+        }
+      ],
+      "coverageGaps": {
+        "scope": "days with no observation at all in this dataset (all commodities together), longest first",
+        "longestGaps": []
+      },
+      "unitAssumptions": [
+        {
+          "code": "price_date_month_first",
+          "statement": "Price Date is read as month/day/year (M/D/YYYY).",
+          "evidence": "docs/data-sources/DATASET_COVERAGE.md section 2 (440,211 rows have a second field above 12; none have a first field above 12)"
+        },
+        {
+          "code": "price_unit_inr_per_quintal",
+          "statement": "The file states no price unit or currency. Prices are taken as Indian rupees (INR) per quintal. This is an assumption, not a fact stated by the source.",
+          "evidence": "docs/data-sources/DATASET_COVERAGE.md (section 1: dataset A prices in rupees per quintal) and the project owner's Milestone 2.2 instruction; not stated in the source file"
+        }
+      ]
+    },
+    "B": {
+      "dataset": "B",
+      "title": "Dataset B: state-level daily prices and arrivals",
+      "sourceCode": "state_daily_prices_arrivals_historical",
+      "granularity": "state x commodity x day (state totals, never mandi figures)",
+      "imported": true,
+      "limitations": [
+        "State-level only: arrivals cannot be attributed to a mandi.",
+        "Units are mixed (tonnes, bundles, pieces); counts are not converted to mass.",
+        "Overlapping report files repeat the same state/commodity/day; exact repeats are skipped and differing repeats are kept as conflicts for review.",
+        "Footer text and structurally broken source rows are quarantined, not repaired."
+      ],
+      "runs": [
+        {
+          "runId": "583a8bfc-11ed-4cd7-9193-9d88cd44c905",
+          "status": "succeeded_with_rejections",
+          "importerVersion": "2.2.1",
+          "startedAt": "2026-10-19T17:14:35.957Z",
+          "finishedAt": "2026-10-19T17:18:35.831Z",
+          "file": {
+            "name": "merged_preprocessed_all_reports.csv",
+            "sha256": "899803ac0592cfbe99f481d647cbd70f7579e3fc53784eef485b247d8b18c754",
+            "bytes": 496383993
+          },
+          "inputRows": 1973777,
+          "accepted": 1953793,
+          "exactDuplicatesSkipped": 19739,
+          "conflictsRetained": 4,
+          "quarantined": 241,
+          "lastCommittedRow": 1973777,
+          "resumedFromRunId": null,
+          "errorSummary": null,
+          "reconciled": true
+        },
+        {
+          "runId": "8c6c8c29-27af-4dd1-b8e1-609dacd56b96",
+          "status": "succeeded_with_rejections",
+          "importerVersion": "2.2.1",
+          "startedAt": "2026-10-19T17:20:41.004Z",
+          "finishedAt": "2026-10-19T17:23:05.855Z",
+          "file": {
+            "name": "merged_preprocessed_all_reports.csv",
+            "sha256": "899803ac0592cfbe99f481d647cbd70f7579e3fc53784eef485b247d8b18c754",
+            "bytes": 496383993
+          },
+          "inputRows": 1973777,
+          "accepted": 0,
+          "exactDuplicatesSkipped": 1973532,
+          "conflictsRetained": 4,
+          "quarantined": 241,
+          "lastCommittedRow": 1973777,
+          "resumedFromRunId": null,
+          "errorSummary": null,
+          "reconciled": true
+        }
+      ],
+      "latestCompletedRun": {
+        "runId": "8c6c8c29-27af-4dd1-b8e1-609dacd56b96",
+        "status": "succeeded_with_rejections",
+        "importerVersion": "2.2.1",
+        "startedAt": "2026-10-19T17:20:41.004Z",
+        "finishedAt": "2026-10-19T17:23:05.855Z",
+        "file": {
+          "name": "merged_preprocessed_all_reports.csv",
+          "sha256": "899803ac0592cfbe99f481d647cbd70f7579e3fc53784eef485b247d8b18c754",
+          "bytes": 496383993
+        },
+        "inputRows": 1973777,
+        "accepted": 0,
+        "exactDuplicatesSkipped": 1973532,
+        "conflictsRetained": 4,
+        "quarantined": 241,
+        "lastCommittedRow": 1973777,
+        "resumedFromRunId": null,
+        "errorSummary": null,
+        "reconciled": true
+      },
+      "initialLoad": {
+        "runIds": ["583a8bfc-11ed-4cd7-9193-9d88cd44c905"],
+        "runsInChain": 1,
+        "note": "A single run.",
+        "file": {
+          "name": "merged_preprocessed_all_reports.csv",
+          "sha256": "899803ac0592cfbe99f481d647cbd70f7579e3fc53784eef485b247d8b18c754",
+          "bytes": 496383993
+        },
+        "inputRows": 1973777,
+        "accepted": 1953793,
+        "exactDuplicatesSkipped": 19739,
+        "conflictsRetained": 4,
+        "quarantined": 241,
+        "reconciled": true
+      },
+      "laterRuns": 1,
+      "quarantineByReason": {
+        "structural_error": 240,
+        "invalid_value": 1
+      },
+      "topQuarantineDetails": [
+        {
+          "reason": "structural_error",
+          "detail": "source row_issue: expected 8 columns, found 1",
+          "rows": 120
+        },
+        {
+          "reason": "structural_error",
+          "detail": "source row_issue: expected 8 columns, found 0",
+          "rows": 120
+        },
+        {
+          "reason": "invalid_value",
+          "detail": "Modal Price is zero (non-positive prices are quarantined)",
+          "rows": 1
+        }
+      ],
+      "loaded": {
+        "observations": 1953793,
+        "firstDate": "2022-01-01",
+        "lastDate": "2026-07-02",
+        "distinctObservationDays": 1644,
+        "distinctResolvedStates": 32,
+        "distinctCommodities": 432,
+        "distinctDistricts": "not applicable (state-level)",
+        "distinctMandis": "not applicable (state-level)"
+      },
+      "missingValues": {
+        "arrivalMissing": 0,
+        "modalPriceMissing": 0
+      },
+      "quality": {
+        "flagged": 156,
+        "flagCounts": {
+          "zero_arrival": 156
+        }
+      },
+      "unitMix": [
+        {
+          "priceUnit": "quintal",
+          "arrivalUnit": "tonne",
+          "rows": 1876562
+        },
+        {
+          "priceUnit": "unit",
+          "arrivalUnit": "nos",
+          "rows": 42040
+        },
+        {
+          "priceUnit": "bundle",
+          "arrivalUnit": "bundle",
+          "rows": 35191
+        }
+      ],
+      "unitNote": "Mass units (tonne) and count units (nos, bundle) are kept apart; counts are never converted to tonnes.",
+      "perCommodityWindows": [
+        {
+          "commodity": "Potato",
+          "observations": 35271,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Onion",
+          "observations": 33988,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Green Chilli",
+          "observations": 33198,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Tomato",
+          "observations": 32622,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Banana",
+          "observations": 31952,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1644
+        },
+        {
+          "commodity": "Brinjal",
+          "observations": 31832,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Cabbage",
+          "observations": 31601,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Cauliflower",
+          "observations": 30879,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Cucumbar(Kheera)",
+          "observations": 29840,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Bitter gourd",
+          "observations": 29500,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Pumpkin",
+          "observations": 29089,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Bottle gourd",
+          "observations": 28952,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Bhindi(Ladies Finger)",
+          "observations": 28657,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Carrot",
+          "observations": 27763,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Apple",
+          "observations": 27251,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1644
+        },
+        {
+          "commodity": "Ginger(Green)",
+          "observations": 27186,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Paddy(Common)",
+          "observations": 25987,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1644
+        },
+        {
+          "commodity": "Raddish",
+          "observations": 25862,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Capsicum",
+          "observations": 24516,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Garlic",
+          "observations": 24081,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Papaya",
+          "observations": 23948,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1644
+        },
+        {
+          "commodity": "Mousambi(Sweet Lime)",
+          "observations": 23049,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1644
+        },
+        {
+          "commodity": "Pomegranate",
+          "observations": 22588,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1644
+        },
+        {
+          "commodity": "Lemon",
+          "observations": 21288,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        },
+        {
+          "commodity": "Ridgeguard(Tori)",
+          "observations": 20810,
+          "first": "2022-01-01",
+          "last": "2026-07-02",
+          "daysWithData": 1521
+        }
+      ],
+      "coverageGaps": {
+        "scope": "days with no observation at all in this dataset (all commodities together), longest first",
+        "longestGaps": []
+      },
+      "unitAssumptions": [
+        {
+          "code": "state_arrivals_are_not_mandi_arrivals",
+          "statement": "Arrival quantities are state-level totals as reported. They are never attributed to any market.",
+          "evidence": "docs/data-sources/DATASET_COVERAGE.md section 1 (dataset B is state level)"
+        }
+      ]
+    }
+  },
+  "mandiLevelVersusStateLevel": "Mandi-level (dataset A) and state-level (dataset B) coverage are reported separately and are not comparable or additive."
+}

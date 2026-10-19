@@ -87,7 +87,7 @@ separate fact tables for mandi-daily, state-daily, national-monthly price and na
 observations (an index has no currency or unit, so it cannot be stored as a price). Constraints enforce
 non-negative values, price ordering, unit/currency pairing, valid dates and cross-entity consistency.
 
-### Phase 2, Milestone 2.2: historical ingestion (verified in disposable databases only)
+### Phase 2, Milestone 2.2: historical ingestion
 
 A resumable, auditable ingestion framework and importers for the four historical datasets (order D, C, A, B)
 load the canonical schema through a separate least-privilege ingestion role (SELECT and INSERT; the
@@ -100,8 +100,20 @@ quintal) are recorded explicitly; count units are never converted to mass. In a 
 conflict or quarantined); repeating the imports adds nothing. Reports are in
 `database/reports/milestone-2.2/`; design and measurements in `database/docs/INGESTION.md`.
 
-**Nothing has been imported into the development database** (that needs the owner's approval). There are no
-market APIs, models, forecasts, risk engine, simulation or AI copilot yet.
+After the owner's approval, the same pipeline (importer 2.2.1, restricted `fasalytics_ingest` role, backup and
+restore rehearsal first) imported the four datasets into the **development database**: 2,698,327 observations,
+82/82 independent reconciliation checks passed. The data is historical, not live.
+
+### Phase 2, Milestone 2.3A: read-only historical market APIs
+
+Express serves the imported data read-only under `/api/v1` (states, districts, commodities, markets, mandi-,
+state- and national-level prices, WPI, sources and coverage), using the `SELECT`-only application role inside
+`READ ONLY` transactions, with validated parameters, bounded windows and cursor pagination. The four
+granularities stay separate; every response states it is a historical snapshot (`is_live: false`); unit
+assumptions, the 1,610 unverified markets, the 49 unresolved district labels, the provisional Keralam mapping and
+the unresolved Gao label are exposed rather than hidden. See `docs/api/historical-market-api.md` and the OpenAPI
+contract. The React frontend is **not** connected yet. There are no models, forecasts, risk engine, simulation or
+AI copilot, and no live-data ingestion.
 
 ### Decisions recorded during Phase 1
 

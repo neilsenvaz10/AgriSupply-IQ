@@ -50,7 +50,7 @@ export function createApp(config, deps = {}) {
   };
   app.use('/health', createHealthRouter(config, probe));
   app.use('/ready', createReadyRouter(config, probe));
-  app.use('/api/v1', createV1Router());
+  app.use('/api/v1', createV1Router(deps.pool));
   app.use(notFound);
   app.use(errorHandler(logger));
   return app;

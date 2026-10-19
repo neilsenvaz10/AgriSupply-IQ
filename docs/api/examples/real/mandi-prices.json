@@ -1,0 +1,136 @@
+{
+  "_about": "REAL RESPONSE captured from the FASALYTICS development database (imported historical records, importer 2.2.1). Not a fixture.",
+  "request": "GET /api/v1/mandi-prices?commodity_id=30e94149-3299-4aa6-90b3-4b7bafc45b91&from=2023-08-01&to=2023-08-31&limit=2",
+  "captured_at": "2026-10-19T17:42:21Z",
+  "response": {
+    "pagination": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "WyIyMDIzLTA4LTAxIiwiMDAwZDZmNGItOTNjNS00Mzc4LWEyZTMtYmUxOTRhODZmMDY1Il0"
+    },
+    "data": [
+      {
+        "id": "000b253f-51b1-45dc-9e73-8ca66d454829",
+        "granularity": "mandi_daily",
+        "observed_date": "2023-08-01",
+        "market": {
+          "id": "dca38aa5-d338-4969-854e-4b23457c9f15",
+          "name": "Kareli",
+          "verification_status": "unverified",
+          "district_status": "resolved"
+        },
+        "state": {
+          "id": "77a6441e-a612-4412-b30d-f4040a18adc4",
+          "name": "MADHYA PRADESH",
+          "mapping_status": "resolved"
+        },
+        "district": {
+          "id": "094f5d90-4272-4bd6-9adc-757e822404a8",
+          "name": "NARSINGHPUR"
+        },
+        "commodity": {
+          "id": "30e94149-3299-4aa6-90b3-4b7bafc45b91",
+          "name": "Wheat"
+        },
+        "variety": {
+          "id": "cd9be944-b500-4492-9311-12ef7297ddb2",
+          "label": "Deshi"
+        },
+        "grade": "FAQ",
+        "min_price": 2390,
+        "max_price": 2457,
+        "modal_price": 2424,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "source_price_unit_label": null,
+        "unit_basis": "assumed_from_documentation",
+        "source_labels": {
+          "state": "Madhya Pradesh",
+          "district": "narsinghpur",
+          "market": "Kareli",
+          "commodity": "Wheat"
+        },
+        "provenance": {
+          "source_code": "mandi_daily_prices_historical",
+          "source_file_id": "d160afb4-4b7d-47fa-b258-1b7500bdab72",
+          "ingestion_run_id": "905a9358-de12-486d-a6e8-be6405878bff",
+          "source_row_number": 88509,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      },
+      {
+        "id": "000d6f4b-93c5-4378-a2e3-be194a86f065",
+        "granularity": "mandi_daily",
+        "observed_date": "2023-08-01",
+        "market": {
+          "id": "a5670b47-d412-4893-8303-8f956adfc231",
+          "name": "Patan",
+          "verification_status": "unverified",
+          "district_status": "resolved"
+        },
+        "state": {
+          "id": "b2758ca5-8679-4f94-ba0c-7e93d32d1bca",
+          "name": "GUJARAT",
+          "mapping_status": "resolved"
+        },
+        "district": {
+          "id": "bb8a769c-c5c7-4028-acd0-4ff676e6c13d",
+          "name": "PATAN"
+        },
+        "commodity": {
+          "id": "30e94149-3299-4aa6-90b3-4b7bafc45b91",
+          "name": "Wheat"
+        },
+        "variety": {
+          "id": null,
+          "label": "Other"
+        },
+        "grade": "FAQ",
+        "min_price": 2205,
+        "max_price": 2650,
+        "modal_price": 2430,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "source_price_unit_label": null,
+        "unit_basis": "assumed_from_documentation",
+        "source_labels": {
+          "state": "Gujarat",
+          "district": "patan",
+          "market": "Patan",
+          "commodity": "Wheat"
+        },
+        "provenance": {
+          "source_code": "mandi_daily_prices_historical",
+          "source_file_id": "d160afb4-4b7d-47fa-b258-1b7500bdab72",
+          "ingestion_run_id": "905a9358-de12-486d-a6e8-be6405878bff",
+          "source_row_number": 89471,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "mandi_daily",
+      "unit_note": "Prices are assumed to be INR per quintal (unit_basis \"assumed_from_documentation\"); the source file states no unit.",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "market_verification": "Market identities are created from source labels. No authoritative market list exists, so every market is \"unverified\".",
+      "window": {
+        "from": "2023-08-01",
+        "to": "2023-08-31"
+      },
+      "separation": "Mandi-level rows only. Missing mandi prices are never filled from state or national data, and this dataset has no arrivals."
+    }
+  }
+}
