@@ -110,9 +110,7 @@
         "reconciled": true
       },
       "initialLoad": {
-        "runIds": [
-          "9c437439-c4a8-4a50-8fa5-cd34bbf9cfbe"
-        ],
+        "runIds": ["9c437439-c4a8-4a50-8fa5-cd34bbf9cfbe"],
         "runsInChain": 1,
         "note": "A single run.",
         "file": {
@@ -510,9 +508,7 @@
         "reconciled": true
       },
       "initialLoad": {
-        "runIds": [
-          "be7a7551-0775-44ae-a44f-171835a9c654"
-        ],
+        "runIds": ["be7a7551-0775-44ae-a44f-171835a9c654"],
         "runsInChain": 1,
         "note": "A single run.",
         "file": {
@@ -783,9 +779,7 @@
         "reconciled": true
       },
       "initialLoad": {
-        "runIds": [
-          "905a9358-de12-486d-a6e8-be6405878bff"
-        ],
+        "runIds": ["905a9358-de12-486d-a6e8-be6405878bff"],
         "runsInChain": 1,
         "note": "A single run.",
         "file": {
@@ -995,9 +989,7 @@
         "reconciled": true
       },
       "initialLoad": {
-        "runIds": [
-          "583a8bfc-11ed-4cd7-9193-9d88cd44c905"
-        ],
+        "runIds": ["583a8bfc-11ed-4cd7-9193-9d88cd44c905"],
         "runsInChain": 1,
         "note": "A single run.",
         "file": {

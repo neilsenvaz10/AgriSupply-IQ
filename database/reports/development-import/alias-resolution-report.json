@@ -1001,169 +1001,86 @@
       {
         "name": "banda",
         "identities": 2,
-        "states": [
-          "MADHYA PRADESH",
-          "UTTAR PRADESH"
-        ],
-        "places": [
-          "BANDA",
-          "SAGAR"
-        ]
+        "states": ["MADHYA PRADESH", "UTTAR PRADESH"],
+        "places": ["BANDA", "SAGAR"]
       },
       {
         "name": "dindori",
         "identities": 2,
-        "states": [
-          "MADHYA PRADESH",
-          "MAHARASHTRA"
-        ],
-        "places": [
-          "DINDORI",
-          "NASHIK"
-        ]
+        "states": ["MADHYA PRADESH", "MAHARASHTRA"],
+        "places": ["DINDORI", "NASHIK"]
       },
       {
         "name": "fatehabad",
         "identities": 2,
-        "states": [
-          "HARYANA",
-          "UTTAR PRADESH"
-        ],
-        "places": [
-          "AGRA",
-          "FATEHABAD"
-        ]
+        "states": ["HARYANA", "UTTAR PRADESH"],
+        "places": ["AGRA", "FATEHABAD"]
       },
       {
         "name": "fatehpur",
         "identities": 2,
-        "states": [
-          "RAJASTHAN",
-          "UTTAR PRADESH"
-        ],
-        "places": [
-          "FATEHPUR",
-          "SIKAR"
-        ]
+        "states": ["RAJASTHAN", "UTTAR PRADESH"],
+        "places": ["FATEHPUR", "SIKAR"]
       },
       {
         "name": "gorakhpur",
         "identities": 2,
-        "states": [
-          "MADHYA PRADESH",
-          "UTTAR PRADESH"
-        ],
-        "places": [
-          "DINDORI",
-          "GORAKHPUR"
-        ]
+        "states": ["MADHYA PRADESH", "UTTAR PRADESH"],
+        "places": ["DINDORI", "GORAKHPUR"]
       },
       {
         "name": "jalalabad",
         "identities": 2,
-        "states": [
-          "PUNJAB",
-          "UTTAR PRADESH"
-        ],
-        "places": [
-          "FAZILKA",
-          "SHAHJAHANPUR"
-        ]
+        "states": ["PUNJAB", "UTTAR PRADESH"],
+        "places": ["FAZILKA", "SHAHJAHANPUR"]
       },
       {
         "name": "kota",
         "identities": 2,
-        "states": [
-          "CHHATTISGARH",
-          "RAJASTHAN"
-        ],
-        "places": [
-          "BILASPUR",
-          "KOTA"
-        ]
+        "states": ["CHHATTISGARH", "RAJASTHAN"],
+        "places": ["BILASPUR", "KOTA"]
       },
       {
         "name": "nokha",
         "identities": 2,
-        "states": [
-          "BIHAR",
-          "RAJASTHAN"
-        ],
-        "places": [
-          "BIKANER",
-          "ROHTAS"
-        ]
+        "states": ["BIHAR", "RAJASTHAN"],
+        "places": ["BIKANER", "ROHTAS"]
       },
       {
         "name": "padampur",
         "identities": 2,
-        "states": [
-          "ODISHA",
-          "RAJASTHAN"
-        ],
-        "places": [
-          "BARGARH",
-          "GANGANAGAR"
-        ]
+        "states": ["ODISHA", "RAJASTHAN"],
+        "places": ["BARGARH", "GANGANAGAR"]
       },
       {
         "name": "patan",
         "identities": 2,
-        "states": [
-          "GUJARAT",
-          "MAHARASHTRA"
-        ],
-        "places": [
-          "PATAN",
-          "SATARA"
-        ]
+        "states": ["GUJARAT", "MAHARASHTRA"],
+        "places": ["PATAN", "SATARA"]
       },
       {
         "name": "pratapgarh",
         "identities": 2,
-        "states": [
-          "RAJASTHAN",
-          "UTTAR PRADESH"
-        ],
-        "places": [
-          "PRATAPGARH"
-        ]
+        "states": ["RAJASTHAN", "UTTAR PRADESH"],
+        "places": ["PRATAPGARH"]
       },
       {
         "name": "shahabad",
         "identities": 2,
-        "states": [
-          "HARYANA",
-          "UTTAR PRADESH"
-        ],
-        "places": [
-          "KURUKSHETRA",
-          "RAMPUR"
-        ]
+        "states": ["HARYANA", "UTTAR PRADESH"],
+        "places": ["KURUKSHETRA", "RAMPUR"]
       },
       {
         "name": "sirsa",
         "identities": 2,
-        "states": [
-          "HARYANA",
-          "UTTAR PRADESH"
-        ],
-        "places": [
-          "PRAYAGRAJ",
-          "SIRSA"
-        ]
+        "states": ["HARYANA", "UTTAR PRADESH"],
+        "places": ["PRAYAGRAJ", "SIRSA"]
       },
       {
         "name": "sultanpur",
         "identities": 2,
-        "states": [
-          "PUNJAB",
-          "UTTAR PRADESH"
-        ],
-        "places": [
-          "Amethi",
-          "KAPURTHALA"
-        ]
+        "states": ["PUNJAB", "UTTAR PRADESH"],
+        "places": ["Amethi", "KAPURTHALA"]
       }
     ],
     "withUnresolvedDistrict": [
@@ -2238,18 +2155,10 @@
     "possibleDuplicateLabels": [
       {
         "key": "barleyjau",
-        "labels": [
-          "Barley (Jau)",
-          "Barley(Jau)"
-        ]
+        "labels": ["Barley (Jau)", "Barley(Jau)"]
       }
     ],
     "note": "Commodities are created per exact label; these differ only by punctuation or spacing and are NOT merged."
   },
-  "datasetsCovered": [
-    "D",
-    "C",
-    "A",
-    "B"
-  ]
+  "datasetsCovered": ["D", "C", "A", "B"]
 }

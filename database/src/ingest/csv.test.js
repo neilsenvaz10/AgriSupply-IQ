@@ -1,3 +1,5 @@
+import v8 from 'node:v8';
+import vm from 'node:vm';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -86,20 +88,29 @@ describe('streaming CSV reader', () => {
   });
 
   it('streams a large file with bounded memory (rows are not retained)', async () => {
+    // Measure RETAINED memory, not garbage: force a collection before every sample. Without it the
+    // heap grows with uncollected garbage and the result depends on when V8 happens to collect.
+    v8.setFlagsFromString('--expose-gc');
+    const collect = vm.runInNewContext('gc');
     const lines = ['id,value'];
     for (let i = 0; i < 300_000; i += 1) lines.push(`${i},${'x'.repeat(40)}`);
     const path = file('big.csv', lines.join('\n') + '\n');
+    lines.length = 0; // the test's own copy of the text is not part of what is measured
+    collect();
     const before = process.memoryUsage().heapUsed;
     let count = 0;
     let peak = 0;
     const { records } = await readCsv(path);
     for await (const r of records) {
       count += 1;
-      if (count % 50_000 === 0) peak = Math.max(peak, process.memoryUsage().heapUsed - before);
+      if (count % 50_000 === 0) {
+        collect();
+        peak = Math.max(peak, process.memoryUsage().heapUsed - before);
+      }
       if (r.rowNumber !== count) throw new Error('row numbering broke');
     }
     expect(count).toBe(300_000);
-    // The file is ~15 MB of text; retaining every row would cost far more than this bound.
-    expect(peak).toBeLessThan(120 * 1024 * 1024);
+    // Retaining the 300,000 parsed rows would cost on the order of 100 MB; streaming retains almost nothing.
+    expect(peak).toBeLessThan(40 * 1024 * 1024);
   });
 });
