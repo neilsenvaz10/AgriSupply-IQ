@@ -6,7 +6,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createDb } from './client.js';
 import { runMigrations } from './migrate.js';
 import { systemMetadata } from './schema/index.js';
-import { shouldRunIntegration } from './test/db.js';
+import { describeIntegration } from './test/db.js';
+import { assertDisposable } from './test/disposable.js';
 import { runVerification } from './verify.js';
 
 /**
@@ -51,7 +52,7 @@ async function tryConnect(url) {
   }
 }
 
-describe.runIf(shouldRunIntegration)('PostgreSQL (real container)', () => {
+describeIntegration('PostgreSQL (real container)', () => {
   /** @type {ReturnType<typeof createDb>} */
   let app;
   /** @type {ReturnType<typeof createDb>} */
@@ -60,6 +61,7 @@ describe.runIf(shouldRunIntegration)('PostgreSQL (real container)', () => {
   const createdKeys = [];
 
   beforeAll(async () => {
+    await assertDisposable();
     await runMigrations(migrationUrl);
     app = createDb(appUrl);
     migrator = createDb(migrationUrl);

@@ -6,7 +6,7 @@
 > **Status:** Phase 1 (foundation) is implemented and verified locally; the first GitHub Actions run is
 > pending. The farmer-facing screens from the Stitch designs are built as **UI previews** (see
 > [apps/web/README.md](./apps/web/README.md)). No market data, models or forecasts exist yet: every
-> data-dependent screen says so. Phase 2 (data engineering) has not started.
+> data-dependent screen says so. Phase 2 (data engineering) has begun: the canonical schema and the historical importers exist and were verified in disposable databases; the development database holds no agricultural data yet.
 
 ---
 
@@ -293,7 +293,9 @@ needs the first successful GitHub Actions run (see [docs/process/REPOSITORY_POLI
 - [x] Milestone 11: Phase 1 close-out: GitHub Actions CI, Express `GET /ready`, cross-service request ids, OpenAPI contracts, threat model, credential policy, repository policy, clean-checkout reproduction
 - [x] Frontend integration sprint: all eight Stitch screens converted to responsive React pages (Dashboard is the landing page), plus a Profile placeholder and the System Status diagnostics page. UI previews only: no data, forecasts or recommendations are shown ([route map and data boundaries](./apps/web/README.md))
 - [ ] First GitHub Actions run passing on GitHub (required before formally closing Phase 1)
-- [ ] Phase 2: data discovery, ingestion, normalisation and storage (not started; no agricultural tables, no dataset imports, no market APIs yet)
+- [x] Phase 2 / Milestone 2.1: nationwide canonical PostgreSQL schema and data-integrity foundation ([design](./database/docs/CANONICAL_SCHEMA.md)): registries, source aliases, provenance, ingestion tracking and four granularity-separated observation tables.
+- [x] Phase 2 / Milestone 2.2: historical ingestion framework, provisional LGD registry loader, importers for the four datasets, quality and alias reports, and a least-privilege ingestion role. Verified end to end in **disposable** databases only (2,698,327 observations accepted, every input row reconciled); **not imported into the development database** ([details](./database/docs/INGESTION.md)).
+- [ ] Phase 2 / Milestone 2.3 onwards: owner review of aliases, official LGD reference, approval-gated development import, read-only market APIs (not started)
 - [ ] Phases 3-10: forecasting, risk, mandi comparison, allocation, dashboard, AI copilot, accessibility, deployment (not started)
 
 **Known limitations today:** no authentication, rate limiting or TLS (all ports are bound to loopback); the web

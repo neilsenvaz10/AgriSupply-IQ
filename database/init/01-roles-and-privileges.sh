@@ -53,3 +53,17 @@ ALTER DEFAULT PRIVILEGES FOR ROLE :"migrator_user" IN SCHEMA public
 ALTER DEFAULT PRIVILEGES FOR ROLE :"migrator_user" IN SCHEMA public
   GRANT USAGE, SELECT ON SEQUENCES TO :"app_user";
 SQL
+
+# Optional ingestion role (Phase 2, Milestone 2.2). Created only when both variables are set.
+# It may log in and use the schema; its table privileges are granted by
+# scripts/grant-ingest-privileges.js, run as the migrator AFTER the migrations (so it can grant
+# on the tables that exist then), and never include DELETE, TRUNCATE or DDL.
+if [ -n "${DB_INGEST_USER:-}" ] && [ -n "${DB_INGEST_PASSWORD:-}" ]; then
+  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB"     -v dbname="$POSTGRES_DB" -v ingest_user="$DB_INGEST_USER" -v ingest_pw="$DB_INGEST_PASSWORD" <<'SQL'
+CREATE ROLE :"ingest_user" LOGIN PASSWORD :'ingest_pw'
+  NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+ALTER ROLE :"ingest_user" SET statement_timeout = '10min';
+GRANT CONNECT ON DATABASE :"dbname" TO :"ingest_user";
+GRANT USAGE ON SCHEMA public TO :"ingest_user";
+SQL
+fi

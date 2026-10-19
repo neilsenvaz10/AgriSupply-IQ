@@ -119,12 +119,15 @@ jobs:
           admin_pw=$(openssl rand -hex 24)
           migrator_pw=$(openssl rand -hex 24)
           app_pw=$(openssl rand -hex 24)
-          for secret in "$admin_pw" "$migrator_pw" "$app_pw"; do echo "::add-mask::$secret"; done
+          disposable_token=$(openssl rand -hex 24)
+          for secret in "$admin_pw" "$migrator_pw" "$app_pw" "$disposable_token"; do echo "::add-mask::$secret"; done
           app_url="postgresql://fasalytics_app:${app_pw}@127.0.0.1:5433/fasalytics"
           {
             echo "DATABASE_URL=${app_url}"
             echo "TEST_DATABASE_URL=${app_url}"
             echo "DATABASE_MIGRATION_URL=postgresql://fasalytics_migrator:${migrator_pw}@127.0.0.1:5433/fasalytics"
+            echo "FASALYTICS_DISPOSABLE_DB=1"
+            echo "FASALYTICS_DISPOSABLE_TOKEN=${disposable_token}"
           } >> "$GITHUB_ENV"
           # The repository's own init script creates the migrator and app roles, exactly as in
           # development. The data lives only in this container and disappears with the runner.
@@ -137,6 +140,10 @@ jobs:
           # TCP check: the temporary server used during first-time initialisation has no TCP socket.
           for _ in $(seq 1 60); do
             if docker exec ci-postgres pg_isready -h 127.0.0.1 -U fasalytics_admin -d fasalytics >/dev/null 2>&1; then
+              # The disposable identity the integration tests require before they write anything
+              # (database/src/test/disposable.js): the same token in the environment and in the database.
+              docker exec ci-postgres psql -U fasalytics_admin -d fasalytics -v ON_ERROR_STOP=1 \
+                -c "ALTER DATABASE fasalytics SET fasalytics.disposable_token = '${disposable_token}'" >/dev/null
               echo "PostgreSQL is ready"; exit 0
             fi
             sleep 2
@@ -176,6 +183,13 @@ jobs:
       - name: Database - tests
         working-directory: database
         run: npm test
+
+      # Starts its own throwaway container (random port and credentials), applies only the Phase 1
+      # baseline, upgrades to the current schema, creates the ingestion role and runs the schema,
+      # privilege and ingestion integration tests. Nothing here touches the job database above.
+      - name: Database - fresh upgrade and ingestion tests (separate disposable container)
+        working-directory: database
+        run: npm run test:disposable
 
       - name: API - install, then tests including real PostgreSQL integration
         working-directory: apps/api

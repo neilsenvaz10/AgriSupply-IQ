@@ -1,6 +1,12 @@
 # Canonical agricultural schema (Phase 2, Milestone 2.1)
 
-> **Scope of this milestone:** database structure only. The schema is migration-managed and tested,
+> **Update (Milestone 2.2):** migrations 0003 and 0004 extend this schema (assumptions table, unit basis, resume
+> fields, registry provenance, read-only application role) and importers now exist; see
+> [INGESTION.md](./INGESTION.md). The text below describes Milestone 2.1 and is otherwise still accurate, except
+> that variety `Local` is a real variety (only `Other` and blank are unspecified) and the application role no
+> longer writes canonical tables.
+>
+> **Scope of Milestone 2.1:** database structure only. The schema is migration-managed and tested,
 > but **no agricultural data has been imported**. Every registry, fact, provenance and quarantine
 > table is empty after migration (the only rows are six physical units). Importers are Milestone 2.2.
 > Source of truth for the definitions: `src/schema/*.js` (Drizzle) and `migrations/0001_*`, `0002_*`.

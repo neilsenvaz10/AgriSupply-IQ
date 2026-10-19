@@ -1,0 +1,11 @@
+source_code,source_label,context,decision,target_code,note
+*,Chattisgarh,,resolved,22,common misspelling of CHHATTISGARH
+*,Orissa,,resolved,21,former name of Odisha (renamed by the Orissa (Alteration of Name) Act 2011)
+*,Tamilnadu,,resolved,33,spacing variant of TAMIL NADU
+*,Uttrakhand,,resolved,5,misspelling of UTTARAKHAND
+*,Jammu & Kashmir,,resolved,1,ampersand variant of JAMMU AND KASHMIR
+*,NCT of Delhi,,resolved,7,official long name of the union territory DELHI
+*,Pondicherry,,resolved,34,former name of PUDUCHERRY (renamed 2006)
+*,Andaman and Nicobar,,resolved,35,truncated label for ANDAMAN AND NICOBAR ISLANDS (no other Andaman or Nicobar entity exists)
+*,Keralam,,resolved,32,official English name of Kerala since the Kerala (Alteration of Name) Act 2026 (notified 2026-08-25 per press reports; primary gazette not retrieved); the 2022 LGD mirror lists it as KERALA; dataset B has no other Kerala label; owner to confirm
+*,Gao,,unresolved,,not a recognised state name; its 4 rows carry district north goa which exists only under GOA in the 2022 LGD mirror (supports Goa) but that is inference from a second unverified label so it is NOT applied; owner decision needed

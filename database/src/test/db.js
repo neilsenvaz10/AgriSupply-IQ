@@ -1,36 +1,39 @@
-import pg from 'pg';
+import { describe } from 'vitest';
+import { disposableCheck } from './disposable.js';
 
 /**
- * Whether a real database accepts connections right now.
+ * Integration tests write (migrations, fixtures, deletes), so they run ONLY against a database that
+ * proves it is disposable (see ./disposable.js). Otherwise they are reported as SKIPPED, with the
+ * reason in the suite name, and nothing is written. The development database is never such a
+ * target, even when `database/.env` points at it.
  *
- * @param {string | undefined} connectionString
- * @returns {Promise<boolean>}
+ * REQUIRE_DB=1 (used by `test:disposable` and CI) turns a missing disposable database into a
+ * FAILURE instead of a skip; it still never lets a test write to an unverified database, because
+ * every integration suite calls `assertDisposable()` before its first write.
  */
-async function canConnect(connectionString) {
-  if (!connectionString) return false;
-  const client = new pg.Client({ connectionString, connectionTimeoutMillis: 3000 });
-  client.on('error', () => undefined);
-  try {
-    await client.connect();
-    await client.query('SELECT 1');
-    return true;
-  } catch {
-    return false;
-  } finally {
-    await client.end().catch(() => undefined);
-  }
-}
+const check = await disposableCheck();
 
-/** True when the migrator and application connections both work. */
-export const databaseAvailable =
-  (await canConnect(process.env.DATABASE_MIGRATION_URL)) &&
-  (await canConnect(process.env.DATABASE_URL));
+/** True when the target is a verified disposable database. */
+export const databaseAvailable = check.ok;
 
-/**
- * Set REQUIRE_DB=1 to make the integration tests RUN (and therefore FAIL) when the database is
- * down, instead of being reported as skipped.
- */
 export const requireDatabase = process.env.REQUIRE_DB === '1';
 
-/** `describe` that runs only when the database is reachable (or REQUIRE_DB=1). */
-export const shouldRunIntegration = databaseAvailable || requireDatabase;
+/** Run the suite when the target is verified, or (to fail loudly) when REQUIRE_DB=1. */
+export const shouldRunIntegration = check.ok || requireDatabase;
+
+/** Explanation shown in the name of a skipped suite. */
+export const skipReason = check.ok
+  ? ''
+  : `SKIPPED: not a verified disposable database (${check.reason}); run \`npm run test:disposable\``;
+
+/**
+ * `describe` for database-writing integration suites.
+ *
+ * @param {string} name
+ * @param {() => void} fn
+ * @param {boolean} [extraCondition]
+ */
+export function describeIntegration(name, fn, extraCondition = true) {
+  if (shouldRunIntegration && extraCondition) return describe(name, fn);
+  return describe.skip(extraCondition ? `${name} [${skipReason}]` : name, fn);
+}

@@ -4,6 +4,8 @@ import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { MIGRATIONS_FOLDER, runMigrations } from './migrate.js';
 import * as schema from './schema/index.js';
+import { shouldRunIntegration } from './test/db.js';
+import { assertDisposable } from './test/disposable.js';
 
 /**
  * Fresh-database migration tests.
@@ -13,7 +15,7 @@ import * as schema from './schema/index.js';
  * that (a throwaway PostgreSQL container) and sets FRESH_DB_BASELINE=1. These tests are skipped
  * everywhere else, so they can never run against the development database.
  */
-const runnable = process.env.FRESH_DB_BASELINE === '1';
+const runnable = process.env.FRESH_DB_BASELINE === '1' && shouldRunIntegration;
 const migrationUrl = process.env.DATABASE_MIGRATION_URL ?? '';
 const appUrl = process.env.DATABASE_URL ?? '';
 
@@ -31,6 +33,7 @@ describe.runIf(runnable)(
     let first;
 
     beforeAll(async () => {
+      await assertDisposable();
       migrator = new pg.Pool({ connectionString: migrationUrl, max: 2 });
       app = new pg.Pool({ connectionString: appUrl, max: 2 });
     });
@@ -154,7 +157,7 @@ describe.runIf(runnable)(
       expect(ownsNothing.rows[0].n).toBe(0);
     });
 
-    it('gave the application role default DML on every new table and view, and read-only units', async () => {
+    it('leaves the application role read-only on every canonical relation (DML only on system_metadata)', async () => {
       const result = await app.query(
         `SELECT c.relname,
               has_table_privilege(current_user, c.oid, 'SELECT') AS can_select,
@@ -164,18 +167,14 @@ describe.runIf(runnable)(
               has_table_privilege(current_user, c.oid, 'TRUNCATE') AS can_truncate
          FROM pg_class c WHERE c.relnamespace = 'public'::regnamespace AND c.relkind IN ('r', 'v') ORDER BY 1`,
       );
+      expect(result.rows.length).toBeGreaterThan(20);
       for (const row of result.rows) {
         expect(row.can_select, `${row.relname} select`).toBe(true);
         expect(row.can_truncate, `${row.relname} truncate`).toBe(false);
-        if (row.relname === 'measurement_units') {
-          expect([row.can_insert, row.can_update, row.can_delete]).toEqual([false, false, false]);
-        } else if (!row.relname.endsWith('_normalized')) {
-          expect([row.can_insert, row.can_update, row.can_delete], row.relname).toEqual([
-            true,
-            true,
-            true,
-          ]);
-        }
+        const writes = [row.can_insert, row.can_update, row.can_delete];
+        if (row.relname === 'system_metadata')
+          expect(writes, row.relname).toEqual([true, true, true]);
+        else expect(writes, row.relname).toEqual([false, false, false]);
       }
     });
   },

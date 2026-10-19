@@ -30,7 +30,10 @@ const INIT_DIR = join(DATABASE_DIR, 'init');
 const IMAGE = 'postgres:17-alpine';
 const name = `fasalytics-test-${randomBytes(4).toString('hex')}`;
 const secret = () => randomBytes(24).toString('hex');
-const [adminPw, migratorPw, appPw] = [secret(), secret(), secret()];
+const [adminPw, migratorPw, appPw, ingestPw] = [secret(), secret(), secret(), secret()];
+// The disposable identity: stored IN this database (ALTER DATABASE ... SET) and in the test environment.
+// The integration tests refuse to write unless both match (src/test/disposable.js).
+const disposableToken = secret();
 
 /** @returns {Promise<number>} */
 function freePort() {
@@ -101,6 +104,10 @@ async function main() {
     'DB_APP_USER=fasalytics_app',
     '-e',
     `DB_APP_PASSWORD=${appPw}`,
+    '-e',
+    'DB_INGEST_USER=fasalytics_ingest',
+    '-e',
+    `DB_INGEST_PASSWORD=${ingestPw}`,
     '-v',
     `${INIT_DIR}:/docker-entrypoint-initdb.d:ro`,
     '-p',
@@ -127,13 +134,33 @@ async function main() {
     if (!ready) await new Promise((r) => setTimeout(r, 1000));
   }
   if (!ready) throw new Error('the disposable database did not become ready');
+  const identity = docker([
+    'exec',
+    name,
+    'psql',
+    '-U',
+    'fasalytics_admin',
+    '-d',
+    'fasalytics',
+    '-v',
+    'ON_ERROR_STOP=1',
+    '-c',
+    `ALTER DATABASE fasalytics SET fasalytics.disposable_token = '${disposableToken}'`,
+  ]);
+  if (identity.status !== 0)
+    throw new Error('could not stamp the disposable identity on the database');
 
   const migrationUrl = `postgresql://fasalytics_migrator:${migratorPw}@127.0.0.1:${port}/fasalytics`;
   const appUrl = `postgresql://fasalytics_app:${appPw}@127.0.0.1:${port}/fasalytics`;
+  const ingestUrl = `postgresql://fasalytics_ingest:${ingestPw}@127.0.0.1:${port}/fasalytics`;
   const env = {
     ...process.env,
     DATABASE_URL: appUrl,
     DATABASE_MIGRATION_URL: migrationUrl,
+    DATABASE_INGEST_URL: ingestUrl,
+    DB_INGEST_USER: 'fasalytics_ingest',
+    FASALYTICS_DISPOSABLE_DB: '1',
+    FASALYTICS_DISPOSABLE_TOKEN: disposableToken,
     REQUIRE_DB: '1',
     FRESH_DB_BASELINE: '',
   };
@@ -171,13 +198,29 @@ async function main() {
     { ...env, FRESH_DB_BASELINE: '1' },
   );
   await step(
+    'grant the ingestion role its narrow privileges (as the migrator)',
+    ['node', 'scripts/grant-ingest-privileges.js'],
+    env,
+  );
+  await step(
     'drizzle-kit check (migration history consistent)',
     [...npx, 'drizzle-kit', 'check'],
     env,
   );
   await step('migration runner (must report up to date)', ['node', 'src/migrate.js'], env);
   await step('privilege and data-access verification', ['node', 'src/verify.js'], env);
-  await step('full database test suite (REQUIRE_DB=1)', [...npx, 'vitest', 'run'], env);
+  // Optional: FASALYTICS_TEST_JSON=<file> also writes a machine-readable result (used to audit skips).
+  const jsonOut = process.env.FASALYTICS_TEST_JSON;
+  await step(
+    'full database test suite (REQUIRE_DB=1)',
+    [
+      ...npx,
+      'vitest',
+      'run',
+      ...(jsonOut ? ['--reporter=default', '--reporter=json', `--outputFile.json=${jsonOut}`] : []),
+    ],
+    env,
+  );
   console.log('\nDisposable verification PASSED.');
 }
 

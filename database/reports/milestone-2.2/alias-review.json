@@ -1,0 +1,380 @@
+{
+  "stateAliases": [
+    {
+      "sourceLabel": "Chattisgarh",
+      "proposed": "CHHATTISGARH (22)",
+      "evidence": "Spelling variant; LGD 2022 state 22 is CHHATTISGARH. Dataset A uses both spellings (districts rajnandgaon, durg, janjgir under this one are Chhattisgarh districts). A: 2,603 rows; B: 73,596 rows",
+      "confidence": "High",
+      "applied": "Yes, through the reviewed decision file (not guessed)",
+      "manualApproval": "Routine sign-off"
+    },
+    {
+      "sourceLabel": "Orissa",
+      "proposed": "ODISHA (21)",
+      "evidence": "Official rename (Orissa (Alteration of Name) Act 2011); LGD 2022 state 21 is ODISHA. Districts bargarh, dhenkanal, keonjhar, khurda are Odisha districts. A: 20,633 rows",
+      "confidence": "High",
+      "applied": "Yes, reviewed decision",
+      "manualApproval": "Routine sign-off"
+    },
+    {
+      "sourceLabel": "Tamilnadu",
+      "proposed": "TAMIL NADU (33)",
+      "evidence": "Spacing variant; LGD state 33. Dataset A also uses the correct spelling for 26 other rows. A: 66,602 rows",
+      "confidence": "High",
+      "applied": "Yes, reviewed decision",
+      "manualApproval": "Routine sign-off"
+    },
+    {
+      "sourceLabel": "Uttrakhand",
+      "proposed": "UTTARAKHAND (5)",
+      "evidence": "Spelling variant; LGD state 5. Its only district, champawat, is an Uttarakhand district. A: 46 rows",
+      "confidence": "High",
+      "applied": "Yes, reviewed decision",
+      "manualApproval": "Routine sign-off"
+    },
+    {
+      "sourceLabel": "Jammu & Kashmir",
+      "proposed": "JAMMU AND KASHMIR (1)",
+      "evidence": "Ampersand variant of the LGD name (union territory, code 1). Ladakh is a separate LGD entity (37) and is not merged. A: 5,299 rows",
+      "confidence": "High",
+      "applied": "Yes, reviewed decision",
+      "manualApproval": "Routine sign-off"
+    },
+    {
+      "sourceLabel": "NCT of Delhi",
+      "proposed": "DELHI (7)",
+      "evidence": "Official long name of the union territory; LGD 2022 lists DELHI (7). B: 89,064 rows",
+      "confidence": "High",
+      "applied": "Yes, reviewed decision",
+      "manualApproval": "Routine sign-off"
+    },
+    {
+      "sourceLabel": "Pondicherry",
+      "proposed": "PUDUCHERRY (34)",
+      "evidence": "Former name (renamed 2006); LGD 2022 lists PUDUCHERRY (34). B: 3,796 rows",
+      "confidence": "High",
+      "applied": "Yes, reviewed decision",
+      "manualApproval": "Routine sign-off"
+    },
+    {
+      "sourceLabel": "Andaman and Nicobar",
+      "proposed": "ANDAMAN AND NICOBAR ISLANDS (35)",
+      "evidence": "Truncated label; no other Andaman or Nicobar entity exists in LGD 2022. B: 6,409 rows",
+      "confidence": "High",
+      "applied": "Yes, reviewed decision",
+      "manualApproval": "Routine sign-off"
+    },
+    {
+      "sourceLabel": "Keralam",
+      "proposed": "KERALA (32) - applied, pending owner confirmation",
+      "evidence": "The 2022 LGD mirror cannot evidence this: it lists only KERALA. External evidence: press reports say the Kerala (Alteration of Name) Act 2026 was notified on 2026-08-25, making Keralam the official English name; I did not retrieve the gazette itself. Internal evidence: dataset B has no other Kerala label while it lists the other states under their usual names; dataset A's Kerala labels use Kerala districts. B: 131,223 rows (dated from 2022-01-01, so the source relabelled history)",
+      "confidence": "Medium-high (identity is very likely; documentary evidence is secondary)",
+      "applied": "Yes, through the reviewed decision file, which I wrote (the importer did not guess it)",
+      "manualApproval": "YES: confirm against the gazette or an official LGD export. If rejected, 131,223 rows of B move to quarantine on re-import"
+    },
+    {
+      "sourceLabel": "Gao",
+      "proposed": "unresolved (not mapped)",
+      "evidence": "Not a state name. Its 4 rows (dataset A) carry district north goa, which exists only under GOA in the LGD 2022 mirror, so Goa is plausible. That is inference from a second unverified label, so it is NOT applied",
+      "confidence": "Unresolved",
+      "applied": "No: kept unresolved; 4 rows quarantined (unmapped_entity)",
+      "manualApproval": "YES: an owner decision is needed to map it to Goa; 4 rows"
+    }
+  ],
+  "unresolvedDistricts": [
+    {
+      "state": "uttar pradesh",
+      "district": "bulandshahar",
+      "rows": 10716,
+      "markets": 9
+    },
+    {
+      "state": "uttar pradesh",
+      "district": "badaun",
+      "rows": 7343,
+      "markets": 8
+    },
+    {
+      "state": "haryana",
+      "district": "yamuna nagar",
+      "rows": 6052,
+      "markets": 6
+    },
+    {
+      "state": "andhra pradesh",
+      "district": "hyderabad",
+      "rows": 4984,
+      "markets": 5
+    },
+    {
+      "state": "haryana",
+      "district": "gurgaon",
+      "rows": 4503,
+      "markets": 4
+    },
+    {
+      "state": "delhi",
+      "district": "delhi",
+      "rows": 3713,
+      "markets": 5
+    },
+    {
+      "state": "west bengal",
+      "district": "puruliya",
+      "rows": 3452,
+      "markets": 3
+    },
+    {
+      "state": "maharashtra",
+      "district": "sholapur",
+      "rows": 3278,
+      "markets": 12
+    },
+    {
+      "state": "haryana",
+      "district": "mewat",
+      "rows": 3135,
+      "markets": 4
+    },
+    {
+      "state": "punjab",
+      "district": "muktsar",
+      "rows": 3007,
+      "markets": 4
+    },
+    {
+      "state": "west bengal",
+      "district": "north 24 parganas",
+      "rows": 2814,
+      "markets": 2
+    },
+    {
+      "state": "gujarat",
+      "district": "ahmedabad",
+      "rows": 2767,
+      "markets": 5
+    },
+    {
+      "state": "karnataka",
+      "district": "bangalore",
+      "rows": 2639,
+      "markets": 7
+    },
+    {
+      "state": "orissa",
+      "district": "keonjhar",
+      "rows": 2118,
+      "markets": 5
+    },
+    {
+      "state": "tamilnadu",
+      "district": "thirunelveli",
+      "rows": 2110,
+      "markets": 8
+    },
+    {
+      "state": "tamilnadu",
+      "district": "kancheepuram",
+      "rows": 2054,
+      "markets": 6
+    },
+    {
+      "state": "madhya pradesh",
+      "district": "hoshangabad",
+      "rows": 1952,
+      "markets": 9
+    },
+    {
+      "state": "uttar pradesh",
+      "district": "ambedkarnagar",
+      "rows": 1887,
+      "markets": 1
+    },
+    {
+      "state": "maharashtra",
+      "district": "amarawati",
+      "rows": 1870,
+      "markets": 13
+    },
+    {
+      "state": "gujarat",
+      "district": "dahod",
+      "rows": 1822,
+      "markets": 4
+    },
+    {
+      "state": "orissa",
+      "district": "khurda",
+      "rows": 1805,
+      "markets": 4
+    },
+    {
+      "state": "madhya pradesh",
+      "district": "khandwa",
+      "rows": 1478,
+      "markets": 7
+    },
+    {
+      "state": "andhra pradesh",
+      "district": "warangal",
+      "rows": 1379,
+      "markets": 2
+    },
+    {
+      "state": "karnataka",
+      "district": "chikmagalur",
+      "rows": 1288,
+      "markets": 5
+    },
+    {
+      "state": "karnataka",
+      "district": "shimoga",
+      "rows": 1175,
+      "markets": 3
+    },
+    {
+      "state": "andhra pradesh",
+      "district": "nalgonda",
+      "rows": 899,
+      "markets": 2
+    },
+    {
+      "state": "karnataka",
+      "district": "belgaum",
+      "rows": 800,
+      "markets": 5
+    },
+    {
+      "state": "punjab",
+      "district": "nawanshahr",
+      "rows": 785,
+      "markets": 5
+    },
+    {
+      "state": "andhra pradesh",
+      "district": "medak",
+      "rows": 784,
+      "markets": 6
+    },
+    {
+      "state": "karnataka",
+      "district": "mysore",
+      "rows": 681,
+      "markets": 6
+    },
+    {
+      "state": "andhra pradesh",
+      "district": "mahbubnagar",
+      "rows": 678,
+      "markets": 4
+    },
+    {
+      "state": "uttar pradesh",
+      "district": "kushinagar",
+      "rows": 560,
+      "markets": 1
+    },
+    {
+      "state": "gujarat",
+      "district": "sabarkantha",
+      "rows": 519,
+      "markets": 5
+    },
+    {
+      "state": "orissa",
+      "district": "angul",
+      "rows": 403,
+      "markets": 5
+    },
+    {
+      "state": "karnataka",
+      "district": "bijapur",
+      "rows": 198,
+      "markets": 3
+    },
+    {
+      "state": "andhra pradesh",
+      "district": "adilabad",
+      "rows": 174,
+      "markets": 5
+    },
+    {
+      "state": "karnataka",
+      "district": "bellary",
+      "rows": 154,
+      "markets": 2
+    },
+    {
+      "state": "karnataka",
+      "district": "tumkur",
+      "rows": 119,
+      "markets": 3
+    },
+    {
+      "state": "chattisgarh",
+      "district": "janjgir",
+      "rows": 100,
+      "markets": 4
+    },
+    {
+      "state": "madhya pradesh",
+      "district": "anupur",
+      "rows": 89,
+      "markets": 3
+    },
+    {
+      "state": "karnataka",
+      "district": "bagalkot",
+      "rows": 43,
+      "markets": 2
+    },
+    {
+      "state": "kerala",
+      "district": "palakad",
+      "rows": 39,
+      "markets": 2
+    },
+    {
+      "state": "andhra pradesh",
+      "district": "karimnagar",
+      "rows": 35,
+      "markets": 2
+    },
+    {
+      "state": "tamilnadu",
+      "district": "thiruchirappalli",
+      "rows": 26,
+      "markets": 2
+    },
+    {
+      "state": "orissa",
+      "district": "jajpur",
+      "rows": 17,
+      "markets": 1
+    },
+    {
+      "state": "tamil nadu",
+      "district": "thiruchirappalli",
+      "rows": 13,
+      "markets": 3
+    },
+    {
+      "state": "uttar pradesh",
+      "district": "kanpur",
+      "rows": 3,
+      "markets": 1
+    },
+    {
+      "state": "tamil nadu",
+      "district": "thiruvannamalai",
+      "rows": 3,
+      "markets": 1
+    },
+    {
+      "state": "andhra pradesh",
+      "district": "nizamabad",
+      "rows": 2,
+      "markets": 1
+    }
+  ]
+}

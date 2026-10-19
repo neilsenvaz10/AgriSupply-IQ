@@ -22,7 +22,9 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:disposable": "node scripts/test-disposable.js"
+    "test:disposable": "node scripts/test-disposable.js",
+    "ingest": "node src/ingest/cli.js",
+    "db:grant-ingest": "node scripts/grant-ingest-privileges.js"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",

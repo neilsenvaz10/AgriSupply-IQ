@@ -1,2 +1,5 @@
 # Shell scripts run inside Linux containers: they must keep LF line endings on every platform.
 *.sh text eol=lf
+
+# The LGD reference files are verified byte-for-byte against SHA-256 values in their manifest: never convert line endings.
+database/reference/** -text
