@@ -113,11 +113,30 @@ REQUIRE_DB=1 DB_TEST_RESTART=1 npm test       # also stop/start the db container
 
 ## Migration history
 
-| Migration                                  | Content                                                                                                                                                       |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `0000_initial_system_metadata`             | Phase 1: the neutral `system_metadata` table (never modified)                                                                                                 |
-| `0001_canonical_agricultural_schema`       | Phase 2.1: 21 tables (registries, aliases, units, sources, files, runs, rejections, conflicts, four fact tables, WPI series) with all constraints and indexes |
-| `0002_units_normalised_views_and_comments` | Phase 2.1: six physical units, two derived normalised views, read-only protection of unit conversions for the application role, table comments                |
+| Migration                                     | Content                                                                                                                                                       |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0000_initial_system_metadata`                | Phase 1: the neutral `system_metadata` table (never modified)                                                                                                 |
+| `0001_canonical_agricultural_schema`          | Phase 2.1: 21 tables (registries, aliases, units, sources, files, runs, rejections, conflicts, four fact tables, WPI series) with all constraints and indexes |
+| `0002_units_normalised_views_and_comments`    | Phase 2.1: six physical units, two derived normalised views, read-only protection of unit conversions for the application role, table comments                |
+| `0003_ingestion_provenance_and_resume`        | Phase 2.2: `source_assumptions`, `unit_basis` on price facts, run resume fields, registry provenance run                                                      |
+| `0004_restrict_application_role_to_read_only` | Phase 2.2: the application role keeps SELECT only on every canonical table (ingestion uses its own role)                                                      |
+
+### Test safety: tests never write to your development database
+
+The database integration tests migrate, insert and delete, so they run **only** against a database that proves
+it is disposable: a random token that exists both in the test environment (`FASALYTICS_DISPOSABLE_TOKEN`
+with `FASALYTICS_DISPOSABLE_DB=1`) and inside the database itself (`ALTER DATABASE ... SET
+fasalytics.disposable_token`). Host names and ports are never trusted, and `database/.env` cannot supply the
+token. An ordinary `npm test` therefore skips those suites (each skipped suite says why in its name) and writes
+nothing, even though `.env` points at the development database. `npm run test:disposable` (and the CI
+database job) create and stamp a throwaway database. Deliberate migrations stay available as
+`npm run db:migrate`. See `src/test/disposable.js` and its regression tests.
+
+### Ingesting the historical datasets (Phase 2.2)
+
+See [docs/INGESTION.md](./docs/INGESTION.md): dry-run profiling, registry loading, the four importers, resume,
+the ingestion role (`SELECT`/`INSERT` only) and the quality and alias reports in `reports/milestone-2.2/`.
+Importing into the development database needs the project owner's approval.
 
 ### Testing the schema without touching your data
 

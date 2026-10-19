@@ -22,6 +22,7 @@ const EXPECTED_TABLES = [
   'measurement_units',
   'national_monthly_prices',
   'observation_conflicts',
+  'source_assumptions',
   'source_files',
   'state_aliases',
   'state_observations',
@@ -150,7 +151,7 @@ describe('migrations folder', () => {
   const allSql = sqlFiles.map(sqlOf).join('\n');
 
   it('contains numbered SQL migrations and the drizzle-kit journal', () => {
-    expect(sqlFiles.length).toBeGreaterThanOrEqual(3);
+    expect(sqlFiles.length).toBeGreaterThanOrEqual(5);
     for (const file of sqlFiles) expect(file).toMatch(/^\d{4}_[a-z0-9_]+\.sql$/);
     expect(files).toContain('meta');
   });

@@ -1,0 +1,2164 @@
+{
+  "generatedAt": "2026-10-19T16:26:48.952Z",
+  "target": {
+    "host": "127.0.0.1",
+    "port": "64419",
+    "database": "fasalytics"
+  },
+  "reference": {
+    "manifestSummary": {
+      "referenceSet": "lgd-github-mirror-2022-12",
+      "status": "provisional-historical",
+      "referenceDate": "2022-12",
+      "licence": "Government Open Data License - India (GODL-India)",
+      "retrievedAt": "2026-10-18T15:19:39Z",
+      "authority": {
+        "origin": "Local Government Directory (LGD), Ministry of Panchayati Raj, Government of India; hosted by the National Informatics Centre (https://lgdirectory.gov.in)",
+        "mirror": "https://github.com/planemad/india-local-government-directory (administrative/ folder), community maintained, not an official publication"
+      }
+    },
+    "loadedSets": [
+      {
+        "source": "lgd-github-mirror-2022-12",
+        "statesIntroduced": 36,
+        "districtsIntroduced": 763
+      }
+    ],
+    "totals": {
+      "states": 36,
+      "districts": 763
+    },
+    "caution": "PROVISIONAL: a third-party mirror of LGD as of December 2022. It is not a verified current registry; post-2022 districts stay unresolved."
+  },
+  "policy": [
+    "A label resolves only by a reviewed decision or an exact case/whitespace-insensitive match. There is no fuzzy matching.",
+    "Unresolved, ambiguous and rejected identities are never merged; their rows are quarantined (states) or kept with a source-label identity (districts, mandis).",
+    "Districts resolve only inside their resolved state. Markets have no authoritative list: they are created from source labels as unverified."
+  ],
+  "states": [
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Andhra Pradesh",
+      "status": "resolved",
+      "resolvedTo": "ANDHRA PRADESH",
+      "note": "exact normalised match to \"ANDHRA PRADESH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Assam",
+      "status": "resolved",
+      "resolvedTo": "ASSAM",
+      "note": "exact normalised match to \"ASSAM\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Bihar",
+      "status": "resolved",
+      "resolvedTo": "BIHAR",
+      "note": "exact normalised match to \"BIHAR\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Chandigarh",
+      "status": "resolved",
+      "resolvedTo": "CHANDIGARH",
+      "note": "exact normalised match to \"CHANDIGARH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Chattisgarh",
+      "status": "resolved",
+      "resolvedTo": "CHHATTISGARH",
+      "note": "reviewed decision: common misspelling of CHHATTISGARH",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Chhattisgarh",
+      "status": "resolved",
+      "resolvedTo": "CHHATTISGARH",
+      "note": "exact normalised match to \"CHHATTISGARH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Delhi",
+      "status": "resolved",
+      "resolvedTo": "DELHI",
+      "note": "exact normalised match to \"DELHI\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Gao",
+      "status": "unresolved",
+      "resolvedTo": null,
+      "note": "reviewed decision: not a recognised state name; its 4 rows carry district north goa which exists only under GOA in the 2022 LGD mirror (supports Goa) but that is inference from a second unverified label so it is NOT applied; owner decision needed",
+      "rowsQuarantined": 4,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Gujarat",
+      "status": "resolved",
+      "resolvedTo": "GUJARAT",
+      "note": "exact normalised match to \"GUJARAT\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Haryana",
+      "status": "resolved",
+      "resolvedTo": "HARYANA",
+      "note": "exact normalised match to \"HARYANA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Himachal Pradesh",
+      "status": "resolved",
+      "resolvedTo": "HIMACHAL PRADESH",
+      "note": "exact normalised match to \"HIMACHAL PRADESH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Jammu & Kashmir",
+      "status": "resolved",
+      "resolvedTo": "JAMMU AND KASHMIR",
+      "note": "reviewed decision: ampersand variant of JAMMU AND KASHMIR",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Jammu and Kashmir",
+      "status": "resolved",
+      "resolvedTo": "JAMMU AND KASHMIR",
+      "note": "exact normalised match to \"JAMMU AND KASHMIR\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Karnataka",
+      "status": "resolved",
+      "resolvedTo": "KARNATAKA",
+      "note": "exact normalised match to \"KARNATAKA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Kerala",
+      "status": "resolved",
+      "resolvedTo": "KERALA",
+      "note": "exact normalised match to \"KERALA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Madhya Pradesh",
+      "status": "resolved",
+      "resolvedTo": "MADHYA PRADESH",
+      "note": "exact normalised match to \"MADHYA PRADESH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Maharashtra",
+      "status": "resolved",
+      "resolvedTo": "MAHARASHTRA",
+      "note": "exact normalised match to \"MAHARASHTRA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Manipur",
+      "status": "resolved",
+      "resolvedTo": "MANIPUR",
+      "note": "exact normalised match to \"MANIPUR\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Meghalaya",
+      "status": "resolved",
+      "resolvedTo": "MEGHALAYA",
+      "note": "exact normalised match to \"MEGHALAYA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Nagaland",
+      "status": "resolved",
+      "resolvedTo": "NAGALAND",
+      "note": "exact normalised match to \"NAGALAND\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Orissa",
+      "status": "resolved",
+      "resolvedTo": "ODISHA",
+      "note": "reviewed decision: former name of Odisha (renamed by the Orissa (Alteration of Name) Act 2011)",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Punjab",
+      "status": "resolved",
+      "resolvedTo": "PUNJAB",
+      "note": "exact normalised match to \"PUNJAB\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Rajasthan",
+      "status": "resolved",
+      "resolvedTo": "RAJASTHAN",
+      "note": "exact normalised match to \"RAJASTHAN\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Tamil Nadu",
+      "status": "resolved",
+      "resolvedTo": "TAMIL NADU",
+      "note": "exact normalised match to \"TAMIL NADU\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Tamilnadu",
+      "status": "resolved",
+      "resolvedTo": "TAMIL NADU",
+      "note": "reviewed decision: spacing variant of TAMIL NADU",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Tripura",
+      "status": "resolved",
+      "resolvedTo": "TRIPURA",
+      "note": "exact normalised match to \"TRIPURA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Uttar Pradesh",
+      "status": "resolved",
+      "resolvedTo": "UTTAR PRADESH",
+      "note": "exact normalised match to \"UTTAR PRADESH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Uttrakhand",
+      "status": "resolved",
+      "resolvedTo": "UTTARAKHAND",
+      "note": "reviewed decision: misspelling of UTTARAKHAND",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "West Bengal",
+      "status": "resolved",
+      "resolvedTo": "WEST BENGAL",
+      "note": "exact normalised match to \"WEST BENGAL\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Andaman and Nicobar",
+      "status": "resolved",
+      "resolvedTo": "ANDAMAN AND NICOBAR ISLANDS",
+      "note": "reviewed decision: truncated label for ANDAMAN AND NICOBAR ISLANDS (no other Andaman or Nicobar entity exists)",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Andhra Pradesh",
+      "status": "resolved",
+      "resolvedTo": "ANDHRA PRADESH",
+      "note": "exact normalised match to \"ANDHRA PRADESH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Arunachal Pradesh",
+      "status": "resolved",
+      "resolvedTo": "ARUNACHAL PRADESH",
+      "note": "exact normalised match to \"ARUNACHAL PRADESH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Assam",
+      "status": "resolved",
+      "resolvedTo": "ASSAM",
+      "note": "exact normalised match to \"ASSAM\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Bihar",
+      "status": "resolved",
+      "resolvedTo": "BIHAR",
+      "note": "exact normalised match to \"BIHAR\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Chandigarh",
+      "status": "resolved",
+      "resolvedTo": "CHANDIGARH",
+      "note": "exact normalised match to \"CHANDIGARH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Chattisgarh",
+      "status": "resolved",
+      "resolvedTo": "CHHATTISGARH",
+      "note": "reviewed decision: common misspelling of CHHATTISGARH",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Goa",
+      "status": "resolved",
+      "resolvedTo": "GOA",
+      "note": "exact normalised match to \"GOA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Gujarat",
+      "status": "resolved",
+      "resolvedTo": "GUJARAT",
+      "note": "exact normalised match to \"GUJARAT\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Haryana",
+      "status": "resolved",
+      "resolvedTo": "HARYANA",
+      "note": "exact normalised match to \"HARYANA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Himachal Pradesh",
+      "status": "resolved",
+      "resolvedTo": "HIMACHAL PRADESH",
+      "note": "exact normalised match to \"HIMACHAL PRADESH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Jammu and Kashmir",
+      "status": "resolved",
+      "resolvedTo": "JAMMU AND KASHMIR",
+      "note": "exact normalised match to \"JAMMU AND KASHMIR\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Jharkhand",
+      "status": "resolved",
+      "resolvedTo": "JHARKHAND",
+      "note": "exact normalised match to \"JHARKHAND\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Karnataka",
+      "status": "resolved",
+      "resolvedTo": "KARNATAKA",
+      "note": "exact normalised match to \"KARNATAKA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Keralam",
+      "status": "resolved",
+      "resolvedTo": "KERALA",
+      "note": "reviewed decision: official English name of Kerala since the Kerala (Alteration of Name) Act 2026 (notified 2026-08-25 per press reports; primary gazette not retrieved); the 2022 LGD mirror lists it as KERALA; dataset B has no other Kerala label; owner to confirm",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Madhya Pradesh",
+      "status": "resolved",
+      "resolvedTo": "MADHYA PRADESH",
+      "note": "exact normalised match to \"MADHYA PRADESH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Maharashtra",
+      "status": "resolved",
+      "resolvedTo": "MAHARASHTRA",
+      "note": "exact normalised match to \"MAHARASHTRA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Manipur",
+      "status": "resolved",
+      "resolvedTo": "MANIPUR",
+      "note": "exact normalised match to \"MANIPUR\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Meghalaya",
+      "status": "resolved",
+      "resolvedTo": "MEGHALAYA",
+      "note": "exact normalised match to \"MEGHALAYA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Mizoram",
+      "status": "resolved",
+      "resolvedTo": "MIZORAM",
+      "note": "exact normalised match to \"MIZORAM\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "NCT of Delhi",
+      "status": "resolved",
+      "resolvedTo": "DELHI",
+      "note": "reviewed decision: official long name of the union territory DELHI",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Nagaland",
+      "status": "resolved",
+      "resolvedTo": "NAGALAND",
+      "note": "exact normalised match to \"NAGALAND\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Odisha",
+      "status": "resolved",
+      "resolvedTo": "ODISHA",
+      "note": "exact normalised match to \"ODISHA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Pondicherry",
+      "status": "resolved",
+      "resolvedTo": "PUDUCHERRY",
+      "note": "reviewed decision: former name of PUDUCHERRY (renamed 2006)",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Punjab",
+      "status": "resolved",
+      "resolvedTo": "PUNJAB",
+      "note": "exact normalised match to \"PUNJAB\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Rajasthan",
+      "status": "resolved",
+      "resolvedTo": "RAJASTHAN",
+      "note": "exact normalised match to \"RAJASTHAN\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Tamil Nadu",
+      "status": "resolved",
+      "resolvedTo": "TAMIL NADU",
+      "note": "exact normalised match to \"TAMIL NADU\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Telangana",
+      "status": "resolved",
+      "resolvedTo": "TELANGANA",
+      "note": "exact normalised match to \"TELANGANA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Tripura",
+      "status": "resolved",
+      "resolvedTo": "TRIPURA",
+      "note": "exact normalised match to \"TRIPURA\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Uttar Pradesh",
+      "status": "resolved",
+      "resolvedTo": "UTTAR PRADESH",
+      "note": "exact normalised match to \"UTTAR PRADESH\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Uttarakhand",
+      "status": "resolved",
+      "resolvedTo": "UTTARAKHAND",
+      "note": "exact normalised match to \"UTTARAKHAND\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "West Bengal",
+      "status": "resolved",
+      "resolvedTo": "WEST BENGAL",
+      "note": "exact normalised match to \"WEST BENGAL\"",
+      "rowsQuarantined": 0,
+      "needsReview": false
+    }
+  ],
+  "statesNeedingReview": [
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Chattisgarh",
+      "status": "resolved",
+      "resolvedTo": "CHHATTISGARH",
+      "note": "reviewed decision: common misspelling of CHHATTISGARH",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Gao",
+      "status": "unresolved",
+      "resolvedTo": null,
+      "note": "reviewed decision: not a recognised state name; its 4 rows carry district north goa which exists only under GOA in the 2022 LGD mirror (supports Goa) but that is inference from a second unverified label so it is NOT applied; owner decision needed",
+      "rowsQuarantined": 4,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Jammu & Kashmir",
+      "status": "resolved",
+      "resolvedTo": "JAMMU AND KASHMIR",
+      "note": "reviewed decision: ampersand variant of JAMMU AND KASHMIR",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Orissa",
+      "status": "resolved",
+      "resolvedTo": "ODISHA",
+      "note": "reviewed decision: former name of Odisha (renamed by the Orissa (Alteration of Name) Act 2011)",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Tamilnadu",
+      "status": "resolved",
+      "resolvedTo": "TAMIL NADU",
+      "note": "reviewed decision: spacing variant of TAMIL NADU",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "mandi_daily_prices_historical",
+      "sourceLabel": "Uttrakhand",
+      "status": "resolved",
+      "resolvedTo": "UTTARAKHAND",
+      "note": "reviewed decision: misspelling of UTTARAKHAND",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Andaman and Nicobar",
+      "status": "resolved",
+      "resolvedTo": "ANDAMAN AND NICOBAR ISLANDS",
+      "note": "reviewed decision: truncated label for ANDAMAN AND NICOBAR ISLANDS (no other Andaman or Nicobar entity exists)",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Chattisgarh",
+      "status": "resolved",
+      "resolvedTo": "CHHATTISGARH",
+      "note": "reviewed decision: common misspelling of CHHATTISGARH",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Keralam",
+      "status": "resolved",
+      "resolvedTo": "KERALA",
+      "note": "reviewed decision: official English name of Kerala since the Kerala (Alteration of Name) Act 2026 (notified 2026-08-25 per press reports; primary gazette not retrieved); the 2022 LGD mirror lists it as KERALA; dataset B has no other Kerala label; owner to confirm",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "NCT of Delhi",
+      "status": "resolved",
+      "resolvedTo": "DELHI",
+      "note": "reviewed decision: official long name of the union territory DELHI",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    },
+    {
+      "source": "state_daily_prices_arrivals_historical",
+      "sourceLabel": "Pondicherry",
+      "status": "resolved",
+      "resolvedTo": "PUDUCHERRY",
+      "note": "reviewed decision: former name of PUDUCHERRY (renamed 2006)",
+      "rowsQuarantined": 0,
+      "needsReview": true
+    }
+  ],
+  "districts": {
+    "statusCounts": {
+      "resolved": 325,
+      "unresolved": 49
+    },
+    "unresolvedOrAmbiguous": [
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Andhra Pradesh",
+        "district": "adilabad",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Andhra Pradesh",
+        "district": "hyderabad",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Andhra Pradesh",
+        "district": "karimnagar",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Andhra Pradesh",
+        "district": "mahbubnagar",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Andhra Pradesh",
+        "district": "medak",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Andhra Pradesh",
+        "district": "nalgonda",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Andhra Pradesh",
+        "district": "nizamabad",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Andhra Pradesh",
+        "district": "warangal",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Chattisgarh",
+        "district": "janjgir",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Delhi",
+        "district": "delhi",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Gujarat",
+        "district": "ahmedabad",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Gujarat",
+        "district": "dahod",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Gujarat",
+        "district": "sabarkantha",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Haryana",
+        "district": "gurgaon",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Haryana",
+        "district": "mewat",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Haryana",
+        "district": "yamuna nagar",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Karnataka",
+        "district": "bagalkot",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Karnataka",
+        "district": "bangalore",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Karnataka",
+        "district": "belgaum",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Karnataka",
+        "district": "bellary",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Karnataka",
+        "district": "bijapur",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Karnataka",
+        "district": "chikmagalur",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Karnataka",
+        "district": "mysore",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Karnataka",
+        "district": "shimoga",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Karnataka",
+        "district": "tumkur",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Kerala",
+        "district": "palakad",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Madhya Pradesh",
+        "district": "anupur",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Madhya Pradesh",
+        "district": "hoshangabad",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Madhya Pradesh",
+        "district": "khandwa",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Maharashtra",
+        "district": "amarawati",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Maharashtra",
+        "district": "sholapur",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Orissa",
+        "district": "angul",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Orissa",
+        "district": "jajpur",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Orissa",
+        "district": "keonjhar",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Orissa",
+        "district": "khurda",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Punjab",
+        "district": "muktsar",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Punjab",
+        "district": "nawanshahr",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Tamil Nadu",
+        "district": "thiruchirappalli",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Tamil Nadu",
+        "district": "thiruvannamalai",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Tamilnadu",
+        "district": "kancheepuram",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Tamilnadu",
+        "district": "thiruchirappalli",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Tamilnadu",
+        "district": "thirunelveli",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Uttar Pradesh",
+        "district": "ambedkarnagar",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Uttar Pradesh",
+        "district": "badaun",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Uttar Pradesh",
+        "district": "bulandshahar",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Uttar Pradesh",
+        "district": "kanpur",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "Uttar Pradesh",
+        "district": "kushinagar",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "West Bengal",
+        "district": "north 24 parganas",
+        "status": "unresolved"
+      },
+      {
+        "source": "mandi_daily_prices_historical",
+        "state": "West Bengal",
+        "district": "puruliya",
+        "status": "unresolved"
+      }
+    ],
+    "note": "Districts absent from the December 2022 reference (created or renamed since) are unresolved. They are not invented."
+  },
+  "mandis": {
+    "totals": {
+      "markets": 1610,
+      "unverified": 1610,
+      "district_unresolved": 213
+    },
+    "note": "Every mandi is \"unverified\": there is no authoritative market list. Mandis whose district is unresolved carry the source district label as their identity.",
+    "namesSharedByDifferentIdentities": [
+      {
+        "name": "banda",
+        "identities": 2,
+        "states": ["MADHYA PRADESH", "UTTAR PRADESH"],
+        "places": ["BANDA", "SAGAR"]
+      },
+      {
+        "name": "dindori",
+        "identities": 2,
+        "states": ["MADHYA PRADESH", "MAHARASHTRA"],
+        "places": ["DINDORI", "NASHIK"]
+      },
+      {
+        "name": "fatehabad",
+        "identities": 2,
+        "states": ["HARYANA", "UTTAR PRADESH"],
+        "places": ["AGRA", "FATEHABAD"]
+      },
+      {
+        "name": "fatehpur",
+        "identities": 2,
+        "states": ["RAJASTHAN", "UTTAR PRADESH"],
+        "places": ["FATEHPUR", "SIKAR"]
+      },
+      {
+        "name": "gorakhpur",
+        "identities": 2,
+        "states": ["MADHYA PRADESH", "UTTAR PRADESH"],
+        "places": ["DINDORI", "GORAKHPUR"]
+      },
+      {
+        "name": "jalalabad",
+        "identities": 2,
+        "states": ["PUNJAB", "UTTAR PRADESH"],
+        "places": ["FAZILKA", "SHAHJAHANPUR"]
+      },
+      {
+        "name": "kota",
+        "identities": 2,
+        "states": ["CHHATTISGARH", "RAJASTHAN"],
+        "places": ["BILASPUR", "KOTA"]
+      },
+      {
+        "name": "nokha",
+        "identities": 2,
+        "states": ["BIHAR", "RAJASTHAN"],
+        "places": ["BIKANER", "ROHTAS"]
+      },
+      {
+        "name": "padampur",
+        "identities": 2,
+        "states": ["ODISHA", "RAJASTHAN"],
+        "places": ["BARGARH", "GANGANAGAR"]
+      },
+      {
+        "name": "patan",
+        "identities": 2,
+        "states": ["GUJARAT", "MAHARASHTRA"],
+        "places": ["PATAN", "SATARA"]
+      },
+      {
+        "name": "pratapgarh",
+        "identities": 2,
+        "states": ["RAJASTHAN", "UTTAR PRADESH"],
+        "places": ["PRATAPGARH"]
+      },
+      {
+        "name": "shahabad",
+        "identities": 2,
+        "states": ["HARYANA", "UTTAR PRADESH"],
+        "places": ["KURUKSHETRA", "RAMPUR"]
+      },
+      {
+        "name": "sirsa",
+        "identities": 2,
+        "states": ["HARYANA", "UTTAR PRADESH"],
+        "places": ["PRAYAGRAJ", "SIRSA"]
+      },
+      {
+        "name": "sultanpur",
+        "identities": 2,
+        "states": ["PUNJAB", "UTTAR PRADESH"],
+        "places": ["Amethi", "KAPURTHALA"]
+      }
+    ],
+    "withUnresolvedDistrict": [
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Adilabad(Rythu Bazar)",
+        "identity": "src-district:adilabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Asifabad",
+        "identity": "src-district:adilabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Bhainsa",
+        "identity": "src-district:adilabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Bowenpally",
+        "identity": "src-district:hyderabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Devarakadra",
+        "identity": "src-district:mahbubnagar"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Erragadda(Rythu Bazar)",
+        "identity": "src-district:hyderabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Gajwel",
+        "identity": "src-district:medak"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Gudimalkapur",
+        "identity": "src-district:hyderabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Hanmarkonda(Rythu Bazar)",
+        "identity": "src-district:warangal"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Jainath",
+        "identity": "src-district:adilabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Kalwakurthy",
+        "identity": "src-district:mahbubnagar"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Karimnagar",
+        "identity": "src-district:karimnagar"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Karimnagar(Rythu Bazar)",
+        "identity": "src-district:karimnagar"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "L B Nagar",
+        "identity": "src-district:hyderabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Mahabubnagar(Rythu Bazar)",
+        "identity": "src-district:mahbubnagar"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Mahboob Manison",
+        "identity": "src-district:hyderabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Mancharial",
+        "identity": "src-district:adilabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Miryalguda(Rythu Bazar)",
+        "identity": "src-district:nalgonda"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Nizamabad",
+        "identity": "src-district:nizamabad"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Sadasivpet",
+        "identity": "src-district:medak"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Sangareddy",
+        "identity": "src-district:medak"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Shadnagar",
+        "identity": "src-district:mahbubnagar"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Siddipet(Rythu Bazar)",
+        "identity": "src-district:medak"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Vantamamidi",
+        "identity": "src-district:medak"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Venkateswarnagar",
+        "identity": "src-district:nalgonda"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Warangal",
+        "identity": "src-district:warangal"
+      },
+      {
+        "state": "ANDHRA PRADESH",
+        "market": "Zaheerabad",
+        "identity": "src-district:medak"
+      },
+      {
+        "state": "CHHATTISGARH",
+        "market": "Amadula",
+        "identity": "src-district:janjgir"
+      },
+      {
+        "state": "CHHATTISGARH",
+        "market": "Champa",
+        "identity": "src-district:janjgir"
+      },
+      {
+        "state": "CHHATTISGARH",
+        "market": "Naila",
+        "identity": "src-district:janjgir"
+      },
+      {
+        "state": "CHHATTISGARH",
+        "market": "Shakti",
+        "identity": "src-district:janjgir"
+      },
+      {
+        "state": "DELHI",
+        "market": "Azadpur",
+        "identity": "src-district:delhi"
+      },
+      {
+        "state": "DELHI",
+        "market": "Keshopur",
+        "identity": "src-district:delhi"
+      },
+      {
+        "state": "DELHI",
+        "market": "Najafgarh",
+        "identity": "src-district:delhi"
+      },
+      {
+        "state": "DELHI",
+        "market": "Narela",
+        "identity": "src-district:delhi"
+      },
+      {
+        "state": "DELHI",
+        "market": "Shahdara",
+        "identity": "src-district:delhi"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Ahmedabad",
+        "identity": "src-district:ahmedabad"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Ahmedabad(Chimanbhai Patal Market Vasana)",
+        "identity": "src-district:ahmedabad"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Bavla",
+        "identity": "src-district:ahmedabad"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Bhiloda",
+        "identity": "src-district:sabarkantha"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Dahod",
+        "identity": "src-district:dahod"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Dahod(Veg. Market)",
+        "identity": "src-district:dahod"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Dhansura",
+        "identity": "src-district:sabarkantha"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Himatnagar",
+        "identity": "src-district:sabarkantha"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Khedbrahma",
+        "identity": "src-district:sabarkantha"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Limkheda",
+        "identity": "src-district:dahod"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Mandal",
+        "identity": "src-district:ahmedabad"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Sanad",
+        "identity": "src-district:ahmedabad"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Talod",
+        "identity": "src-district:sabarkantha"
+      },
+      {
+        "state": "GUJARAT",
+        "market": "Zalod(Sanjeli)",
+        "identity": "src-district:dahod"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Chhachrauli",
+        "identity": "src-district:yamuna nagar"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Farukh Nagar",
+        "identity": "src-district:gurgaon"
+      },
+      {
+        "state": "HARYANA",
+        "market": "FerozpurZirkha(Nagina)",
+        "identity": "src-district:mewat"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Gurgaon",
+        "identity": "src-district:gurgaon"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Jagadhri",
+        "identity": "src-district:yamuna nagar"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Mustafabad",
+        "identity": "src-district:yamuna nagar"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Nuh",
+        "identity": "src-district:mewat"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Pataudi",
+        "identity": "src-district:gurgaon"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Punhana",
+        "identity": "src-district:mewat"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Radaur",
+        "identity": "src-district:yamuna nagar"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Sadhaura",
+        "identity": "src-district:yamuna nagar"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Sohna",
+        "identity": "src-district:gurgaon"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Tauru",
+        "identity": "src-district:mewat"
+      },
+      {
+        "state": "HARYANA",
+        "market": "Yamuna Nagar",
+        "identity": "src-district:yamuna nagar"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Athani",
+        "identity": "src-district:belgaum"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Bagalakot",
+        "identity": "src-district:bagalkot"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Bagalkot(Bilagi)",
+        "identity": "src-district:bagalkot"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Bagepalli",
+        "identity": "src-district:chikmagalur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Bangalore",
+        "identity": "src-district:bangalore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Belgaum",
+        "identity": "src-district:belgaum"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Bellary",
+        "identity": "src-district:bellary"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Bhadravathi",
+        "identity": "src-district:shimoga"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Bijapur",
+        "identity": "src-district:bijapur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Binny Mill (F&V), Bangalore",
+        "identity": "src-district:bangalore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Channapatana",
+        "identity": "src-district:bangalore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Chikkamagalore",
+        "identity": "src-district:chikmagalur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Doddaballa Pur",
+        "identity": "src-district:bangalore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Gokak",
+        "identity": "src-district:belgaum"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Hoskote",
+        "identity": "src-district:bangalore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Hospet",
+        "identity": "src-district:bellary"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Hunsur",
+        "identity": "src-district:mysore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "K.R.Nagar",
+        "identity": "src-district:mysore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Kadur",
+        "identity": "src-district:chikmagalur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Kanakapura",
+        "identity": "src-district:bangalore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Koppa",
+        "identity": "src-district:chikmagalur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Madhugiri",
+        "identity": "src-district:tumkur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Mysore (Bandipalya)",
+        "identity": "src-district:mysore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Nanjangud",
+        "identity": "src-district:mysore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Piriya Pattana",
+        "identity": "src-district:mysore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Ramanagara",
+        "identity": "src-district:bangalore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Ramdurga",
+        "identity": "src-district:belgaum"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Sankeshwar",
+        "identity": "src-district:belgaum"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Shimoga",
+        "identity": "src-district:shimoga"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Shimogga(Theertahalli)",
+        "identity": "src-district:shimoga"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Sindagi",
+        "identity": "src-district:bijapur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Sindagi(Indi)",
+        "identity": "src-district:bijapur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Sira",
+        "identity": "src-district:tumkur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "T. Narasipura",
+        "identity": "src-district:mysore"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Tarikere",
+        "identity": "src-district:chikmagalur"
+      },
+      {
+        "state": "KARNATAKA",
+        "market": "Tumkur",
+        "identity": "src-district:tumkur"
+      },
+      {
+        "state": "KERALA",
+        "market": "Koduvayoor",
+        "identity": "src-district:palakad"
+      },
+      {
+        "state": "KERALA",
+        "market": "Kollengode",
+        "identity": "src-district:palakad"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Anuppur",
+        "identity": "src-district:anupur"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Babai",
+        "identity": "src-district:hoshangabad"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Badwah(F&V)",
+        "identity": "src-district:khandwa"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Banapura",
+        "identity": "src-district:hoshangabad"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Bankhedi",
+        "identity": "src-district:hoshangabad"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Harsood",
+        "identity": "src-district:khandwa"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Hoshangabad",
+        "identity": "src-district:hoshangabad"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Hoshangabad(F&V)",
+        "identity": "src-district:hoshangabad"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Itarsi",
+        "identity": "src-district:hoshangabad"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Jaithari",
+        "identity": "src-district:anupur"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Khandwa",
+        "identity": "src-district:khandwa"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Khandwa(F&V)",
+        "identity": "src-district:khandwa"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Kotma",
+        "identity": "src-district:anupur"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Pandhana",
+        "identity": "src-district:khandwa"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Pandhana(F&V)",
+        "identity": "src-district:khandwa"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Pipariya",
+        "identity": "src-district:hoshangabad"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Pipariya(F&V)",
+        "identity": "src-district:hoshangabad"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Sanawad(F&V)",
+        "identity": "src-district:khandwa"
+      },
+      {
+        "state": "MADHYA PRADESH",
+        "market": "Semriharchand",
+        "identity": "src-district:hoshangabad"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Achalpur",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Akkalkot",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Akluj",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Amarawati",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Amrawati(Frui & Veg. Market)",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Anajngaon",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Barshi",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Barshi(Vairag)",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Chandur Bazar",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Chandur Railway",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Daryapur",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Dhamngaon-Railway",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Dharni",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Dudhani",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Karmala",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Kurdwadi",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Kurdwadi(Modnimb)",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Laxmi Sopan Agriculture Produce Marketing Co Ltd",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Mangal Wedha",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Morshi",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Nandgaon Khandeshwar",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Pandharpur",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Solapur",
+        "identity": "src-district:sholapur"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Varud",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "MAHARASHTRA",
+        "market": "Varud(Rajura Bazar)",
+        "identity": "src-district:amarawati"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Aiginia Mandi",
+        "identity": "src-district:khurda"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Angaura",
+        "identity": "src-district:angul"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Angul",
+        "identity": "src-district:angul"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Angul(Atthamallick)",
+        "identity": "src-district:angul"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Angul(Jarapada)",
+        "identity": "src-district:angul"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Balugaon",
+        "identity": "src-district:khurda"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Champua",
+        "identity": "src-district:keonjhar"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Damana Hat",
+        "identity": "src-district:khurda"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Jajpur",
+        "identity": "src-district:jajpur"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Jatni",
+        "identity": "src-district:khurda"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Keonjhar",
+        "identity": "src-district:keonjhar"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Keonjhar(Dhekikote)",
+        "identity": "src-district:keonjhar"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Keonjhar(Jhumpura)",
+        "identity": "src-district:keonjhar"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Saharpada",
+        "identity": "src-district:keonjhar"
+      },
+      {
+        "state": "ODISHA",
+        "market": "Talcher",
+        "identity": "src-district:angul"
+      },
+      {
+        "state": "PUNJAB",
+        "market": "Balachaur",
+        "identity": "src-district:nawanshahr"
+      },
+      {
+        "state": "PUNJAB",
+        "market": "Banga",
+        "identity": "src-district:nawanshahr"
+      },
+      {
+        "state": "PUNJAB",
+        "market": "Bariwala",
+        "identity": "src-district:muktsar"
+      },
+      {
+        "state": "PUNJAB",
+        "market": "Giddarbaha",
+        "identity": "src-district:muktsar"
+      },
+      {
+        "state": "PUNJAB",
+        "market": "Malout",
+        "identity": "src-district:muktsar"
+      },
+      {
+        "state": "PUNJAB",
+        "market": "Muktsar",
+        "identity": "src-district:muktsar"
+      },
+      {
+        "state": "PUNJAB",
+        "market": "Nawan Shahar(Mandi Aur)",
+        "identity": "src-district:nawanshahr"
+      },
+      {
+        "state": "PUNJAB",
+        "market": "Nawan Shahar(Subzi Mandi)",
+        "identity": "src-district:nawanshahr"
+      },
+      {
+        "state": "PUNJAB",
+        "market": "Nawanshahar",
+        "identity": "src-district:nawanshahr"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Ambasamudram",
+        "identity": "src-district:thirunelveli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Ambasamudram(Uzhavar Sandhai )",
+        "identity": "src-district:thirunelveli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Chengalpattu",
+        "identity": "src-district:kancheepuram"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Kancheepuram(Uzhavar Sandhai )",
+        "identity": "src-district:kancheepuram"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Kanchipuram",
+        "identity": "src-district:kancheepuram"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Kandiyaperi(Uzhavar Sandhai )",
+        "identity": "src-district:thirunelveli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Kundrathur(Uzhavar Sandhai )",
+        "identity": "src-district:kancheepuram"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Lalgudi(Uzhavar Sandhai )",
+        "identity": "src-district:thiruchirappalli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Manachanallur(Uzhavar Sandhai )",
+        "identity": "src-district:thiruchirappalli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Manapparai(Uzhavar Sandhai )",
+        "identity": "src-district:thiruchirappalli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Melapalayam(Uzhavar Sandhai )",
+        "identity": "src-district:thirunelveli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "NGO Colony(Uzhavar Sandhai )",
+        "identity": "src-district:thirunelveli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Padappai(Uzhavar Sandhai )",
+        "identity": "src-district:kancheepuram"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Palayamkottai(Uzhavar Sandhai )",
+        "identity": "src-district:thirunelveli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Sankarankovil",
+        "identity": "src-district:thirunelveli"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Sunguvarchatram(Uzhavar Sandhai )",
+        "identity": "src-district:kancheepuram"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Tamarainagar(Uzhavar Sandhai )",
+        "identity": "src-district:thiruvannamalai"
+      },
+      {
+        "state": "TAMIL NADU",
+        "market": "Thenkasi",
+        "identity": "src-district:thirunelveli"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Akbarpur",
+        "identity": "src-district:ambedkarnagar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Anoop Shahar",
+        "identity": "src-district:bulandshahar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Babrala",
+        "identity": "src-district:badaun"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Badayoun",
+        "identity": "src-district:badaun"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Bilsi",
+        "identity": "src-district:badaun"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Buland Shahr",
+        "identity": "src-district:bulandshahar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Dataganj",
+        "identity": "src-district:badaun"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Divai",
+        "identity": "src-district:bulandshahar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Gulavati",
+        "identity": "src-district:bulandshahar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Jahangirabad",
+        "identity": "src-district:bulandshahar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Khurja",
+        "identity": "src-district:bulandshahar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Shahaswan",
+        "identity": "src-district:badaun"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Sikanderabad",
+        "identity": "src-district:bulandshahar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Sikarpur",
+        "identity": "src-district:bulandshahar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Siyana",
+        "identity": "src-district:bulandshahar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Tamkuhi road",
+        "identity": "src-district:kushinagar"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Ujhani",
+        "identity": "src-district:badaun"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Uttaripura",
+        "identity": "src-district:kanpur"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Visoli",
+        "identity": "src-district:badaun"
+      },
+      {
+        "state": "UTTAR PRADESH",
+        "market": "Wazirganj",
+        "identity": "src-district:badaun"
+      },
+      {
+        "state": "WEST BENGAL",
+        "market": "Balarampur",
+        "identity": "src-district:puruliya"
+      },
+      {
+        "state": "WEST BENGAL",
+        "market": "Barasat",
+        "identity": "src-district:north 24 parganas"
+      },
+      {
+        "state": "WEST BENGAL",
+        "market": "Habra",
+        "identity": "src-district:north 24 parganas"
+      },
+      {
+        "state": "WEST BENGAL",
+        "market": "Kasipur",
+        "identity": "src-district:puruliya"
+      },
+      {
+        "state": "WEST BENGAL",
+        "market": "Purulia",
+        "identity": "src-district:puruliya"
+      }
+    ]
+  },
+  "commodities": {
+    "possibleDuplicateLabels": [
+      {
+        "key": "barleyjau",
+        "labels": ["Barley (Jau)", "Barley(Jau)"]
+      }
+    ],
+    "note": "Commodities are created per exact label; these differ only by punctuation or spacing and are NOT merged."
+  },
+  "datasetsCovered": ["D", "C", "A", "B"]
+}

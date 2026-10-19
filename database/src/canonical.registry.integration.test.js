@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createDb } from './client.js';
-import { shouldRunIntegration } from './test/db.js';
+import { describeIntegration } from './test/db.js';
+import { assertDisposable } from './test/disposable.js';
 import {
   expectViolation,
   insertRow,
@@ -18,12 +19,16 @@ import {
  * Real PostgreSQL, application role, every test rolled back. Prerequisites: running, migrated
  * database (see database/README.md). Skipped when the database is down unless REQUIRE_DB=1.
  */
-const appUrl = process.env.DATABASE_URL ?? '';
+// Constraint tests run as the schema OWNER (the migrator): they test the data rules, not role
+// privileges. Since Milestone 2.2 the application role is read-only on these tables; its
+// privileges are verified in verify.js and the privilege tests.
+const appUrl = process.env.DATABASE_MIGRATION_URL ?? '';
 
-describe.runIf(shouldRunIntegration)('canonical schema: registries', () => {
+describeIntegration('canonical schema: registries', () => {
   /** @type {ReturnType<typeof createDb>} */
   let app;
   beforeAll(async () => {
+    await assertDisposable();
     app = createDb(appUrl);
     await requireCanonicalSchema(app.pool);
   });

@@ -78,8 +78,30 @@ enters each page through one hook in `apps/web/src/services/agri/index.js` so Ph
 Express endpoints without rewriting the pages. Route map, component inventory and per-screen API needs:
 `apps/web/README.md`.
 
-**Not started:** Phase 2 and later. There are no agricultural tables, no dataset imports (the four files in
-`data/raw/` are untouched), no market APIs, no models, no forecasts, no risk engine, no simulation and no AI copilot.
+### Phase 2, Milestone 2.1: canonical database schema
+
+The nationwide, all-commodity PostgreSQL schema is implemented and tested (`database/docs/CANONICAL_SCHEMA.md`):
+state/district/market/commodity/variety registries with source-scoped alias tables; data sources, file
+fingerprints, ingestion runs, a quarantine for rejected records and a table for conflicting records; and
+separate fact tables for mandi-daily, state-daily, national-monthly price and national-monthly WPI index
+observations (an index has no currency or unit, so it cannot be stored as a price). Constraints enforce
+non-negative values, price ordering, unit/currency pairing, valid dates and cross-entity consistency.
+
+### Phase 2, Milestone 2.2: historical ingestion (verified in disposable databases only)
+
+A resumable, auditable ingestion framework and importers for the four historical datasets (order D, C, A, B)
+load the canonical schema through a separate least-privilege ingestion role (SELECT and INSERT; the
+application role is read-only on canonical tables). Identities resolve only by reviewed decision or exact
+normalised match against a **provisional December 2022 LGD mirror** (states/UTs and districts; manifest with
+source, retrieval date, SHA-256 and licence); unresolved states are quarantined, mandis are created
+unverified from source labels, and nothing is fuzzy-matched. Unit assumptions for datasets A and C (INR per
+quintal) are recorded explicitly; count units are never converted to mass. In a disposable database
+2,698,327 observations were accepted with every input row accounted for (accepted, exact duplicate,
+conflict or quarantined); repeating the imports adds nothing. Reports are in
+`database/reports/milestone-2.2/`; design and measurements in `database/docs/INGESTION.md`.
+
+**Nothing has been imported into the development database** (that needs the owner's approval). There are no
+market APIs, models, forecasts, risk engine, simulation or AI copilot yet.
 
 ### Decisions recorded during Phase 1
 

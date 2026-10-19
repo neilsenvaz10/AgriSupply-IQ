@@ -10,7 +10,13 @@
 export { systemMetadata } from './systemMetadata.js';
 export { measurementUnits } from './units.js';
 export { states, districts, markets, commodities, varieties } from './registry.js';
-export { dataSources, sourceFiles, ingestionRuns, ingestionRejections } from './provenance.js';
+export {
+  dataSources,
+  sourceFiles,
+  sourceAssumptions,
+  ingestionRuns,
+  ingestionRejections,
+} from './provenance.js';
 export {
   stateAliases,
   districtAliases,

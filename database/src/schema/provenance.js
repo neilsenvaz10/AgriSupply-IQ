@@ -94,6 +94,34 @@ export const sourceFiles = pgTable(
   ],
 );
 
+/**
+ * Assumptions a source's data depends on that the source itself does not state (for example a
+ * price unit that is only documented elsewhere). Facts built on an assumption carry
+ * `unit_basis = 'assumed_from_documentation'`; this table says what was assumed and why.
+ */
+export const sourceAssumptions = pgTable(
+  'source_assumptions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    sourceId: uuid('source_id')
+      .notNull()
+      .references(() => dataSources.id),
+    assumptionCode: text('assumption_code').notNull(),
+    statement: text('statement').notNull(),
+    /** Where the assumption comes from (a document and section), so it can be re-checked. */
+    evidenceReference: text('evidence_reference').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique('source_assumptions_code_uq').on(t.sourceId, t.assumptionCode),
+    check('source_assumptions_code_ck', sql`${t.assumptionCode} ~ '^[a-z][a-z0-9_]*$'`),
+    check(
+      'source_assumptions_text_ck',
+      sql`btrim(${t.statement}) <> '' AND btrim(${t.evidenceReference}) <> ''`,
+    ),
+  ],
+);
+
 export const INGESTION_RUN_STATUSES = /** @type {const} */ ([
   'running',
   'succeeded',
@@ -127,8 +155,21 @@ export const ingestionRuns = pgTable(
     rowsRejected: bigint('rows_rejected', { mode: 'number' }).notNull().default(0),
     /** Short, non-sensitive failure description. Never a connection string or a raw record. */
     errorSummary: text('error_summary'),
+    /** The interrupted run this one continues (same source). NULL for a first attempt. */
+    resumedFromRunId: uuid('resumed_from_run_id'),
+    /**
+     * Last source record number whose batch is fully committed. Written in the same transaction
+     * as the batch, so a resumed run can safely continue after it.
+     */
+    lastCommittedRow: bigint('last_committed_row', { mode: 'number' }).notNull().default(0),
   },
   (t) => [
+    foreignKey({
+      name: 'ingestion_runs_resumed_fk',
+      columns: [t.resumedFromRunId, t.sourceId],
+      foreignColumns: [t.id, t.sourceId],
+    }),
+    check('ingestion_runs_checkpoint_ck', sql`${t.lastCommittedRow} >= 0`),
     foreignKey({
       name: 'ingestion_runs_file_source_fk',
       columns: [t.sourceFileId, t.sourceId],

@@ -37,6 +37,8 @@ data/demo/*.parquet
 *.tar
 *.gz
 # Docs/fixtures that are intentionally small CSVs must be added with `git add -f`.
+# Registry reference files and reviewed alias decisions are small, version-controlled CSVs.
+!database/reference/**/*.csv
 
 # --- Machine-learning artifacts --------------------------------
 models/artifacts/

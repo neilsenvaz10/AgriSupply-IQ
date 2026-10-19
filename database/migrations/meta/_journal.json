@@ -22,6 +22,20 @@
       "when": 1792332335175,
       "tag": "0002_units_normalised_views_and_comments",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792336943615,
+      "tag": "0003_ingestion_provenance_and_resume",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792336945418,
+      "tag": "0004_restrict_application_role_to_read_only",
+      "breakpoints": true
     }
   ]
 }

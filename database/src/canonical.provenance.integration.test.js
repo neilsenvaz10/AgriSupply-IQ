@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createDb } from './client.js';
-import { shouldRunIntegration } from './test/db.js';
+import { describeIntegration } from './test/db.js';
+import { assertDisposable } from './test/disposable.js';
 import {
   expectViolation,
   insertMandi,
@@ -23,17 +24,21 @@ import {
  * Source registry, file fingerprints, ingestion runs, rejections and provenance traceability.
  * Synthetic fixtures only; every test is rolled back.
  */
-const appUrl = process.env.DATABASE_URL ?? '';
+// Constraint tests run as the schema OWNER (the migrator): they test the data rules, not role
+// privileges. Since Milestone 2.2 the application role is read-only on these tables; its
+// privileges are verified in verify.js and the privilege tests.
+const appUrl = process.env.DATABASE_MIGRATION_URL ?? '';
 
 const constraintOf = async (c, table, row) => {
   const { text, values } = insertText(table, row);
   return (await expectViolation(c, text, values)).constraint;
 };
 
-describe.runIf(shouldRunIntegration)('canonical schema: sources, ingestion and provenance', () => {
+describeIntegration('canonical schema: sources, ingestion and provenance', () => {
   /** @type {ReturnType<typeof createDb>} */
   let app;
   beforeAll(async () => {
+    await assertDisposable();
     app = createDb(appUrl);
     await requireCanonicalSchema(app.pool);
   });

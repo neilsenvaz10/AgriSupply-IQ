@@ -5,6 +5,7 @@ import { createDb } from './client.js';
 import { runMigrations } from './migrate.js';
 import { systemMetadata } from './schema/index.js';
 import { databaseAvailable } from './test/db.js';
+import { assertDisposable } from './test/disposable.js';
 
 /**
  * Persistence across container restarts and re-creation.
@@ -53,6 +54,7 @@ describe.runIf(enabled)('persistence (disruptive; DB_TEST_RESTART=1)', () => {
   });
 
   it('keeps data across a container restart', async () => {
+    await assertDisposable();
     await runMigrations(migrationUrl);
     const first = createDb(appUrl, { max: 1 });
     await first.db.insert(systemMetadata).values({ key, value: 'before-restart' });

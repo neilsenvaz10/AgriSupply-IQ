@@ -1,0 +1,38 @@
+{
+  "referenceSet": "lgd-github-mirror-2022-12",
+  "format": "lgd-mirror-v1",
+  "status": "provisional-historical",
+  "statusNote": "A third-party mirror of the Local Government Directory as of December 2022. It is NOT a verified current (2026) LGD registry: states, union territories and districts created, merged or renamed after 2022 are missing or differ, and the file could not be compared with the official portal (it requires an image captcha). Treat every resolution against it as provisional.",
+  "authority": {
+    "origin": "Local Government Directory (LGD), Ministry of Panchayati Raj, Government of India; hosted by the National Informatics Centre (https://lgdirectory.gov.in)",
+    "mirror": "https://github.com/planemad/india-local-government-directory (administrative/ folder), community maintained, not an official publication"
+  },
+  "referenceDate": "2022-12",
+  "referenceDateEvidence": "Mirror commit history: 1-state.csv created 2022-03-22; 2-district.csv updated 2022-12-14 and merged 2022-12-22 ('New districts').",
+  "licence": {
+    "name": "Government Open Data License - India (GODL-India)",
+    "statedBy": "the mirror repository README",
+    "reuseNote": "Reuse with attribution to the original publisher is permitted by GODL-India; the licence terms were not independently confirmed against the official portal."
+  },
+  "retrievedAt": "2026-10-18T15:19:39Z",
+  "retrievedBy": "curl over HTTPS from raw.githubusercontent.com, with the user's explicit approval for these two files",
+  "files": [
+    {
+      "role": "states",
+      "name": "1-state.csv",
+      "url": "https://raw.githubusercontent.com/planemad/india-local-government-directory/main/administrative/1-state.csv",
+      "sha256": "e355f4179744d36813031fa75e08e2e72e9b1009b7c3e4604031ffb909eef500",
+      "bytes": 1493,
+      "rows": 36
+    },
+    {
+      "role": "districts",
+      "name": "2-district.csv",
+      "url": "https://raw.githubusercontent.com/planemad/india-local-government-directory/main/administrative/2-district.csv",
+      "sha256": "3adf79c6ad6037eb90ccb1f02c7a39d32e21d5f1368c913fdd975db2d53fc2d7",
+      "bytes": 26161,
+      "rows": 763
+    }
+  ],
+  "replacement": "To use a newer or official LGD export, add a new directory under database/reference/ with its own manifest.json (same format, or a new adapter in src/ingest/registry/) and load it with `registry:load --reference <dir>`. Existing rows keep their provenance run; new codes are added; names that differ are reported for review, never overwritten."
+}

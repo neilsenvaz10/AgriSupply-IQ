@@ -12,6 +12,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 import { normalizedNameColumn } from './helpers.js';
+import { ingestionRuns } from './provenance.js';
 
 /**
  * Canonical registries: states/UTs, districts, markets (mandis), commodities, varieties.
@@ -23,6 +24,9 @@ import { normalizedNameColumn } from './helpers.js';
  */
 
 const createdAt = () => timestamp('created_at', { withTimezone: true }).notNull().defaultNow();
+
+/** The ingestion run (reference load or importer) that created the row: its provenance. */
+const provenanceRun = () => uuid('provenance_run_id').references(() => ingestionRuns.id);
 
 /** States and union territories. */
 export const states = pgTable(
@@ -36,6 +40,7 @@ export const states = pgTable(
     lgdCode: text('lgd_code'),
     isActive: boolean('is_active').notNull().default(true),
     createdAt: createdAt(),
+    provenanceRunId: provenanceRun(),
   },
   (t) => [
     unique('states_normalized_name_uq').on(t.normalizedName),
@@ -58,6 +63,7 @@ export const districts = pgTable(
     lgdCode: text('lgd_code'),
     isActive: boolean('is_active').notNull().default(true),
     createdAt: createdAt(),
+    provenanceRunId: provenanceRun(),
   },
   (t) => [
     // The same district name legitimately exists in several states; it is unique within one.
@@ -97,6 +103,7 @@ export const markets = pgTable(
     latitude: numeric('latitude', { precision: 9, scale: 6 }),
     longitude: numeric('longitude', { precision: 9, scale: 6 }),
     createdAt: createdAt(),
+    provenanceRunId: provenanceRun(),
   },
   (t) => [
     // A district, when given, must be a district OF THIS market's state.
@@ -142,6 +149,7 @@ export const commodities = pgTable(
     commodityGroup: text('commodity_group'),
     isActive: boolean('is_active').notNull().default(true),
     createdAt: createdAt(),
+    provenanceRunId: provenanceRun(),
   },
   (t) => [
     unique('commodities_normalized_name_uq').on(t.normalizedName),
@@ -164,6 +172,7 @@ export const varieties = pgTable(
     normalizedName: normalizedNameColumn('normalized_name', 'name'),
     isActive: boolean('is_active').notNull().default(true),
     createdAt: createdAt(),
+    provenanceRunId: provenanceRun(),
   },
   (t) => [
     unique('varieties_commodity_name_uq').on(t.commodityId, t.normalizedName),

@@ -78,6 +78,8 @@ const dailyMeasureColumns = () => ({
   priceCurrency: char('price_currency', { length: 3 }),
   priceUnit: text('price_unit').references(() => measurementUnits.code),
   sourcePriceUnitLabel: text('source_price_unit_label'),
+  /** `source_stated`: the file says the unit. `assumed_from_documentation`: it does not (see source_assumptions). */
+  unitBasis: text('unit_basis').notNull().default('source_stated'),
   arrivalQuantity: arrivalNumeric('arrival_quantity'),
   arrivalUnit: text('arrival_unit').references(() => measurementUnits.code),
   sourceArrivalUnitLabel: text('source_arrival_unit_label'),
@@ -115,6 +117,17 @@ const priceUnitChecks = (prefix, t, c) => [
     `${prefix}_price_unit_ck`,
     sql`num_nonnulls(${c.min}, ${c.max}, ${c.modal}) = 0
       OR (${t.priceCurrency} IS NOT NULL AND ${t.priceUnit} IS NOT NULL)`,
+  ),
+  check(
+    `${prefix}_unit_basis_ck`,
+    sql`${t.unitBasis} IN ('source_stated', 'assumed_from_documentation')`,
+  ),
+  // A unit the source states must carry the source's own wording; an assumed one must not claim to.
+  check(
+    `${prefix}_unit_label_ck`,
+    sql`num_nonnulls(${c.min}, ${c.max}, ${c.modal}) = 0
+      OR (${t.unitBasis} = 'source_stated' AND ${t.sourcePriceUnitLabel} IS NOT NULL)
+      OR (${t.unitBasis} = 'assumed_from_documentation' AND ${t.sourcePriceUnitLabel} IS NULL)`,
   ),
   check(
     `${prefix}_currency_ck`,
@@ -265,6 +278,7 @@ export const nationalMonthlyPrices = pgTable(
     priceCurrency: char('price_currency', { length: 3 }),
     priceUnit: text('price_unit').references(() => measurementUnits.code),
     sourcePriceUnitLabel: text('source_price_unit_label'),
+    unitBasis: text('unit_basis').notNull().default('source_stated'),
     /** The source's "change" figure exactly as reported. Its definition is unconfirmed. */
     sourceReportedChange: numeric('source_reported_change', { precision: 16, scale: 4 }),
     sourceCalculationType: text('source_calculation_type'),
