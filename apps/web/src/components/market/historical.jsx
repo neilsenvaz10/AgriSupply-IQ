@@ -1,5 +1,6 @@
 import { MaterialIcon } from '../ui/MaterialIcon';
-import { describePrice, formatDate, formatRupees } from '../../services/agri/format';
+import { describePrice, formatCount, formatDate, formatRupees } from '../../services/agri/format';
+import { MAX_RANGE_DAYS, spanDays } from '../../services/agri/historical';
 
 /**
  * Presentational pieces for historical market records. They use the existing Stitch tokens and
@@ -229,5 +230,148 @@ export function PriceSeriesChart({ points, unitLabel }) {
         <span>{formatDate(sorted[sorted.length - 1].date)}</span>
       </figcaption>
     </figure>
+  );
+}
+
+/**
+ * One historical STATE-level observation: a price and arrival for a state as a whole. It is shown
+ * with its own label so it can never be mistaken for a mandi price. Units are shown exactly as the
+ * source stated them (the original label and the unit code); arrivals are never converted, and
+ * count units (bundle, nos, unit) carry an explicit "not convertible to weight" note.
+ *
+ * @param {{ row: any }} props
+ */
+export function StateObservationCard({ row }) {
+  const countUnit = row.price_unit_dimension === 'count' || row.arrival_unit_dimension === 'count';
+  return (
+    <article className="flex flex-col gap-2 rounded-2xl bg-surface-container-lowest p-space-sm shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0 flex-1 basis-40">
+          <h3 className="break-words font-label-md text-label-md font-bold text-on-surface">
+            {row.commodity.name}
+          </h3>
+          <p className="font-label-xs text-label-xs text-on-surface-variant">
+            {row.state.name} (state as a whole)
+          </p>
+        </div>
+        <div className="shrink-0 text-right">
+          <p className="font-metric-md text-metric-md font-bold text-on-surface">
+            {formatRupees(row.modal_price)}
+          </p>
+          <p className="font-label-xs text-label-xs text-on-surface-variant">
+            modal price per {row.price_unit}
+            {row.source_price_unit_label ? ` (source unit “${row.source_price_unit_label}”)` : ''}
+          </p>
+        </div>
+      </div>
+      <p className="font-label-xs text-label-xs text-on-surface-variant">
+        {row.arrival_quantity === null || row.arrival_quantity === undefined
+          ? 'Arrival: not reported'
+          : `Arrival: ${formatCount(row.arrival_quantity)} ${row.source_arrival_unit_label ?? row.arrival_unit} (original unit, not converted)`}
+        {' · '}Observed <time dateTime={row.observed_date}>{formatDate(row.observed_date)}</time>
+      </p>
+      <div className="flex flex-wrap items-center gap-1.5 font-label-xs text-label-xs text-on-surface-variant">
+        <Chip icon="public">State-level observation · not a mandi price</Chip>
+        <StateMappingNote state={row.state} sourceLabel={row.source_labels.state} />
+        {countUnit ? (
+          <Chip icon="straighten" tone="caution">
+            Count unit · not convertible to weight
+          </Chip>
+        ) : null}
+      </div>
+      <p className="font-label-xs text-label-xs text-outline">
+        Source: {row.provenance.source_code}
+        {row.source_labels.report ? ` · report “${row.source_labels.report}”` : ''} · historical
+        record, not a live price
+      </p>
+    </article>
+  );
+}
+
+/**
+ * Date window controls for the observation lists. The window is capped at one year, like the API.
+ * "Latest day only" narrows the window to the latest available day (`latestDay`); it lists only the
+ * rows observed on that date. It is not live data and not a ranking.
+ *
+ * @param {{ from: string, to: string, onChange: (w: { from: string, to: string }) => void,
+ *   minDate?: string | null, maxDate?: string | null, latestDay?: string | null,
+ *   onReset?: () => void }} props
+ */
+export function WindowControls({
+  from,
+  to,
+  onChange,
+  minDate,
+  maxDate,
+  latestDay = null,
+  onReset,
+}) {
+  const tooLong = from && to && spanDays(from, to) > MAX_RANGE_DAYS;
+  const reversed = from && to && from > to;
+  const latestOnly = Boolean(latestDay && from === latestDay && to === latestDay);
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-2 gap-space-sm">
+        {[
+          ['From', 'from', from],
+          ['To', 'to', to],
+        ].map(([label, key, value]) => (
+          <label
+            key={key}
+            className="flex flex-col gap-1 font-label-xs text-label-xs font-bold uppercase tracking-wider text-on-surface-variant"
+          >
+            {label}
+            <input
+              type="date"
+              value={value}
+              min={minDate ?? undefined}
+              max={maxDate ?? undefined}
+              onChange={(event) => onChange({ from, to, [key]: event.target.value })}
+              className="min-h-[48px] w-full rounded-xl bg-surface-container-lowest px-3 font-label-md text-label-md normal-case text-on-surface shadow-sm"
+            />
+          </label>
+        ))}
+      </div>
+      {tooLong || reversed ? (
+        <p role="alert" className="font-label-xs text-label-xs text-error">
+          {reversed
+            ? '“From” must not be after “To”.'
+            : `Choose a window of at most ${MAX_RANGE_DAYS} days.`}
+        </p>
+      ) : null}
+      {latestDay || onReset ? (
+        <div className="flex flex-wrap items-center gap-space-xs">
+          {latestDay ? (
+            <button
+              type="button"
+              aria-pressed={latestOnly}
+              onClick={() => onChange({ from: latestDay, to: latestDay })}
+              className={`min-h-[44px] rounded-full px-4 font-label-md text-label-md font-bold ${
+                latestOnly
+                  ? 'bg-primary-container text-on-primary'
+                  : 'bg-surface-container-high text-on-surface-variant'
+              }`}
+            >
+              Latest available day only ({formatDate(latestDay)})
+            </button>
+          ) : null}
+          {onReset ? (
+            <button
+              type="button"
+              onClick={onReset}
+              className="min-h-[44px] rounded-full bg-surface-container-high px-4 font-label-md text-label-md font-bold text-on-surface-variant"
+            >
+              Last 90 days
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+      {latestOnly ? (
+        <p className="font-label-xs text-label-xs text-on-surface-variant">
+          Only rows observed on {formatDate(latestDay)}, the latest day in the historical files for
+          this selection. It is the latest available, not live, and it is not a ranking.
+        </p>
+      ) : null}
+    </div>
   );
 }

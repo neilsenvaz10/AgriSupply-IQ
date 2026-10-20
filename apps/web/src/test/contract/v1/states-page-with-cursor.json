@@ -1,0 +1,51 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T06:18:22.083Z",
+  "request": "GET /api/v1/states?limit=2",
+  "status": 200,
+  "response": {
+    "pagination": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "WyJBTkRIUkEgUFJBREVTSCIsIjBjNmI0Y2I2LTJlNWMtNDMxYy1hZWU3LWQxOGFiZDBjZWMwYyJd"
+    },
+    "data": [
+      {
+        "id": "44baaa1a-6b81-427e-b1a3-1bc3dae08992",
+        "name": "ANDAMAN AND NICOBAR ISLANDS",
+        "kind": "union_territory",
+        "lgd_code": "35",
+        "source_labels": [
+          {
+            "source_code": "state_daily_prices_arrivals_historical",
+            "source_label": "Andaman and Nicobar",
+            "resolution_status": "resolved",
+            "mapping_basis": "reviewed_decision",
+            "mapping_status": "resolved",
+            "note": "reviewed decision: truncated label for ANDAMAN AND NICOBAR ISLANDS (no other Andaman or Nicobar entity exists)"
+          }
+        ]
+      },
+      {
+        "id": "0c6b4cb6-2e5c-431c-aee7-d18abd0cec0c",
+        "name": "ANDHRA PRADESH",
+        "kind": "state",
+        "lgd_code": "28",
+        "source_labels": []
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "registry",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "market_verification": "Market identities are created from source labels. No authoritative market list exists, so every market is \"unverified\"."
+    }
+  }
+}

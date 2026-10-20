@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { HistoricalBadge, Chip } from '../components/market/historical';
-import { RegistrySelect, SearchField, Disclosure } from '../components/ui/controls';
+import { SearchField, Disclosure } from '../components/ui/controls';
+import { SearchableSelect } from '../components/ui/SearchableSelect';
 import { DataState } from '../components/ui/DataState';
 import {
   Card,
@@ -113,6 +114,21 @@ export function CommoditiesPage() {
     return out;
   }, [items]);
   const selected = items.find((c) => c.id === selectedId) ?? null;
+  const spotlightOptions = useMemo(
+    () =>
+      items.map((c) => ({
+        value: c.id,
+        label: c.name,
+        description: `${TIER_LABEL[coverageTier(c)]}${
+          c.coverage.mandi_daily.observations > 0
+            ? `: ${formatCount(c.coverage.mandi_daily.observations)} mandi observations`
+            : c.coverage.state_daily.observations > 0
+              ? `: ${formatCount(c.coverage.state_daily.observations)} state-level observations`
+              : ''
+        }`,
+      })),
+    [items],
+  );
 
   return (
     <div className="flex flex-col gap-space-md">
@@ -214,13 +230,15 @@ export function CommoditiesPage() {
                 message="A commodity spotlight appears once a commodity is selected from the catalogue."
               />
             )}
-            <RegistrySelect
+            <SearchableSelect
               label="Commodity"
-              placeholder="Select a commodity"
-              unavailable={catalogue.status !== 'ready'}
-              options={items.map((c) => ({ value: c.id, label: c.name }))}
+              placeholder="Search commodities…"
+              options={spotlightOptions}
               value={selectedId}
               onChange={setSelectedId}
+              disabled={catalogue.status !== 'ready'}
+              disabledNote="The catalogue is not loaded yet."
+              emptyMessage="No commodity matches this search."
             />
           </Card>
 

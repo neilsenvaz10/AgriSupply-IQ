@@ -1,0 +1,109 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T06:18:22.367Z",
+  "request": "GET /api/v1/coverage",
+  "status": 200,
+  "response": {
+    "data": {
+      "granularities": {
+        "mandi_daily": {
+          "observations": 735461,
+          "first_date": "2023-06-06",
+          "last_date": "2025-06-11",
+          "markets": 1610,
+          "states": 25,
+          "commodities": 5
+        },
+        "state_daily": {
+          "observations": 1953793,
+          "first_date": "2022-01-01",
+          "last_date": "2026-07-02",
+          "states": 32,
+          "commodities": 432
+        },
+        "national_monthly": {
+          "observations": 2800,
+          "first_month": "2010-01-01",
+          "last_month": "2025-03-01",
+          "commodities": 16
+        },
+        "wpi_monthly_index": {
+          "observations": 6273,
+          "first_month": "2012-04-01",
+          "last_month": "2024-12-01",
+          "series": 41
+        }
+      },
+      "registry": {
+        "states": 36,
+        "districts": 763,
+        "markets": 1610,
+        "commodities": 434,
+        "varieties": 107
+      },
+      "geography": {
+        "markets_unverified": 1610,
+        "markets_with_unresolved_district": 213,
+        "mandi_observations_in_unresolved_district_markets": 86427,
+        "unresolved_district_labels": 49,
+        "unresolved_state_labels": 1
+      },
+      "units": [
+        {
+          "code": "bundle",
+          "label": "Bundle (count, no mass conversion)",
+          "dimension": "count",
+          "kg_per_unit": null
+        },
+        {
+          "code": "kg",
+          "label": "Kilogram",
+          "dimension": "mass",
+          "kg_per_unit": 1
+        },
+        {
+          "code": "nos",
+          "label": "Pieces (count, no mass conversion)",
+          "dimension": "count",
+          "kg_per_unit": null
+        },
+        {
+          "code": "quintal",
+          "label": "Quintal (100 kg)",
+          "dimension": "mass",
+          "kg_per_unit": 100
+        },
+        {
+          "code": "tonne",
+          "label": "Metric tonne (1000 kg)",
+          "dimension": "mass",
+          "kg_per_unit": 1000
+        },
+        {
+          "code": "unit",
+          "label": "Source-defined count unit (no mass conversion)",
+          "dimension": "count",
+          "kg_per_unit": null
+        }
+      ]
+    },
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "coverage",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "market_verification": "Market identities are created from source labels. No authoritative market list exists, so every market is \"unverified\".",
+      "provisional_mappings": [
+        "Keralam is mapped to Kerala provisionally; confirm against an authoritative source."
+      ],
+      "unresolved_note": "Gao stays an unresolved state label; unresolved district labels are listed at /api/v1/geography/unresolved.",
+      "cache_ttl_seconds": 600
+    }
+  }
+}

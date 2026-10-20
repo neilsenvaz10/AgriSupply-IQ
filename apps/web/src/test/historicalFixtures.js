@@ -57,7 +57,22 @@ export const COMMODITIES = [
 ];
 
 export const STATES = [
-  { id: id(11), name: 'SYNTHETIC STATE ONE', kind: 'state', lgd_code: '90', source_labels: [] },
+  {
+    id: id(11),
+    name: 'SYNTHETIC STATE ONE',
+    kind: 'state',
+    lgd_code: '90',
+    source_labels: [
+      {
+        source_code: 'synthetic_state_source',
+        source_label: 'Synthetic Spelling',
+        resolution_status: 'resolved',
+        mapping_basis: 'reviewed_decision',
+        mapping_status: 'provisional',
+        note: 'Mapped by a reviewed decision; pending authoritative confirmation.',
+      },
+    ],
+  },
   { id: id(12), name: 'SYNTHETIC STATE TWO', kind: 'state', lgd_code: '91', source_labels: [] },
 ];
 
@@ -129,6 +144,104 @@ export function observation(n, marketRow, extra = {}) {
   };
 }
 
+/** A state-level observation (a state as a whole). `extra` overrides any field. */
+export function stateObservation(n, extra = {}) {
+  return {
+    id: id(n),
+    granularity: 'state_daily',
+    observed_date: '2026-07-02',
+    state: { id: id(11), name: 'SYNTHETIC STATE ONE', mapping_status: 'resolved' },
+    commodity: { id: id(101), name: 'Testcrop Alpha' },
+    modal_price: 3100,
+    price_currency: 'INR',
+    price_unit: 'quintal',
+    price_unit_dimension: 'mass',
+    source_price_unit_label: 'Rs./Quintal',
+    arrival_quantity: 12.5,
+    arrival_unit: 'tonne',
+    arrival_unit_dimension: 'mass',
+    source_arrival_unit_label: 'Metric Tonnes',
+    unit_basis: 'source_stated',
+    source_labels: {
+      state: 'Synthetic State One',
+      commodity: 'Testcrop Alpha',
+      commodity_group: null,
+      report: 'synthetic report',
+    },
+    provenance: {
+      source_code: 'synthetic_state_source',
+      source_file_id: id(910),
+      ingestion_run_id: id(911),
+      source_row_number: 9,
+      is_historical_snapshot: true,
+      is_synthetic: false,
+      quality_status: 'accepted',
+      quality_flags: [],
+    },
+    ...extra,
+  };
+}
+
+export const SOURCES = [
+  {
+    code: 'synthetic_mandi_source',
+    name: 'Synthetic mandi file',
+    source_type: 'historical_file',
+    publisher: null,
+    description: null,
+    granularity: 'mandi_daily',
+    files: [
+      {
+        id: id(900),
+        file_name: 'synthetic_mandi.csv',
+        sha256: 'a'.repeat(64),
+        size_bytes: 10,
+        registered_at: '2026-01-01T00:00:00.000Z',
+      },
+    ],
+    initial_load: {
+      importer_version: '9.9.9',
+      finished_at: '2026-01-01T00:00:00.000Z',
+      rows_read: 12,
+      accepted: 10,
+      exact_duplicates: 0,
+      conflicts: 0,
+      quarantined: 2,
+    },
+    runs_total: 1,
+    last_completed_run_at: '2026-01-01T00:00:00.000Z',
+    observations: { count: 120, first_date: '2024-01-02', last_date: '2024-03-28' },
+    assumptions: [
+      {
+        code: 'unit',
+        statement: 'Prices are assumed to be INR per quintal.',
+        evidence_reference: null,
+      },
+    ],
+  },
+];
+
+export const UNRESOLVED = {
+  states: [
+    {
+      source_code: 'synthetic_mandi_source',
+      source_label: 'Synthetic Unknown State',
+      status: 'unresolved',
+      rows_quarantined: 4,
+      note: null,
+    },
+  ],
+  districts: [
+    {
+      source_state_label: 'Synthetic State One',
+      source_district_label: 'oddly spelled district',
+      status: 'unresolved',
+      observations: 5,
+      markets: 1,
+    },
+  ],
+};
+
 export const COVERAGE = {
   granularities: {
     mandi_daily: {
@@ -174,7 +287,7 @@ export const COVERAGE = {
  * A fetch double that routes by pathname. `handlers` maps a path to a function receiving the URL
  * and returning `{ body, status? }` (or throwing for a network failure). Calls are recorded.
  *
- * @param {Record<string, (url: URL) => { body?: any, status?: number }>} handlers
+ * @param {Record<string, (url: URL) => { body?: any, status?: number } | Promise<{ body?: any, status?: number }>>} handlers
  */
 export function mockFetch(handlers) {
   const fn = vi.fn(async (input, init) => {
@@ -183,7 +296,8 @@ export function mockFetch(handlers) {
     if (init?.signal?.aborted) throw new DOMException('Aborted', 'AbortError');
     if (!handler)
       return new Response(JSON.stringify({ error: { code: 'NOT_FOUND' } }), { status: 404 });
-    const { body = {}, status = 200 } = handler(url);
+    // A handler may return a promise, so a test can hold a response back and release it later.
+    const { body = {}, status = 200 } = await handler(url);
     return new Response(JSON.stringify(body), {
       status,
       headers: { 'Content-Type': 'application/json' },
@@ -228,6 +342,19 @@ export function healthyHandlers(overrides = {}) {
         meta: META,
       },
     }),
+    '/api/v1/state-prices': () => ({
+      body: listBody(
+        [stateObservation(601), stateObservation(602, { observed_date: '2026-07-01' })],
+        {
+          limit: 50,
+          meta: { ...META, granularity: 'state_daily' },
+        },
+      ),
+    }),
+    '/api/v1/sources': () => ({
+      body: { data: SOURCES, meta: { ...META, granularity: 'provenance' } },
+    }),
+    '/api/v1/geography/unresolved': () => ({ body: { data: UNRESOLVED, meta: META } }),
     '/api/v1/mandi-prices': () => ({
       body: listBody(
         [

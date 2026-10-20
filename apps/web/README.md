@@ -42,20 +42,20 @@ never a Docker service name. See `.env.example`.
 
 ## Route map
 
-| Route          | Page                            | Source Stitch screen                       | Status                                                                                   |
-| -------------- | ------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| `/`            | Redirects to `/dashboard`       |                                            |                                                                                          |
-| `/dashboard`   | Farmer Dashboard (landing page) | `original/.../fasalytics_farmer_dashboard` | Historical mandi prices; recommendation, ranking and allocation widgets stay unavailable |
-| `/markets`     | Nationwide Market Explorer      | `new-exports/nationwide_market_explorer`   | Historical directory and mandi prices (server-paginated, dependent filters)              |
-| `/commodities` | Explore Commodities             | `new-exports/all_crop_commodity_explorer`  | Real catalogue with mandi / state-level-only / no-data coverage tiers                    |
-| `/forecast`    | AI Price Forecasting            | `new-exports/ai_price_forecasting`         | UI preview                                                                               |
-| `/compare`     | Mandi Comparison                | `original/.../smart_mandi_comparison`      | UI preview                                                                               |
-| `/allocate`    | Smart Harvest Allocation        | `original/.../smart_harvest_allocation`    | UI preview                                                                               |
-| `/simulate`    | What-If Simulator               | `new-exports/what_if_market_simulator`     | UI preview                                                                               |
-| `/assistant`   | AI Copilot                      | `original/.../fasalytics_ai_copilot`       | UI preview                                                                               |
-| `/profile`     | Profile and preferences         | (design system only)                       | UI preview, no sign-in                                                                   |
-| `/status`      | System Status (diagnostics)     | (not a Stitch screen)                      | Working: real API health check                                                           |
-| `*`            | Not found                       |                                            |                                                                                          |
+| Route          | Page                            | Source Stitch screen                       | Status                                                                                                 |
+| -------------- | ------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `/`            | Redirects to `/dashboard`       |                                            |                                                                                                        |
+| `/dashboard`   | Farmer Dashboard (landing page) | `original/.../fasalytics_farmer_dashboard` | Historical mandi prices; recommendation, ranking and allocation widgets stay unavailable               |
+| `/markets`     | Nationwide Market Explorer      | `new-exports/nationwide_market_explorer`   | Historical directory and mandi prices, plus a separate state-level prices tab and a data quality panel |
+| `/commodities` | Explore Commodities             | `new-exports/all_crop_commodity_explorer`  | Real catalogue with mandi / state-level-only / no-data coverage tiers                                  |
+| `/forecast`    | AI Price Forecasting            | `new-exports/ai_price_forecasting`         | UI preview                                                                                             |
+| `/compare`     | Mandi Comparison                | `original/.../smart_mandi_comparison`      | UI preview                                                                                             |
+| `/allocate`    | Smart Harvest Allocation        | `original/.../smart_harvest_allocation`    | UI preview                                                                                             |
+| `/simulate`    | What-If Simulator               | `new-exports/what_if_market_simulator`     | UI preview                                                                                             |
+| `/assistant`   | AI Copilot                      | `original/.../fasalytics_ai_copilot`       | UI preview                                                                                             |
+| `/profile`     | Profile and preferences         | (design system only)                       | UI preview, no sign-in                                                                                 |
+| `/status`      | System Status (diagnostics)     | (not a Stitch screen)                      | Working: real API health check                                                                         |
+| `*`            | Not found                       |                                            |                                                                                                        |
 
 Alias paths redirect to the canonical routes: `/forecasting`, `/compare-mandis`, `/harvest-allocation`,
 `/what-if`, `/copilot` (see `src/app/navigation.js`). Stitch paths are under
@@ -111,7 +111,33 @@ Screens read data through hooks in `src/services/agri/` and render the standard 
   (dates, rupees, original units); it never converts units or computes changes.
 
 Endpoints used: `/coverage`, `/states`, `/districts`, `/commodities`, `/markets`, `/markets/{id}`,
-`/mandi-prices` (all GET; see `docs/api/historical-market-api.md`). State-level prices are never requested.
+`/mandi-prices`, `/state-prices`, `/sources`, `/geography/unresolved` (all GET; see
+`docs/api/historical-market-api.md`). `/state-prices` is used only by the separate **State-level prices**
+tab of the Market Explorer; its rows are checked to be `state_daily` (and mandi rows `mandi_daily`), so a
+state-level row can never be shown as a mandi observation.
+
+### Milestone 2.3C additions
+
+- **Searchable selector** (`components/ui/SearchableSelect.jsx`): an accessible combobox (type to filter,
+  arrow keys / Home / End / Enter / Escape, a Clear button, a "no match" message, coverage shown under each
+  option, a render limit). Used for the 434-commodity catalogue (Commodities spotlight, state-level view).
+- **State-level prices tab** (Market Explorer): state and commodity filters, a date window of at most 366
+  days, cursor pagination, original units (arrivals are never converted; count units are flagged), source
+  provenance, and its own "state-level, not a mandi price" labels.
+- **Latest-observation discovery**: "Latest available day only" is offered only when the API's summary
+  data proves the day for exactly the active filters: a commodity on its own (its own latest day) or a
+  market on its own (that market's latest day). With a state filter, or a market and a commodity together,
+  the summary data cannot say which day was the latest, so no shortcut is offered and the dataset-wide
+  maximum is never used instead (the default window then only _starts_ at the relevant end date). The
+  single day is listed in full through the server's cursor, with a note that it is the latest available,
+  not live, and not a ranking. No browser-side re-sorting of partial pages. The proposed API
+  addition for a per-market latest list is in `docs/api/proposals/latest-observations.md` (not built).
+- **Data quality and coverage** panel (Market Explorer): unverified mandis, unresolved district labels with
+  row counts, provisional aliases, unit assumptions, source files and fingerprints, latest dates and
+  coverage limits, all from API metadata. Its heavier requests are made only when it is opened.
+- **Contract tests**: `src/test/contract/` holds versioned, sanitized captures of real API responses
+  (refresh with `scripts/capture-contract-examples.mjs`); they are kept apart from the synthetic
+  unit-test fixtures in `src/test/historicalFixtures.js` and need no API or database.
 
 | Screen             | Data                                                               | When there is none                                                                            |
 | ------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |

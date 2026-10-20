@@ -1,0 +1,73 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T06:18:22.358Z",
+  "request": "GET /api/v1/state-prices?state_id=46194b5c-6edf-437b-b175-0a1897d8d731&commodity_id=7c2489df-ae3f-4c1c-800e-fa073517b4ff&from=2025-01-01&to=2025-01-01&limit=1",
+  "status": 200,
+  "response": {
+    "pagination": {
+      "limit": 1,
+      "has_more": false,
+      "next_cursor": null
+    },
+    "data": [
+      {
+        "id": "01e5f7e1-1c56-43e8-bd31-e1f1326f4b2a",
+        "granularity": "state_daily",
+        "observed_date": "2025-01-01",
+        "state": {
+          "id": "46194b5c-6edf-437b-b175-0a1897d8d731",
+          "name": "MAHARASHTRA",
+          "mapping_status": "resolved"
+        },
+        "commodity": {
+          "id": "7c2489df-ae3f-4c1c-800e-fa073517b4ff",
+          "name": "Mint(Pudina)"
+        },
+        "modal_price": 450,
+        "price_currency": "INR",
+        "price_unit": "bundle",
+        "price_unit_dimension": "count",
+        "source_price_unit_label": "Rs./Bundle",
+        "arrival_quantity": 15.2,
+        "arrival_unit": "bundle",
+        "arrival_unit_dimension": "count",
+        "source_arrival_unit_label": "Bundle",
+        "unit_basis": "source_stated",
+        "source_labels": {
+          "state": "Maharashtra",
+          "commodity": "Mint(Pudina)",
+          "commodity_group": "Vegetables",
+          "report": "All Type of Report (All Grades) for 01-Jan-2025 to 30-Apr-2025 | All_Type_of_Report_(All_Grades)_04-07-2026_03-43-54_PM.csv#34608"
+        },
+        "provenance": {
+          "source_code": "state_daily_prices_arrivals_historical",
+          "source_file_id": "1383a994-98f1-4116-bdeb-5aca2a4c005f",
+          "ingestion_run_id": "583a8bfc-11ed-4cd7-9193-9d88cd44c905",
+          "source_row_number": 485680,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "state_daily",
+      "unit_note": "Units are stated by the source per row and are mixed (quintal, bundle and unit for prices; tonne, bundle and nos for arrivals). Count units are never converted to mass.",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "window": {
+        "from": "2025-01-01",
+        "to": "2025-01-01"
+      },
+      "separation": "State-level rows only: they describe a state as a whole and must not be read as the price in any mandi."
+    }
+  }
+}
