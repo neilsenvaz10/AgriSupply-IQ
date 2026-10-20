@@ -117,6 +117,7 @@ describe('real example responses in docs/api/examples/real', () => {
     'commodity-wheat': '/api/v1/commodities',
     'market-unresolved-district': '/api/v1/markets/{id}',
     'mandi-prices': '/api/v1/mandi-prices',
+    'latest-mandi-prices': '/api/v1/mandi-prices/latest',
     'state-prices-keralam': '/api/v1/state-prices',
     'national-prices': '/api/v1/national-prices',
     'wpi-observations': '/api/v1/wpi/observations',

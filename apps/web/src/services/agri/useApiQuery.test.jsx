@@ -181,6 +181,47 @@ describe('usePagedQuery', () => {
     expect(result.current.items).toEqual([]);
   });
 
+  it('ignores a late first page for old filters, even if the request does not honour cancellation', async () => {
+    const late = deferred();
+    const fetchPage = vi.fn((k) =>
+      k === 'old' ? late.promise : Promise.resolve(page([{ id: 'new-1' }], null)),
+    );
+    const { result, rerender } = renderHook(({ k }) => usePagedQuery(k, () => fetchPage(k)), {
+      wrapper,
+      initialProps: { k: 'old' },
+    });
+    rerender({ k: 'new' });
+    await waitFor(() => expect(result.current.items.map((r) => r.id)).toEqual(['new-1']));
+    await act(async () => late.resolve(page([{ id: 'old-1' }], 'old-cursor')));
+    expect(result.current.items.map((r) => r.id)).toEqual(['new-1']);
+    expect(result.current.pagination?.next_cursor).toBeNull();
+  });
+
+  it('drops the cursor and ignores a late "load more" answer when the filters change', async () => {
+    const lateMore = deferred();
+    const calls = [];
+    const fetchFor = (k) => async (_c, cursor) => {
+      calls.push([k, cursor]);
+      if (k === 'old' && cursor) return lateMore.promise;
+      return k === 'old' ? page([{ id: 'old-1' }], 'old-cursor') : page([{ id: 'new-1' }], null);
+    };
+    const { result, rerender } = renderHook(({ k }) => usePagedQuery(k, fetchFor(k)), {
+      wrapper,
+      initialProps: { k: 'old' },
+    });
+    await waitFor(() => expect(result.current.items).toHaveLength(1));
+    act(() => result.current.loadMore());
+    rerender({ k: 'new' });
+    expect(result.current.items).toEqual([]);
+    expect(result.current.pagination).toBeNull();
+    await waitFor(() => expect(result.current.items.map((r) => r.id)).toEqual(['new-1']));
+    await act(async () => lateMore.resolve(page([{ id: 'old-2' }], 'older-cursor')));
+    expect(result.current.items.map((r) => r.id)).toEqual(['new-1']);
+    expect(result.current.pagination?.next_cursor).toBeNull();
+    // The new filters never received the old cursor.
+    expect(calls.filter(([k]) => k === 'new')).toEqual([['new', null]]);
+  });
+
   it('aborts the in-flight page when the filters change', async () => {
     /** @type {AbortSignal[]} */
     const signals = [];

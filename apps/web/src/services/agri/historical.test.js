@@ -1,8 +1,22 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createApiClient } from '../api/client';
 import { ApiError } from '../api/errors';
-import { META, id, listBody } from '../../test/historicalFixtures';
-import { buildPath, describeError, historical, parseEnvelope } from './historical';
+import {
+  META,
+  id,
+  latestMeta,
+  latestObservation,
+  listBody,
+  MARKETS,
+} from '../../test/historicalFixtures';
+import {
+  buildPath,
+  checkLatestMeta,
+  checkObservationRows,
+  describeError,
+  historical,
+  parseEnvelope,
+} from './historical';
 
 const client = (fetchImpl) =>
   createApiClient({ baseUrl: 'http://api.test', timeoutMs: 500, fetchImpl });
@@ -159,5 +173,54 @@ describe('request cancellation', () => {
     const pending = historical.states(client(fetchImpl), {}, controller.signal);
     controller.abort();
     await expect(pending).rejects.toMatchObject({ kind: 'aborted' });
+  });
+});
+
+describe('latest observation per mandi', () => {
+  it('builds the path, requires a commodity and validates every filter', () => {
+    expect(buildPath('latestMandiPrices', { commodity_id: id(101), limit: 50 })).toBe(
+      `/api/v1/mandi-prices/latest?commodity_id=${id(101)}&limit=50`,
+    );
+    expect(() => buildPath('latestMandiPrices', {})).toThrow(/commodity is required/);
+    expect(() => buildPath('latestMandiPrices', { commodity_id: 'nope' })).toThrow();
+    expect(() => buildPath('latestMandiPrices', { commodity_id: id(1), limit: 501 })).toThrow();
+    expect(() =>
+      buildPath('latestMandiPrices', { commodity_id: id(1), from: '2024-01-01' }),
+    ).toThrow();
+  });
+
+  it('checks the row contract and that the latest date equals the observed date', () => {
+    const row = latestObservation(1, MARKETS[0]);
+    expect(() => checkObservationRows('latestMandiPrices', [row])).not.toThrow();
+    const { latest_observation_date: _omit, ...missing } = row;
+    expect(() => checkObservationRows('latestMandiPrices', [missing])).toThrow(
+      /latest_observation_date/,
+    );
+    expect(() =>
+      checkObservationRows('latestMandiPrices', [
+        { ...row, latest_observation_date: '2020-01-01' },
+      ]),
+    ).toThrow(/differs/);
+  });
+
+  it('checks the meta identifies the endpoint and carries a reference date and request time', () => {
+    expect(() => checkLatestMeta(latestMeta())).not.toThrow();
+    expect(() => checkLatestMeta(latestMeta(null))).not.toThrow();
+    expect(() => checkLatestMeta({ ...latestMeta(), endpoint: 'other' })).toThrow();
+    expect(() => checkLatestMeta({ ...latestMeta(), reference_date: 'yesterday' })).toThrow();
+    expect(() => checkLatestMeta({ ...latestMeta(), requested_at: undefined })).toThrow();
+  });
+
+  it('surfaces a live-claiming response as a parse error', async () => {
+    const body = {
+      ...listBody([latestObservation(1, MARKETS[0])]),
+      meta: { ...latestMeta(), is_live: true },
+    };
+    await expect(
+      historical.latestMandiPrices(
+        client(async () => json(body)),
+        { commodity_id: id(101) },
+      ),
+    ).rejects.toMatchObject({ kind: 'parse' });
   });
 });

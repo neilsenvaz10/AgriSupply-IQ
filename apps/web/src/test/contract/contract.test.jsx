@@ -1,10 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { MandiObservationCard, StateObservationCard } from '../../components/market/historical';
+import {
+  LatestObservationCard,
+  MandiObservationCard,
+  StateObservationCard,
+} from '../../components/market/historical';
 import { createApiClient } from '../../services/api/client';
 import { describePrice } from '../../services/agri/format';
 import {
   buildPath,
+  checkLatestMeta,
   checkObservationRows,
   historical,
   parseEnvelope,
@@ -410,5 +415,48 @@ describe('unexpected or missing response fields', () => {
     const fetchImpl = vi.fn(async () => new Response('<html>nope</html>', { status: 200 }));
     const client = createApiClient({ baseUrl: 'http://api.test', timeoutMs: 1000, fetchImpl });
     await expect(historical.states(client)).rejects.toMatchObject({ kind: 'parse' });
+  });
+});
+
+describe('latest observation per mandi (captured)', () => {
+  it('the real capture satisfies the frontend row and meta contract and is historical-only', async () => {
+    const example = byName('mandi-prices-latest');
+    const { client } = clientFor(example);
+    const page = await historical.latestMandiPrices(client, {
+      commodity_id: '00000000-0000-4000-8000-000000000001',
+      limit: 2,
+    });
+    expect(page.data.length).toBeGreaterThan(0);
+    checkLatestMeta(page.meta);
+    expect(page.meta.is_live).toBe(false);
+    for (const row of page.data) {
+      expect(row.latest_observation_date).toBe(row.observed_date);
+      expect(row.observations_on_latest_date).toBeGreaterThanOrEqual(1);
+      expect(row.granularity).toBe('mandi_daily');
+    }
+  });
+
+  it('renders a real row with neutral wording, original unit, provenance and verification', () => {
+    const doc = byName('mandi-prices-latest');
+    const row = doc.response.data[0];
+    render(<LatestObservationCard row={row} referenceDate={doc.response.meta.reference_date} />);
+    const text = document.body.textContent ?? '';
+    expect(text).toMatch(/Last reported on/);
+    expect(text).toMatch(/Historical observation/);
+    expect(text).toMatch(/unit assumed/);
+    expect(text).toMatch(/Source: /);
+    expect(text).not.toMatch(/\b(fresh|current)\b/i);
+  });
+
+  it('the empty and state-filtered captures and the missing-commodity error are understood', () => {
+    expect(byName('mandi-prices-latest-empty').response.data).toEqual([]);
+    expect(byName('mandi-prices-latest-state').response.meta.filters.state_id).toBeTruthy();
+    expect(byName('error-latest-missing-commodity').status).toBe(400);
+  });
+
+  it('a latest row whose date disagrees is refused', () => {
+    const rows = clone(byName('mandi-prices-latest').response.data);
+    rows[0].latest_observation_date = '1999-01-01';
+    expect(() => checkObservationRows('latestMandiPrices', rows)).toThrow(/differs/);
   });
 });

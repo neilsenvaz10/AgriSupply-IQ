@@ -1,5 +1,11 @@
 import { MaterialIcon } from '../ui/MaterialIcon';
-import { describePrice, formatCount, formatDate, formatRupees } from '../../services/agri/format';
+import {
+  describeFreshness,
+  describePrice,
+  formatCount,
+  formatDate,
+  formatRupees,
+} from '../../services/agri/format';
 import { MAX_RANGE_DAYS, spanDays } from '../../services/agri/historical';
 
 /**
@@ -373,5 +379,69 @@ export function WindowControls({
         </p>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * One mandi's latest available historical observation of a commodity. The wording is deliberately
+ * neutral: when it was last reported, how many calendar days that is before a stated reference
+ * date, and that it is a historical observation. It does not call a price fresh, current or live,
+ * because no freshness policy exists.
+ *
+ * @param {{ row: any, referenceDate: string | null }} props
+ */
+export function LatestObservationCard({ row, referenceDate }) {
+  const price = describePrice(row);
+  const freshness = describeFreshness(row.latest_observation_date, referenceDate);
+  return (
+    <article className="flex flex-col gap-2 rounded-2xl bg-surface-container-lowest p-space-sm shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0 flex-1 basis-40">
+          <h3 className="break-words font-label-md text-label-md font-bold text-on-surface">
+            {row.market.name}
+          </h3>
+          <p className="font-label-xs text-label-xs text-on-surface-variant">
+            {row.commodity.name}
+            {row.variety?.label ? ` · ${row.variety.label}` : ''}
+            {row.grade ? ` · grade ${row.grade}` : ''}
+          </p>
+        </div>
+        <div className="shrink-0 text-right">
+          <p className="font-metric-md text-metric-md font-bold text-on-surface">{price.amount}</p>
+          <p className="font-label-xs text-label-xs text-on-surface-variant">
+            latest available modal price {price.unit}
+            {price.assumed ? ' (unit assumed)' : ''}
+          </p>
+        </div>
+      </div>
+      <p className="font-label-xs text-label-xs text-on-surface-variant">
+        <time dateTime={row.latest_observation_date}>{freshness.reported}</time>
+        {freshness.relative ? ` · ${freshness.relative}` : ''} · Historical observation
+      </p>
+      <p className="font-label-xs text-label-xs text-on-surface-variant">
+        Min {formatRupees(row.min_price)} · Max {formatRupees(row.max_price)} on that date
+        {row.observations_on_latest_date > 1
+          ? ` · ${formatCount(row.observations_on_latest_date)} rows exist for this mandi on that date; one is shown (chosen by variety label, then grade, not by price)`
+          : ''}
+      </p>
+      <div className="flex flex-wrap items-center gap-1.5 font-label-xs text-label-xs text-on-surface-variant">
+        <VerificationChip status={row.market.verification_status} />
+        <StateMappingNote state={row.state} sourceLabel={row.source_labels.state} />
+        <span>
+          {row.state.name} ·{' '}
+          <DistrictLine
+            district={row.district}
+            district_status={row.market.district_status}
+            source_district_label={
+              row.market.district_status === 'unresolved' ? row.source_labels.district : null
+            }
+          />
+        </span>
+      </div>
+      <p className="font-label-xs text-label-xs text-outline">
+        Source: {row.provenance.source_code} · file row {row.provenance.source_row_number} ·
+        historical record, not a live price
+      </p>
+    </article>
   );
 }

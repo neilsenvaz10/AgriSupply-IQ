@@ -51,6 +51,7 @@ const COPILOT = unavailable(
 export {
   useCommodityCatalogue,
   useCoverage,
+  useLatestMandiObservations,
   useDistricts,
   useMandiObservations,
   useMarketDirectory,

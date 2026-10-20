@@ -10,6 +10,7 @@ import {
   VerificationChip,
   WindowControls,
 } from '../components/market/historical';
+import { LatestByMandiView } from '../components/market/LatestByMandiView';
 import { StatePricesView } from '../components/market/StatePricesView';
 import { Dialog } from '../components/ui/Dialog';
 import { MaterialIcon } from '../components/ui/MaterialIcon';
@@ -267,6 +268,7 @@ export function MarketsPage() {
       <div role="tablist" aria-label="Price level" className="flex flex-wrap gap-space-xs">
         {[
           ['mandi', 'Mandi prices'],
+          ['latest', 'Latest by mandi'],
           ['state', 'State-level prices'],
         ].map(([value, label]) => (
           <button
@@ -294,7 +296,14 @@ export function MarketsPage() {
         aria-labelledby={`market-tab-${view}`}
         className="flex flex-col gap-space-md"
       >
-        {view === 'state' ? (
+        {view === 'latest' ? (
+          <LatestByMandiView
+            coverage={cov}
+            states={states}
+            catalogue={catalogue}
+            initialCommodityId={commodityId}
+          />
+        ) : view === 'state' ? (
           <StatePricesView coverage={cov} states={states} catalogue={catalogue} />
         ) : (
           <>

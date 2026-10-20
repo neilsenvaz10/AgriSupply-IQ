@@ -11,6 +11,7 @@ export const MARKET_PAGE_SIZE = 50;
 export const OBSERVATION_PAGE_SIZE = 50;
 
 export const STATE_OBSERVATION_PAGE_SIZE = 50;
+export const LATEST_PAGE_SIZE = 50;
 
 /** Dataset coverage, date ranges and geography verification counts. */
 export function useCoverage() {
@@ -156,5 +157,26 @@ export function useUnresolvedGeography(enabled = true) {
     'unresolved',
     async (client, signal) => (await historical.unresolved(client, signal)).data,
     { enabled, unavailableReason: 'Not requested yet.' },
+  );
+}
+
+/**
+ * Each mandi's latest available observation of ONE commodity (`/mandi-prices/latest`), server-side
+ * paginated. Disabled until a commodity is chosen. The page's `meta` carries the reference date and
+ * the request time.
+ *
+ * @param {{ commodityId?: string, stateId?: string, districtId?: string }} filters
+ * @param {{ pageSize?: number }} [options]
+ */
+export function useLatestMandiObservations(
+  { commodityId = '', stateId = '', districtId = '' },
+  { pageSize = LATEST_PAGE_SIZE } = {},
+) {
+  const params = { commodity_id: commodityId, state_id: stateId, district_id: districtId };
+  return usePagedQuery(
+    JSON.stringify(['latest', params, pageSize]),
+    (client, cursor, signal) =>
+      historical.latestMandiPrices(client, { ...params, limit: pageSize, cursor }, signal),
+    { enabled: Boolean(commodityId), unavailableReason: 'Choose a commodity first.' },
   );
 }

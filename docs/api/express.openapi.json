@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "FASALYTICS Express API (operational and historical market endpoints)",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Operational endpoints (/health, /health/dependencies, /ready) and the read-only HISTORICAL market endpoints under /api/v1 (Milestone 2.3A). All /api/v1 data endpoints are GET-only and return historical snapshot data: every response carries meta.is_live = false. Four granularities are kept strictly separate: mandi-daily, state-daily, national-monthly and the national monthly WPI index. No forecasts, live data or write operations exist. Contract tests compare live responses with this document."
   },
   "servers": [
@@ -1316,6 +1316,107 @@
         },
         "description": "Observation counts and date ranges per granularity, registry sizes, geography verification counts and measurement units. Cached up to 10 minutes."
       }
+    },
+    "/api/v1/mandi-prices/latest": {
+      "get": {
+        "tags": ["historical-market"],
+        "summary": "Each mandi's latest available observation of one commodity",
+        "operationId": "listLatestMandiPrices",
+        "description": "Historical snapshot, not a live feed. For the required commodity it returns, per mandi that has at least one observation of it, that mandi's OWN newest observation (its observed_date is the date in the source file, unrelated to requested_at). Mandis with no observation of the commodity are absent; nothing is taken from state-level or national data. Ordering is by mandi name then id, a stable keyset order that is not a ranking. When several rows share a mandi's latest date, one is returned by a price-neutral rule (variety label, then grade, then id) and observations_on_latest_date says how many rows that date has. Price units, unit assumptions, source labels, provenance and market verification are the same as /mandi-prices. meta.reference_date is the newest observation date in the same scope, for describing how many days earlier a mandi last reported.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          },
+          {
+            "name": "commodity_id",
+            "in": "query",
+            "required": true,
+            "description": "The commodity (required).",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "state_id",
+            "in": "query",
+            "required": false,
+            "description": "Only mandis of this state.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "district_id",
+            "in": "query",
+            "required": false,
+            "description": "Only mandis of this district (mandis whose district is unresolved never match).",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Page size (1-500, default 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response (next_cursor). For this endpoint it is bound to the commodity_id, state_id and district_id it was issued for: using it with different filters answers 400 INVALID_PARAMETER.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Historical snapshot data (meta.is_live is false).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LatestMandiPriceList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter (INVALID_PARAMETER), including a missing commodity_id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The database is unreachable or timed out (DEPENDENCY_UNREACHABLE / DEPENDENCY_TIMEOUT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1604,7 +1705,8 @@
             "enum": ["historical_snapshot"]
           },
           "is_live": {
-            "type": "boolean"
+            "type": "boolean",
+            "enum": [false]
           },
           "notice": {
             "type": "string"
@@ -3097,6 +3199,275 @@
           },
           "meta": {
             "$ref": "#/components/schemas/DataMeta"
+          }
+        }
+      },
+      "LatestMandiPrice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "granularity",
+          "observed_date",
+          "market",
+          "state",
+          "district",
+          "commodity",
+          "variety",
+          "grade",
+          "min_price",
+          "max_price",
+          "modal_price",
+          "price_currency",
+          "price_unit",
+          "source_price_unit_label",
+          "unit_basis",
+          "source_labels",
+          "provenance",
+          "latest_observation_date",
+          "observations_on_latest_date"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "granularity": {
+            "type": "string",
+            "enum": ["mandi_daily"]
+          },
+          "observed_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "market": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "name",
+              "verification_status",
+              "district_status"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "verification_status": {
+                "type": "string"
+              },
+              "district_status": {
+                "type": "string",
+                "enum": ["resolved", "unresolved"]
+              }
+            }
+          },
+          "state": {
+            "$ref": "#/components/schemas/StateMapping"
+          },
+          "district": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["id", "name"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "commodity": {
+            "$ref": "#/components/schemas/Ref"
+          },
+          "variety": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": {
+              "id": {
+                "type": ["string", "null"]
+              },
+              "label": {
+                "type": ["string", "null"]
+              }
+            }
+          },
+          "grade": {
+            "type": ["string", "null"]
+          },
+          "min_price": {
+            "type": ["number", "null"]
+          },
+          "max_price": {
+            "type": ["number", "null"]
+          },
+          "modal_price": {
+            "type": ["number", "null"]
+          },
+          "price_currency": {
+            "type": "string"
+          },
+          "price_unit": {
+            "type": "string"
+          },
+          "source_price_unit_label": {
+            "type": ["string", "null"]
+          },
+          "unit_basis": {
+            "type": "string",
+            "enum": ["assumed_from_documentation", "source_stated"]
+          },
+          "source_labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["state", "district", "market", "commodity"],
+            "properties": {
+              "state": {
+                "type": "string"
+              },
+              "district": {
+                "type": "string"
+              },
+              "market": {
+                "type": "string"
+              },
+              "commodity": {
+                "type": "string"
+              }
+            }
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "latest_observation_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "The date in the source file; the same value as observed_date. It is not the request date."
+          },
+          "observations_on_latest_date": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "How many rows this mandi has for the commodity on that date (varieties, grades). One is returned (price-neutral tie-break)."
+          }
+        },
+        "description": "One mandi's latest available observation of the requested commodity: the same fields as a mandi price row, plus latest_observation_date (equal to observed_date) and the number of rows that date has."
+      },
+      "LatestMandiMeta": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "DataMeta plus the fields that define this endpoint. is_live is always false.",
+        "required": [
+          "data_status",
+          "is_live",
+          "notice",
+          "granularity",
+          "endpoint",
+          "scope",
+          "ordering",
+          "tie_break",
+          "date_semantics",
+          "requested_at",
+          "reference_date",
+          "reference_date_definition",
+          "filters"
+        ],
+        "properties": {
+          "data_status": {
+            "type": "string",
+            "enum": ["historical_snapshot"]
+          },
+          "is_live": {
+            "type": "boolean",
+            "enum": [false]
+          },
+          "notice": {
+            "type": "string"
+          },
+          "granularity": {
+            "type": "string",
+            "enum": ["mandi_daily"]
+          },
+          "endpoint": {
+            "type": "string",
+            "enum": ["latest_observation_per_mandi"]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "ordering": {
+            "type": "string",
+            "description": "Alphabetical by mandi name then id. Not a ranking."
+          },
+          "tie_break": {
+            "type": "string"
+          },
+          "date_semantics": {
+            "type": "string",
+            "description": "observed_date is the source-file date; requested_at is when the request was served."
+          },
+          "requested_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this request was served (the request date), unrelated to any observation date."
+          },
+          "reference_date": {
+            "type": ["string", "null"],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Newest observation date among the mandis matching the commodity and filters; null when none match."
+          },
+          "reference_date_definition": {
+            "type": "string"
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["commodity_id", "state_id", "district_id"],
+            "properties": {
+              "commodity_id": {
+                "type": "string"
+              },
+              "state_id": {
+                "type": ["string", "null"]
+              },
+              "district_id": {
+                "type": ["string", "null"]
+              }
+            }
+          },
+          "unit_note": {
+            "type": "string"
+          },
+          "geography_reference": {
+            "type": "object"
+          },
+          "market_verification": {
+            "type": "string"
+          }
+        }
+      },
+      "LatestMandiPriceList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "pagination", "meta"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LatestMandiPrice"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/LatestMandiMeta"
           }
         }
       }

@@ -26,8 +26,59 @@ const PROV = {
   quality_flags: [],
 };
 
+/**
+ * A synthetic row shaped like the mandi SELECT.
+ *
+ * @param {number} n
+ * @param {string} name
+ * @param {string} date
+ */
+function mandiFixtureRow(n, name, date) {
+  return {
+    id: ID(n),
+    observed_date: date,
+    market_id: ID(n + 100),
+    market_name: name,
+    market_status: 'unverified',
+    district_id: null,
+    disambiguator: 'src-district:synthetic',
+    state_id: ID(1),
+    state_name: 'KERALA',
+    district_name: null,
+    commodity_id: ID(3),
+    commodity_name: 'Wheat',
+    variety_id: null,
+    variety_label: null,
+    grade: 'FAQ',
+    min_price: '2000.0000',
+    max_price: '2500.0000',
+    modal_price: '2300.0000',
+    price_currency: 'INR',
+    price_unit: 'quintal',
+    source_price_unit_label: null,
+    unit_basis: 'assumed_from_documentation',
+    source_state_label: 'Kerala',
+    source_district_label: 'synthetic',
+    source_market_label: name,
+    source_commodity_label: 'Wheat',
+    ...PROV,
+  };
+}
+
 /** @type {Record<string, (text?: string, values?: unknown[]) => any[]>} */
 const FIXTURES = {
+  // Latest-per-mandi page (SYNTHETIC): two mandis, one with two rows on its latest date.
+  'WITH page AS MATERIALIZED': () => [
+    {
+      ...mandiFixtureRow(60, 'Synthetic Mandi Alpha', '2024-03-10'),
+      observations_on_latest_date: 1,
+    },
+    {
+      ...mandiFixtureRow(61, 'Synthetic Mandi Beta', '2024-02-01'),
+      observations_on_latest_date: 2,
+    },
+  ],
+  'max(o.observed_date)::text AS reference_date': () => [{ reference_date: '2024-03-10' }],
   'FROM states s': () => [
     {
       id: ID(1),
@@ -587,5 +638,201 @@ describe('read-only historical market API (synthetic fixtures)', () => {
       });
       expect(res.body.data[0].provenance.ingestion_run_id).toBeTruthy();
     });
+  });
+});
+
+describe('GET /api/v1/mandi-prices/latest (synthetic fixtures)', () => {
+  const C = ID(3);
+  const url = `/api/v1/mandi-prices/latest?commodity_id=${C}`;
+
+  it.each([
+    ['a missing commodity', '/api/v1/mandi-prices/latest'],
+    ['a malformed commodity id', '/api/v1/mandi-prices/latest?commodity_id=nope'],
+    ['a malformed state id', `${url}&state_id=1`],
+    ['a malformed district id', `${url}&district_id=1`],
+    ['an unknown parameter', `${url}&market_id=${ID(5)}`],
+    ['the date-window parameters of the other endpoint', `${url}&from=2024-01-01&to=2024-01-31`],
+    ['a limit of 0', `${url}&limit=0`],
+    ['a limit above 500', `${url}&limit=501`],
+    ['a malformed cursor', `${url}&cursor=zzz`],
+    ['a repeated commodity', `${url}&commodity_id=${C}`],
+  ])('rejects %s with 400 INVALID_PARAMETER and never queries the database', async (_n, path) => {
+    const { pool, client } = fakePool();
+    const res = await request(appWith(pool)).get(path);
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('INVALID_PARAMETER');
+    expect(client.query).not.toHaveBeenCalled();
+  });
+
+  it('returns one row per mandi in the mandi row shape, plus the latest-date fields', async () => {
+    const { pool } = fakePool();
+    const res = await request(appWith(pool)).get(url);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveLength(2);
+    const [alpha, beta] = res.body.data;
+    expect(alpha).toMatchObject({
+      granularity: 'mandi_daily',
+      observed_date: '2024-03-10',
+      latest_observation_date: '2024-03-10',
+      observations_on_latest_date: 1,
+      price_unit: 'quintal',
+      unit_basis: 'assumed_from_documentation',
+    });
+    expect(beta).toMatchObject({
+      latest_observation_date: '2024-02-01',
+      observations_on_latest_date: 2,
+    });
+    expect(alpha.market).toMatchObject({
+      name: 'Synthetic Mandi Alpha',
+      verification_status: 'unverified',
+      district_status: 'unresolved',
+    });
+    expect(alpha.provenance).toMatchObject({
+      source_code: 'synthetic_source',
+      is_synthetic: false,
+    });
+    // Each mandi keeps its own date: the dates differ.
+    expect(alpha.latest_observation_date).not.toBe(beta.latest_observation_date);
+  });
+
+  it('is historical-only and separates the observation date from the request date', async () => {
+    const { pool } = fakePool();
+    const before = Date.now();
+    const res = await request(appWith(pool)).get(url);
+    expect(res.body.meta).toMatchObject({
+      is_live: false,
+      data_status: 'historical_snapshot',
+      granularity: 'mandi_daily',
+      endpoint: 'latest_observation_per_mandi',
+      reference_date: '2024-03-10',
+      filters: { commodity_id: C, state_id: null, district_id: null },
+    });
+    expect(res.body.meta.date_semantics).toMatch(
+      /observed_date .*is the date in the source file\. requested_at is when this request was served/,
+    );
+    expect(res.body.meta.ordering).toMatch(/not a ranking/);
+    expect(res.body.meta.scope).toMatch(/nothing is taken from state-level or national data/);
+    const requestedAt = Date.parse(res.body.meta.requested_at);
+    expect(requestedAt).toBeGreaterThanOrEqual(before - 1000);
+    expect(requestedAt).toBeLessThanOrEqual(Date.now() + 1000);
+    // The observation dates are far from the request date: the two are never conflated.
+    expect(Date.parse(res.body.data[0].observed_date)).toBeLessThan(requestedAt - 86_400_000);
+  });
+
+  it('matches the OpenAPI contract', async () => {
+    const { pool } = fakePool();
+    const res = await request(appWith(pool)).get(url);
+    const schema =
+      document.paths['/api/v1/mandi-prices/latest'].get.responses['200'].content['application/json']
+        .schema;
+    expect(validate(schema, res.body)).toEqual([]);
+  });
+
+  it.each([
+    ['another commodity', `/api/v1/mandi-prices/latest?commodity_id=${ID(999)}`],
+    ['an added state', `${url}&state_id=${ID(998)}`],
+    ['an added district', `${url}&district_id=${ID(997)}`],
+  ])('refuses a cursor reused with %s, and a cursor with no filter binding', async (_l, other) => {
+    const { pool, statements } = fakePool();
+    const first = await request(appWith(pool)).get(`${url}&limit=1`);
+    const cursor = first.body.pagination.next_cursor;
+    const queries = () => statements.filter((s) => s.text.includes('WITH page AS')).length;
+    const before = queries();
+    const res = await request(appWith(pool)).get(`${other}&limit=1&cursor=${cursor}`);
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('INVALID_PARAMETER');
+    expect(res.body.error.message).toMatch(/different commodity, state or district/);
+    expect(queries()).toBe(before); // rejected before the data query ran
+    const bare = Buffer.from(JSON.stringify(['Synthetic Mandi Alpha', ID(160)])).toString(
+      'base64url',
+    );
+    expect((await request(appWith(pool)).get(`${url}&limit=1&cursor=${bare}`)).status).toBe(400);
+  });
+
+  it('pages with a keyset cursor over (mandi name, id) and sends nothing but bound parameters', async () => {
+    const { pool, statements } = fakePool();
+    const first = await request(appWith(pool)).get(`${url}&limit=1`);
+    expect(first.body.data).toHaveLength(1);
+    expect(first.body.pagination).toMatchObject({ limit: 1, has_more: true });
+    expect(decodeCursor(first.body.pagination.next_cursor).slice(0, 2)).toEqual([
+      'Synthetic Mandi Alpha',
+      ID(160),
+    ]);
+    await request(appWith(pool)).get(`${url}&limit=1&cursor=${first.body.pagination.next_cursor}`);
+    const query = statements.filter((s) => s.text.includes('WITH page AS MATERIALIZED')).at(-1);
+    expect(query?.text).toContain('(m.name, m.id) >');
+    expect(query?.text).toMatch(/ORDER BY m\.name, m\.id/);
+    expect(query?.values).toEqual(expect.arrayContaining([C, 'Synthetic Mandi Alpha', ID(160)]));
+    expect(query?.values.at(-1)).toBe(2); // limit + 1
+    expect(query?.text).not.toContain(C); // the commodity is a parameter, never concatenated
+  });
+
+  it('passes the state and district filters as parameters and keeps the commodity first', async () => {
+    const { pool, statements } = fakePool();
+    await request(appWith(pool)).get(`${url}&state_id=${ID(21)}&district_id=${ID(22)}`);
+    const query = statements.find((s) => s.text.includes('WITH page AS MATERIALIZED'));
+    expect(query?.values.slice(0, 3)).toEqual([C, ID(21), ID(22)]);
+    expect(query?.text).toContain('m.state_id = $2');
+    expect(query?.text).toContain('m.district_id = $3');
+    const reference = statements.find((s) => s.text.includes('reference_date'));
+    expect(reference?.text).toContain('JOIN markets m');
+  });
+
+  it('does not join the markets table for the reference date when no geographic filter is given', async () => {
+    const { pool, statements } = fakePool();
+    await request(appWith(pool)).get(url);
+    expect(statements.find((s) => s.text.includes('reference_date'))?.text).not.toContain(
+      'JOIN markets',
+    );
+  });
+
+  it('returns an empty page, a null reference date and no cursor when nothing matches', async () => {
+    const { pool } = fakePool({
+      onQuery: (text) => {
+        if (text.includes('WITH page AS MATERIALIZED')) return { rows: [] };
+        if (text.includes('reference_date')) return { rows: [{ reference_date: null }] };
+        return undefined;
+      },
+    });
+    const res = await request(appWith(pool)).get(url);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual([]);
+    expect(res.body.pagination).toEqual({ limit: 100, has_more: false, next_cursor: null });
+    expect(res.body.meta.reference_date).toBeNull();
+    expect(res.body.meta.is_live).toBe(false);
+  });
+
+  it('runs only SELECTs inside a READ ONLY transaction', async () => {
+    const { pool, statements } = fakePool();
+    await request(appWith(pool)).get(url);
+    expect(statements[0]?.text).toBe('BEGIN READ ONLY');
+    expect(statements.at(-1)?.text).toBe('ROLLBACK');
+    for (const { text } of statements) {
+      expect(text).toMatch(/^\s*(SELECT|WITH|BEGIN READ ONLY|ROLLBACK)/);
+      expect(text).not.toMatch(/\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|GRANT|COPY)\b/i);
+    }
+  });
+
+  it('never touches state-level or national tables', async () => {
+    const { pool, statements } = fakePool();
+    await request(appWith(pool)).get(url);
+    for (const { text } of statements) {
+      expect(text).not.toMatch(/state_observations|national_monthly_prices|wpi_observations/);
+    }
+  });
+
+  it('maps database failures like the other endpoints and only allows GET', async () => {
+    const down = fakePool({
+      connectError: Object.assign(new Error('x'), { code: 'ECONNREFUSED' }),
+    });
+    const res = await request(appWith(down.pool)).get(url);
+    expect(res.status).toBe(503);
+    expect(res.body.error.code).toBe('DEPENDENCY_UNREACHABLE');
+    const { pool, client } = fakePool();
+    for (const method of /** @type {const} */ (['post', 'put', 'patch', 'delete'])) {
+      const r = await request(appWith(pool))[method]('/api/v1/mandi-prices/latest').send({});
+      expect(r.status).toBe(405);
+    }
+    expect(client.query).not.toHaveBeenCalled();
   });
 });

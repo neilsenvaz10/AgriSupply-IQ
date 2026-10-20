@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   TIER_LABEL,
   addDays,
+  daysBetween,
+  describeFreshness,
   coverageTier,
   describePrice,
   formatCount,
@@ -78,5 +80,37 @@ describe('commodity coverage tiers', () => {
     expect(new Set(Object.values(TIER_LABEL)).size).toBe(4);
     expect(TIER_LABEL.state).toMatch(/state-level.*only/i);
     expect(TIER_LABEL.none).toMatch(/no price observations/i);
+  });
+});
+
+describe('freshness wording', () => {
+  it('counts whole calendar days with no time-zone or leap-year drift', () => {
+    expect(daysBetween('2024-03-18', '2024-03-28')).toBe(10);
+    expect(daysBetween('2024-02-28', '2024-03-01')).toBe(2);
+    expect(daysBetween('2023-02-28', '2023-03-01')).toBe(1);
+    expect(daysBetween('2024-03-28', '2024-03-28')).toBe(0);
+    expect(daysBetween('2024-03-28', '2024-03-27')).toBe(-1);
+  });
+
+  it('is neutral: reported date, days before a stated reference date, no judgement', () => {
+    expect(describeFreshness('2024-03-18', '2024-03-28')).toEqual({
+      reported: 'Last reported on 18 Mar 2024',
+      relative: '10 days before the reference date (28 Mar 2024)',
+      days: 10,
+    });
+    expect(describeFreshness('2024-03-27', '2024-03-28').relative).toMatch(/^1 day before/);
+    expect(describeFreshness('2024-03-28', '2024-03-28').relative).toBe(
+      'on the reference date (28 Mar 2024)',
+    );
+    expect(describeFreshness('2024-03-28', null)).toEqual({
+      reported: 'Last reported on 28 Mar 2024',
+      relative: null,
+      days: null,
+    });
+    expect(describeFreshness('2024-03-29', '2024-03-28').relative).toMatch(/check the data/);
+    for (const days of [0, 1, 400, 4000]) {
+      const text = JSON.stringify(describeFreshness('2000-01-01', addDays('2000-01-01', days)));
+      expect(text).not.toMatch(/fresh|current|live|stale|recent|old/i);
+    }
   });
 });
