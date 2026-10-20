@@ -22,6 +22,8 @@ import {
 const LGD = 'https://lgdirectory.gov.in';
 const AUTHORITY =
   'Ministry of Panchayati Raj (content owner); National Informatics Centre (host) - Local Government Directory';
+/** The body LGD serves, with HTTP 200, when it has no record for an id. */
+const LGD_ERROR_PAGE = /Ooops!!![\s\S]{0,1500}?Something went wrong[\s\S]{0,1500}?Error ID/i;
 const LICENCE =
   'LGD Copyright Policy: free reproduction in any format with accurate, non-misleading use and prominent source acknowledgement.';
 const TERMS =
@@ -212,11 +214,21 @@ export function buildLgdPlan(dir, options = {}) {
       .map(Number)
       .sort((a, b) => a - b);
     const units = [];
+    const unresolved = [];
     const manifestLines = [];
     let newest = 0;
     let loaded = 0;
     for (const code of codes) {
       const parent = unitType === 'district' ? parentOf.get(code) : null;
+      // LGD answers some ids with HTTP 200 and an error page instead of a record. Such a unit has no official
+      // record to load; it is reported as unresolved whatever the registry says about its parent (none is inferred).
+      if (LGD_ERROR_PAGE.test(readFileSync(detailFile(code), 'utf8'))) {
+        unresolved.push(code);
+        warnings.push(
+          `${unitType} ${code}: unresolved - LGD returned an error page instead of a record; nothing is loaded and no parent is inferred`,
+        );
+        continue;
+      }
       if (unitType === 'district' && parent === undefined) {
         warnings.push(`district ${code}: no parent state known, its pages are not loaded`);
         continue;
@@ -313,8 +325,9 @@ export function buildLgdPlan(dir, options = {}) {
         'Live public pages; the effective date shown is that of the current version only.',
       licenceNote: LICENCE,
       termsNote: TERMS,
-      notes: `Fingerprint = SHA-256 of the manifest listing every page's SHA-256 (${manifestLines.length} pages). No split or merger relation is inferred.`,
+      notes: `Fingerprint = SHA-256 of the manifest listing every page's SHA-256 (${manifestLines.length} pages). No split or merger relation is inferred.${unresolved.length ? ` Unresolved, not loaded (LGD served an error page): ${unresolved.join(', ')}.` : ''}`,
       units,
+      unresolved,
     };
   };
   const endpoint0 = (unitType) =>
@@ -322,5 +335,17 @@ export function buildLgdPlan(dir, options = {}) {
   sets.push(pageSet('state'));
   sets.push(pageSet('district'));
   for (const set of sets) for (const u of set.units) u.contentSha256 = contentFingerprint(u);
-  return { sets, warnings };
+  return {
+    sets,
+    warnings,
+    /** Units LGD itself could not return, by type (explicit, never silently dropped). */
+    unresolved: Object.fromEntries(
+      sets
+        .map(
+          (x) =>
+            /** @type {[string, number[]]} */ ([x.code, /** @type {any} */ (x).unresolved ?? []]),
+        )
+        .filter(([, list]) => list.length > 0),
+    ),
+  };
 }

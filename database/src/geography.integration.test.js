@@ -578,10 +578,9 @@ describeIntegration('geographic reference tables (disposable database, synthetic
           ]);
           // The three districts whose parent state is unknown stay explicitly unresolved: reported as warnings and
           // absent from the page-derived set (the report lists them, but no parent is guessed for their pages).
-          const unresolved = plan.warnings.filter((w) => /no parent state known/.test(w));
-          expect(unresolved.map((w) => Number(/district (\d+)/.exec(w)?.[1])).sort()).toEqual([
-            599, 601, 671,
-          ]);
+          const unresolved = Object.values(plan.unresolved).flat();
+          expect([...unresolved].sort((a, b) => a - b)).toEqual([599, 601, 671]);
+          expect(plan.warnings.filter((w) => /unresolved/.test(w))).toHaveLength(3);
           const pageUnits = await owner.query(
             `SELECT count(*)::int AS n FROM admin_unit_version v JOIN geo_reference_set s ON s.id = v.reference_set_id WHERE s.code LIKE 'lgd-district-pages-%' AND v.lgd_code IN (599, 601, 671)`,
           );
