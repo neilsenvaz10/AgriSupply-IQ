@@ -24,6 +24,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { MIGRATIONS_FOLDER, runMigrations } from '../src/migrate.js';
+import { collectDatabaseUrls } from '../src/test/disposable.js';
 
 const DATABASE_DIR = fileURLToPath(new URL('..', import.meta.url));
 const INIT_DIR = join(DATABASE_DIR, 'init');
@@ -31,6 +32,20 @@ const IMAGE = 'postgres:17-alpine';
 const name = `fasalytics-test-${randomBytes(4).toString('hex')}`;
 const secret = () => randomBytes(24).toString('hex');
 const [adminPw, migratorPw, appPw, ingestPw] = [secret(), secret(), secret(), secret()];
+
+/**
+ * The child processes must see ONLY this container's connections. The disposable guard verifies every
+ * connection string in the environment, so one inherited from the caller (for example the CI job's own
+ * TEST_DATABASE_URL, which points at a different database with a different identity) would, correctly,
+ * make the run refuse. Dropping them here also means a developer's shell can never leak a development URL
+ * into this run. The guard itself is unchanged.
+ *
+ * @param {NodeJS.ProcessEnv} source
+ */
+function withoutInheritedConnections(source) {
+  const drop = new Set(collectDatabaseUrls(source).map(([variable]) => variable));
+  return Object.fromEntries(Object.entries(source).filter(([variable]) => !drop.has(variable)));
+}
 // The disposable identity: stored IN this database (ALTER DATABASE ... SET) and in the test environment.
 // The integration tests refuse to write unless both match (src/test/disposable.js).
 const disposableToken = secret();
@@ -154,7 +169,7 @@ async function main() {
   const appUrl = `postgresql://fasalytics_app:${appPw}@127.0.0.1:${port}/fasalytics`;
   const ingestUrl = `postgresql://fasalytics_ingest:${ingestPw}@127.0.0.1:${port}/fasalytics`;
   const env = {
-    ...process.env,
+    ...withoutInheritedConnections(process.env),
     DATABASE_URL: appUrl,
     DATABASE_MIGRATION_URL: migrationUrl,
     DATABASE_INGEST_URL: ingestUrl,
