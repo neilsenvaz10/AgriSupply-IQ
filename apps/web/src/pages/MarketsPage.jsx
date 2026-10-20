@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { DataQualityPanel } from '../components/market/DataQualityPanel';
 import {
   Chip,
   DistrictLine,
@@ -7,7 +8,9 @@ import {
   LoadMore,
   MandiObservationCard,
   VerificationChip,
+  WindowControls,
 } from '../components/market/historical';
+import { StatePricesView } from '../components/market/StatePricesView';
 import { Dialog } from '../components/ui/Dialog';
 import { MaterialIcon } from '../components/ui/MaterialIcon';
 import { RegistrySelect, SearchField } from '../components/ui/controls';
@@ -96,44 +99,6 @@ function MarketCard({ market, selected, onSelect }) {
   );
 }
 
-/** Date window controls for the price list; the window is capped at one year, like the API. */
-function WindowControls({ from, to, onChange, minDate, maxDate }) {
-  const tooLong = from && to && spanDays(from, to) > MAX_RANGE_DAYS;
-  const reversed = from && to && from > to;
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="grid grid-cols-2 gap-space-sm">
-        {[
-          ['From', 'from', from],
-          ['To', 'to', to],
-        ].map(([label, key, value]) => (
-          <label
-            key={key}
-            className="flex flex-col gap-1 font-label-xs text-label-xs font-bold uppercase tracking-wider text-on-surface-variant"
-          >
-            {label}
-            <input
-              type="date"
-              value={value}
-              min={minDate ?? undefined}
-              max={maxDate ?? undefined}
-              onChange={(event) => onChange({ from, to, [key]: event.target.value })}
-              className="min-h-[48px] w-full rounded-xl bg-surface-container-lowest px-3 font-label-md text-label-md normal-case text-on-surface shadow-sm"
-            />
-          </label>
-        ))}
-      </div>
-      {tooLong || reversed ? (
-        <p role="alert" className="font-label-xs text-label-xs text-error">
-          {reversed
-            ? '“From” must not be after “To”.'
-            : `Choose a window of at most ${MAX_RANGE_DAYS} days.`}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
 /** Nationwide Market Explorer (Stitch: nationwide_market_explorer). */
 export function MarketsPage() {
   useDocumentTitle('Explore markets');
@@ -146,6 +111,7 @@ export function MarketsPage() {
   const [districtStatus, setDistrictStatus] = useState('');
   const [commodityId, setCommodityId] = useState(params.get('commodity') ?? '');
   const [marketId, setMarketId] = useState('');
+  const [view, setView] = useState('mandi');
   const [windowEdit, setWindowEdit] = useState(
     /** @type {{ from: string, to: string } | null} */ (null),
   );
@@ -168,18 +134,30 @@ export function MarketsPage() {
 
   // The latest day with data for the current selection: the market's own, else the commodity's,
   // else the dataset's. Nothing is assumed: while unknown, no price request is made.
-  const lastDate =
+  const marketLast =
     marketId && marketDetail.status === 'ready'
       ? marketDetail.data.coverage.mandi_daily.last_date
-      : marketId
-        ? null
-        : commodity
-          ? commodity.coverage.mandi_daily.last_date
-          : coverage.status === 'ready'
-            ? coverage.data.coverage.granularities.mandi_daily.last_date
-            : null;
-  const defaultWindow = lastDate
-    ? { from: addDays(lastDate, -(WINDOW_DAYS - 1)), to: lastDate }
+      : null;
+  const commodityLast = commodity?.coverage.mandi_daily.last_date ?? null;
+  const datasetLast =
+    coverage.status === 'ready' ? coverage.data.coverage.granularities.mandi_daily.last_date : null;
+
+  // The END OF THE DEFAULT WINDOW. It is only a convenient place to start looking; it is not a
+  // claim that anything was observed on that day.
+  const windowEnd = marketId
+    ? marketLast && commodityLast && commodityLast < marketLast
+      ? commodityLast
+      : marketLast
+    : (commodityLast ?? datasetLast);
+
+  // The LATEST DAY, offered as a shortcut, only when the API's summary data proves it for exactly the
+  // active filters: a commodity on its own (its coverage `last_date`) or a market on its own (its
+  // coverage `last_date`). With a state filter, or a market AND a commodity together, the summary
+  // data cannot say which day was the latest for that combination, so no shortcut is offered (a
+  // wrong day would give an empty list). Nothing is guessed from the dataset-wide maximum.
+  const latestDay = marketId ? (commodity ? null : marketLast) : stateId ? null : commodityLast;
+  const defaultWindow = windowEnd
+    ? { from: addDays(windowEnd, -(WINDOW_DAYS - 1)), to: windowEnd }
     : null;
   const win = windowEdit ?? defaultWindow;
   const windowValid = Boolean(
@@ -272,261 +250,339 @@ export function MarketsPage() {
         subtitle="Historical price discovery across Indian mandis, from imported historical files."
         badge={<HistoricalBadge />}
         action={
-          <button
-            type="button"
-            onClick={() => setFiltersOpen(true)}
-            aria-haspopup="dialog"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-surface-container-high text-on-surface"
-          >
-            <MaterialIcon name="tune" />
-            <span className="sr-only">Open filters</span>
-          </button>
+          view === 'mandi' ? (
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              aria-haspopup="dialog"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-surface-container-high text-on-surface"
+            >
+              <MaterialIcon name="tune" />
+              <span className="sr-only">Open filters</span>
+            </button>
+          ) : undefined
         }
       />
 
-      <SearchField
-        label="Search mandis by name"
-        placeholder="Search mandi by name…"
-        value={query}
-        onChange={(value) => {
-          setQuery(value);
-          resetSelection();
-        }}
-        hint="Searches market names. Use the filters for state, district and commodity."
-      />
-
-      <div className="flex flex-wrap gap-space-xs" role="group" aria-label="Region">
-        <button
-          type="button"
-          aria-pressed="true"
-          className="rounded-full bg-primary-container px-4 py-2 font-label-md text-label-md font-bold text-on-primary"
-        >
-          All India
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
-        <RegistrySelect
-          label="State"
-          placeholder="All states"
-          unavailable={states.status !== 'ready'}
-          options={stateOptions}
-          value={stateId}
-          onChange={(value) => {
-            setStateId(value);
-            setDistrictId('');
-            resetSelection();
-          }}
-        />
-        <RegistrySelect
-          label="Commodity"
-          placeholder="All commodities"
-          unavailable={catalogue.status !== 'ready'}
-          options={commodityOptions}
-          value={commodityId}
-          onChange={(value) => {
-            setCommodityId(value);
-            setWindowEdit(null);
-          }}
-        />
-      </div>
-      {catalogue.status === 'ready' ? (
-        <p className="font-label-xs text-label-xs text-on-surface-variant">
-          Only {mandiCommodities.length} of {catalogue.data.items.length} commodities have
-          mandi-level observations; the others have state-level data only (see Commodities).
-        </p>
-      ) : null}
-
-      <div className="grid grid-cols-1 gap-space-md lg:grid-cols-12">
-        <div className="flex flex-col gap-space-md lg:col-span-5">
-          <Card aria-labelledby="map-heading" className="flex flex-col gap-3">
-            <h2 id="map-heading" className="font-headline-sm text-headline-sm font-extrabold">
-              Coverage map
-            </h2>
-            <div className="flex h-48 flex-col items-center justify-center gap-2 rounded-xl bg-surface-container-low text-center">
-              <MaterialIcon name="map" className="text-[40px] text-outline" />
-              <p className="max-w-xs px-space-md font-body-sm text-body-sm text-on-surface-variant">
-                The map needs the market directory with verified locations. No market is verified
-                yet.
-              </p>
-            </div>
-            <dl className="grid grid-cols-3 gap-2">
-              {[
-                ['Mandis (all unverified)', cov ? formatCount(cov.registry.markets) : null],
-                [
-                  'Commodities with mandi prices',
-                  cov ? formatCount(cov.granularities.mandi_daily.commodities) : null,
-                ],
-                ['Average turnover', null],
-              ].map(([label, value]) => (
-                <div
-                  key={label}
-                  className="flex flex-col rounded-xl bg-surface-container-low p-2.5 text-center"
-                >
-                  <dt className="font-label-xs text-label-xs text-on-surface-variant">{label}</dt>
-                  <dd
-                    className={`font-metric-md text-metric-md ${value ? 'text-on-surface' : 'text-outline'}`}
-                  >
-                    {value ?? (
-                      <>
-                        <span aria-hidden="true">—</span>
-                        <span className="sr-only">Not available</span>
-                      </>
-                    )}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </Card>
-
-          <Card aria-labelledby="health-heading" className="flex flex-col gap-2">
-            <h2 id="health-heading" className="font-headline-sm text-headline-sm font-extrabold">
-              Data coverage
-            </h2>
-            {cov ? (
-              <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Historical files, not a live feed. Mandi observations run from{' '}
-                {formatDate(cov.granularities.mandi_daily.first_date)} to{' '}
-                {formatDate(cov.granularities.mandi_daily.last_date)} (
-                {formatCount(cov.granularities.mandi_daily.observations)} observations in{' '}
-                {cov.granularities.mandi_daily.states} states).{' '}
-                {formatCount(cov.geography.markets_with_unresolved_district)} mandis have a district
-                that could not be resolved.
-              </p>
-            ) : (
-              <p className="font-body-sm text-body-sm text-on-surface-variant">
-                {coverage.status === 'error'
-                  ? coverage.reason
-                  : 'Loading the coverage of the historical files…'}
-              </p>
-            )}
-            <div className="h-3 w-full rounded-full bg-surface-container-high" aria-hidden="true" />
-          </Card>
-        </div>
-
-        <section
-          aria-labelledby="hubs-heading"
-          className="flex flex-col gap-space-sm lg:col-span-7"
-        >
-          <div className="flex items-center justify-between">
-            <h2 id="hubs-heading" className="font-headline-sm text-headline-sm font-extrabold">
-              Market hubs
-            </h2>
-            <span className="font-label-xs text-label-xs font-bold text-outline">
-              Showing {directory.items.length}
-            </span>
-          </div>
-          <DataState
-            state={{
-              status: directory.status,
-              data: directory.items,
-              reason: directory.reason,
-              needs: '',
-              retry: directory.retry,
-            }}
-            icon="storefront"
-            skeleton={
-              <div className="grid gap-space-sm">
-                <SkeletonCard lines={2} />
-                <SkeletonCard lines={2} />
-              </div>
-            }
+      <div role="tablist" aria-label="Price level" className="flex flex-wrap gap-space-xs">
+        {[
+          ['mandi', 'Mandi prices'],
+          ['state', 'State-level prices'],
+        ].map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            id={`market-tab-${value}`}
+            aria-selected={view === value}
+            aria-controls="market-view-panel"
+            onClick={() => setView(value)}
+            className={`min-h-[44px] rounded-full px-4 font-label-md text-label-md font-bold ${
+              view === value
+                ? 'bg-primary-container text-on-primary'
+                : 'bg-surface-container-high text-on-surface-variant'
+            }`}
           >
-            {(items) =>
-              items.length === 0 ? (
-                <EmptyState icon="search_off" message="No mandi matches these filters." />
-              ) : (
-                <div className="flex flex-col gap-space-sm">
-                  {items.map((m) => (
-                    <MarketCard
-                      key={m.id}
-                      market={m}
-                      selected={m.id === marketId}
-                      onSelect={(id) => {
-                        setMarketId(id === marketId ? '' : id);
-                        setWindowEdit(null);
-                      }}
-                    />
-                  ))}
-                  <LoadMore pager={directory} noun="mandis" />
-                </div>
-              )
-            }
-          </DataState>
+            {label}
+          </button>
+        ))}
+      </div>
 
-          <Card aria-labelledby="prices-heading" className="flex flex-col gap-space-sm">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 id="prices-heading" className="font-headline-sm text-headline-sm font-extrabold">
-                Historical mandi prices
-              </h2>
-              <HistoricalBadge>Mandi-level · not live</HistoricalBadge>
-            </div>
-            <p className="font-label-xs text-label-xs text-on-surface-variant">
-              {selectedMarket ? `Market: ${selectedMarket.name}. ` : ''}
-              {commodity ? `Commodity: ${commodity.name}. ` : ''}
-              Prices are modal prices in INR per quintal; the file states no unit, so the unit is an
-              assumption. State-level prices are never used to fill missing mandi prices.
-            </p>
-            {win ? (
-              <WindowControls
-                from={win.from}
-                to={win.to}
-                onChange={setWindowEdit}
-                minDate={cov?.granularities.mandi_daily.first_date}
-                maxDate={cov?.granularities.mandi_daily.last_date}
-              />
-            ) : null}
-            {noObservationsForMarket ? (
-              <EmptyState
-                icon="event_busy"
-                message="This mandi has no mandi-level observations in the historical files. No other price is shown in its place."
-              />
-            ) : (
-              <DataState
-                state={{
-                  status: observations.status,
-                  data: observations.items,
-                  reason: observations.reason,
-                  needs: '',
-                  retry: observations.retry,
-                }}
-                icon="payments"
-                skeleton={
-                  <div className="grid gap-space-sm">
-                    <SkeletonCard lines={2} />
-                    <SkeletonCard lines={2} />
-                  </div>
-                }
+      <div
+        role="tabpanel"
+        id="market-view-panel"
+        aria-labelledby={`market-tab-${view}`}
+        className="flex flex-col gap-space-md"
+      >
+        {view === 'state' ? (
+          <StatePricesView coverage={cov} states={states} catalogue={catalogue} />
+        ) : (
+          <>
+            <SearchField
+              label="Search mandis by name"
+              placeholder="Search mandi by name…"
+              value={query}
+              onChange={(value) => {
+                setQuery(value);
+                resetSelection();
+              }}
+              hint="Searches market names. Use the filters for state, district and commodity."
+            />
+
+            <div className="flex flex-wrap gap-space-xs" role="group" aria-label="Region">
+              <button
+                type="button"
+                aria-pressed="true"
+                className="rounded-full bg-primary-container px-4 py-2 font-label-md text-label-md font-bold text-on-primary"
               >
-                {(rows) =>
-                  rows.length === 0 ? (
+                All India
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
+              <RegistrySelect
+                label="State"
+                placeholder="All states"
+                unavailable={states.status !== 'ready'}
+                options={stateOptions}
+                value={stateId}
+                onChange={(value) => {
+                  setStateId(value);
+                  setDistrictId('');
+                  resetSelection();
+                }}
+              />
+              <RegistrySelect
+                label="Commodity"
+                placeholder="All commodities"
+                unavailable={catalogue.status !== 'ready'}
+                options={commodityOptions}
+                value={commodityId}
+                onChange={(value) => {
+                  setCommodityId(value);
+                  setWindowEdit(null);
+                }}
+              />
+            </div>
+            {catalogue.status === 'ready' ? (
+              <p className="font-label-xs text-label-xs text-on-surface-variant">
+                Only {mandiCommodities.length} of {catalogue.data.items.length} commodities have
+                mandi-level observations; the others have state-level data only (see Commodities).
+              </p>
+            ) : null}
+
+            <div className="grid grid-cols-1 gap-space-md lg:grid-cols-12">
+              <div className="flex flex-col gap-space-md lg:col-span-5">
+                <Card aria-labelledby="map-heading" className="flex flex-col gap-3">
+                  <h2 id="map-heading" className="font-headline-sm text-headline-sm font-extrabold">
+                    Coverage map
+                  </h2>
+                  <div className="flex h-48 flex-col items-center justify-center gap-2 rounded-xl bg-surface-container-low text-center">
+                    <MaterialIcon name="map" className="text-[40px] text-outline" />
+                    <p className="max-w-xs px-space-md font-body-sm text-body-sm text-on-surface-variant">
+                      The map needs the market directory with verified locations. No market is
+                      verified yet.
+                    </p>
+                  </div>
+                  <dl className="grid grid-cols-3 gap-2">
+                    {[
+                      ['Mandis (all unverified)', cov ? formatCount(cov.registry.markets) : null],
+                      [
+                        'Commodities with mandi prices',
+                        cov ? formatCount(cov.granularities.mandi_daily.commodities) : null,
+                      ],
+                      ['Average turnover', null],
+                    ].map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="flex flex-col rounded-xl bg-surface-container-low p-2.5 text-center"
+                      >
+                        <dt className="font-label-xs text-label-xs text-on-surface-variant">
+                          {label}
+                        </dt>
+                        <dd
+                          className={`font-metric-md text-metric-md ${value ? 'text-on-surface' : 'text-outline'}`}
+                        >
+                          {value ?? (
+                            <>
+                              <span aria-hidden="true">—</span>
+                              <span className="sr-only">Not available</span>
+                            </>
+                          )}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </Card>
+
+                <Card aria-labelledby="health-heading" className="flex flex-col gap-2">
+                  <h2
+                    id="health-heading"
+                    className="font-headline-sm text-headline-sm font-extrabold"
+                  >
+                    Data coverage
+                  </h2>
+                  {cov ? (
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">
+                      Historical files, not a live feed. Mandi observations run from{' '}
+                      {formatDate(cov.granularities.mandi_daily.first_date)} to{' '}
+                      {formatDate(cov.granularities.mandi_daily.last_date)} (
+                      {formatCount(cov.granularities.mandi_daily.observations)} observations in{' '}
+                      {cov.granularities.mandi_daily.states} states).{' '}
+                      {formatCount(cov.geography.markets_with_unresolved_district)} mandis have a
+                      district that could not be resolved.
+                    </p>
+                  ) : (
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">
+                      {coverage.status === 'error'
+                        ? coverage.reason
+                        : 'Loading the coverage of the historical files…'}
+                    </p>
+                  )}
+                  <div
+                    className="h-3 w-full rounded-full bg-surface-container-high"
+                    aria-hidden="true"
+                  />
+                </Card>
+              </div>
+
+              <section
+                aria-labelledby="hubs-heading"
+                className="flex flex-col gap-space-sm lg:col-span-7"
+              >
+                <div className="flex items-center justify-between">
+                  <h2
+                    id="hubs-heading"
+                    className="font-headline-sm text-headline-sm font-extrabold"
+                  >
+                    Market hubs
+                  </h2>
+                  <span className="font-label-xs text-label-xs font-bold text-outline">
+                    Showing {directory.items.length}
+                  </span>
+                </div>
+                <DataState
+                  state={{
+                    status: directory.status,
+                    data: directory.items,
+                    reason: directory.reason,
+                    needs: '',
+                    retry: directory.retry,
+                  }}
+                  icon="storefront"
+                  skeleton={
+                    <div className="grid gap-space-sm">
+                      <SkeletonCard lines={2} />
+                      <SkeletonCard lines={2} />
+                    </div>
+                  }
+                >
+                  {(items) =>
+                    items.length === 0 ? (
+                      <EmptyState icon="search_off" message="No mandi matches these filters." />
+                    ) : (
+                      <div className="flex flex-col gap-space-sm">
+                        {items.map((m) => (
+                          <MarketCard
+                            key={m.id}
+                            market={m}
+                            selected={m.id === marketId}
+                            onSelect={(id) => {
+                              setMarketId(id === marketId ? '' : id);
+                              setWindowEdit(null);
+                            }}
+                          />
+                        ))}
+                        <LoadMore pager={directory} noun="mandis" />
+                      </div>
+                    )
+                  }
+                </DataState>
+
+                <Card aria-labelledby="prices-heading" className="flex flex-col gap-space-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h2
+                      id="prices-heading"
+                      className="font-headline-sm text-headline-sm font-extrabold"
+                    >
+                      Historical mandi prices
+                    </h2>
+                    <HistoricalBadge>Mandi-level · not live</HistoricalBadge>
+                  </div>
+                  <p className="font-label-xs text-label-xs text-on-surface-variant">
+                    {selectedMarket ? `Market: ${selectedMarket.name}. ` : ''}
+                    {commodity ? `Commodity: ${commodity.name}. ` : ''}
+                    Prices are modal prices in INR per quintal; the file states no unit, so the unit
+                    is an assumption. State-level prices are never used to fill missing mandi
+                    prices.
+                  </p>
+                  {latestDay ? (
+                    <p className="font-label-xs text-label-xs text-on-surface-variant">
+                      Latest available observation for this selection:{' '}
+                      <time dateTime={latestDay}>{formatDate(latestDay)}</time> (historical files,
+                      not live).
+                    </p>
+                  ) : wantsPrices && windowEnd ? (
+                    <p className="font-label-xs text-label-xs text-on-surface-variant">
+                      The latest day for this exact combination of filters is not available from the
+                      API’s summary data, so no “latest day” shortcut is offered; the default window
+                      ends at <time dateTime={windowEnd}>{formatDate(windowEnd)}</time>. Set the
+                      dates to look elsewhere.
+                      {marketLast && commodityLast && marketLast < commodityLast
+                        ? ` This mandi has no observations after ${formatDate(marketLast)} (any commodity); the latest day for ${commodity?.name} in the files is ${formatDate(commodityLast)}.`
+                        : ''}
+                    </p>
+                  ) : null}
+                  {win ? (
+                    <WindowControls
+                      from={win.from}
+                      to={win.to}
+                      onChange={setWindowEdit}
+                      minDate={cov?.granularities.mandi_daily.first_date}
+                      maxDate={cov?.granularities.mandi_daily.last_date}
+                      latestDay={latestDay}
+                      onReset={() => setWindowEdit(null)}
+                    />
+                  ) : null}
+                  {noObservationsForMarket ? (
                     <EmptyState
                       icon="event_busy"
-                      message={`No mandi observations exist for these filters between ${formatDate(win?.from)} and ${formatDate(win?.to)}. State-level prices are not shown in their place.`}
+                      message="This mandi has no mandi-level observations in the historical files. No other price is shown in its place."
                     />
                   ) : (
-                    <div className="flex flex-col gap-space-sm">
-                      {rows.map((row) => (
-                        <MandiObservationCard key={row.id} row={row} />
-                      ))}
-                      <LoadMore pager={observations} noun="observations" />
-                    </div>
-                  )
-                }
-              </DataState>
-            )}
-          </Card>
-        </section>
+                    <DataState
+                      state={{
+                        status: observations.status,
+                        data: observations.items,
+                        reason: observations.reason,
+                        needs: '',
+                        retry: observations.retry,
+                      }}
+                      icon="payments"
+                      skeleton={
+                        <div className="grid gap-space-sm">
+                          <SkeletonCard lines={2} />
+                          <SkeletonCard lines={2} />
+                        </div>
+                      }
+                    >
+                      {(rows) =>
+                        rows.length === 0 ? (
+                          <EmptyState
+                            icon="event_busy"
+                            message={`No mandi observations exist for these filters between ${formatDate(win?.from)} and ${formatDate(win?.to)}. State-level prices are not shown in their place.`}
+                          />
+                        ) : (
+                          <div className="flex flex-col gap-space-sm">
+                            {rows.map((row) => (
+                              <MandiObservationCard key={row.id} row={row} />
+                            ))}
+                            <LoadMore pager={observations} noun="observations" />
+                          </div>
+                        )
+                      }
+                    </DataState>
+                  )}
+                </Card>
+              </section>
+            </div>
+
+            <div className="mx-auto w-full max-w-md">
+              <UnavailableAction
+                icon="compare_arrows"
+                reason="Comparing mandis needs verified markets and cost and forecast inputs, which do not exist yet."
+              >
+                Compare selected mandis (0)
+              </UnavailableAction>
+            </div>
+          </>
+        )}
       </div>
 
-      <div className="mx-auto w-full max-w-md">
-        <UnavailableAction
-          icon="compare_arrows"
-          reason="Comparing mandis needs verified markets and cost and forecast inputs, which do not exist yet."
-        >
-          Compare selected mandis (0)
-        </UnavailableAction>
-      </div>
+      <DataQualityPanel
+        coverage={cov}
+        states={states.status === 'ready' ? states.data.items : []}
+      />
 
       <Dialog
         open={filtersOpen}

@@ -1,0 +1,138 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T06:18:22.162Z",
+  "request": "GET /api/v1/mandi-prices?commodity_id=e6650c5c-bccf-405a-ac48-f394f2d26746&from=2025-06-11&to=2025-06-11&limit=2",
+  "status": 200,
+  "response": {
+    "pagination": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "WyIyMDI1LTA2LTExIiwiMDBhMWI1OWMtODY0MS00ZDk3LWEyMjctZDM3N2I1MGU5YTY2Il0"
+    },
+    "data": [
+      {
+        "id": "0098f71a-f857-47ee-962a-a434ee59cbd8",
+        "granularity": "mandi_daily",
+        "observed_date": "2025-06-11",
+        "market": {
+          "id": "b6a3483f-4cbc-434c-8d44-63d80f347a60",
+          "name": "Hingna",
+          "verification_status": "unverified",
+          "district_status": "resolved"
+        },
+        "state": {
+          "id": "46194b5c-6edf-437b-b175-0a1897d8d731",
+          "name": "MAHARASHTRA",
+          "mapping_status": "resolved"
+        },
+        "district": {
+          "id": "fb7261f8-2b66-4678-9e08-031f923c3fb3",
+          "name": "NAGPUR"
+        },
+        "commodity": {
+          "id": "e6650c5c-bccf-405a-ac48-f394f2d26746",
+          "name": "Onion"
+        },
+        "variety": {
+          "id": "b11c074b-f4eb-44ba-b39f-eb6fcf20fdd7",
+          "label": "Red"
+        },
+        "grade": "Local",
+        "min_price": 1500,
+        "max_price": 1500,
+        "modal_price": 1500,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "source_price_unit_label": null,
+        "unit_basis": "assumed_from_documentation",
+        "source_labels": {
+          "state": "Maharashtra",
+          "district": "nagpur",
+          "market": "Hingna",
+          "commodity": "Onion"
+        },
+        "provenance": {
+          "source_code": "mandi_daily_prices_historical",
+          "source_file_id": "d160afb4-4b7d-47fa-b258-1b7500bdab72",
+          "ingestion_run_id": "905a9358-de12-486d-a6e8-be6405878bff",
+          "source_row_number": 737270,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      },
+      {
+        "id": "00a1b59c-8641-4d97-a227-d377b50e9a66",
+        "granularity": "mandi_daily",
+        "observed_date": "2025-06-11",
+        "market": {
+          "id": "2194e354-82cb-43ec-b05c-266ad5c8053b",
+          "name": "Naanpara",
+          "verification_status": "unverified",
+          "district_status": "resolved"
+        },
+        "state": {
+          "id": "c2569e21-3796-46d0-a0ab-9fb54d936780",
+          "name": "UTTAR PRADESH",
+          "mapping_status": "resolved"
+        },
+        "district": {
+          "id": "eda68a83-1c4b-4ccf-9ba1-260b27352637",
+          "name": "BAHRAICH"
+        },
+        "commodity": {
+          "id": "e6650c5c-bccf-405a-ac48-f394f2d26746",
+          "name": "Onion"
+        },
+        "variety": {
+          "id": null,
+          "label": "Other"
+        },
+        "grade": "Non-FAQ",
+        "min_price": 1500,
+        "max_price": 1600,
+        "modal_price": 1540,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "source_price_unit_label": null,
+        "unit_basis": "assumed_from_documentation",
+        "source_labels": {
+          "state": "Uttar Pradesh",
+          "district": "bahraich",
+          "market": "Naanpara",
+          "commodity": "Onion"
+        },
+        "provenance": {
+          "source_code": "mandi_daily_prices_historical",
+          "source_file_id": "d160afb4-4b7d-47fa-b258-1b7500bdab72",
+          "ingestion_run_id": "905a9358-de12-486d-a6e8-be6405878bff",
+          "source_row_number": 736783,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        }
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "mandi_daily",
+      "unit_note": "Prices are assumed to be INR per quintal (unit_basis \"assumed_from_documentation\"); the source file states no unit.",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "market_verification": "Market identities are created from source labels. No authoritative market list exists, so every market is \"unverified\".",
+      "window": {
+        "from": "2025-06-11",
+        "to": "2025-06-11"
+      },
+      "separation": "Mandi-level rows only. Missing mandi prices are never filled from state or national data, and this dataset has no arrivals."
+    }
+  }
+}

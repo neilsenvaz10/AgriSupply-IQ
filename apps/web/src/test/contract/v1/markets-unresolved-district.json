@@ -1,0 +1,56 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T06:18:22.117Z",
+  "request": "GET /api/v1/markets?district_status=unresolved&limit=2",
+  "status": 200,
+  "response": {
+    "pagination": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "WyJBTkRIUkEgUFJBREVTSCIsIkFzaWZhYmFkIiwiYzQ4N2ZlNWItYmJmMS00ZmY4LWFlZTQtNGZiN2IyMWI2YzBkIl0"
+    },
+    "data": [
+      {
+        "id": "febff832-b77d-4fef-ad5d-5d85c4ae2474",
+        "name": "Adilabad(Rythu Bazar)",
+        "state": {
+          "id": "0c6b4cb6-2e5c-431c-aee7-d18abd0cec0c",
+          "name": "ANDHRA PRADESH"
+        },
+        "district": null,
+        "district_status": "unresolved",
+        "source_district_label": "adilabad",
+        "verification_status": "unverified",
+        "government_market_code": null,
+        "classification": null
+      },
+      {
+        "id": "c487fe5b-bbf1-4ff8-aee4-4fb7b21b6c0d",
+        "name": "Asifabad",
+        "state": {
+          "id": "0c6b4cb6-2e5c-431c-aee7-d18abd0cec0c",
+          "name": "ANDHRA PRADESH"
+        },
+        "district": null,
+        "district_status": "unresolved",
+        "source_district_label": "adilabad",
+        "verification_status": "unverified",
+        "government_market_code": null,
+        "classification": null
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "registry",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "market_verification": "Market identities are created from source labels. No authoritative market list exists, so every market is \"unverified\"."
+    }
+  }
+}

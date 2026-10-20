@@ -1,0 +1,68 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T06:18:22.091Z",
+  "request": "GET /api/v1/commodities?limit=3",
+  "status": 200,
+  "trimmed": "data shortened from 3 to 2 rows",
+  "response": {
+    "pagination": {
+      "limit": 3,
+      "has_more": true,
+      "next_cursor": "WyJBandhbiIsIjJmZjFiNTc3LThiMDgtNDE5Yy05ZDhiLTdkNTBjOWQzYWIzNyJd"
+    },
+    "data": [
+      {
+        "id": "7ed93f1b-0da2-44e2-afa5-fc4829b942ac",
+        "name": "Absinthe",
+        "commodity_group": "Forest Products",
+        "coverage": {
+          "mandi_daily": {
+            "observations": 0,
+            "first_date": null,
+            "last_date": null
+          },
+          "state_daily": {
+            "observations": 214,
+            "first_date": "2024-08-20",
+            "last_date": "2026-07-02"
+          },
+          "national_monthly": {
+            "observations": 0,
+            "first_date": null,
+            "last_date": null
+          }
+        }
+      },
+      {
+        "id": "d07cc5ea-9a2a-4d7a-978c-2b2a947b3582",
+        "name": "Adulsa",
+        "commodity_group": "Medicinal and Aromatic Plants",
+        "coverage": {
+          "mandi_daily": {
+            "observations": 0,
+            "first_date": null,
+            "last_date": null
+          },
+          "state_daily": {
+            "observations": 1,
+            "first_date": "2026-05-11",
+            "last_date": "2026-05-11"
+          },
+          "national_monthly": {
+            "observations": 0,
+            "first_date": null,
+            "last_date": null
+          }
+        }
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "registry",
+      "note": "coverage lists observed rows per granularity; a commodity with 0 rows has no data at that granularity."
+    }
+  }
+}

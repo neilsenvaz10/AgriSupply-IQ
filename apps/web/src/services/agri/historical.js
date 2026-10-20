@@ -126,6 +126,17 @@ const ENDPOINTS = {
       cursor: V.cursor,
     },
   },
+  statePrices: {
+    path: '/state-prices',
+    params: {
+      state_id: V.uuid,
+      commodity_id: V.uuid,
+      from: V.date,
+      to: V.date,
+      limit: V.limit,
+      cursor: V.cursor,
+    },
+  },
   coverage: { path: '/coverage', params: {} },
   sources: { path: '/sources', params: {} },
   unresolved: { path: '/geography/unresolved', params: {} },
@@ -154,16 +165,24 @@ export function buildPath(endpoint, params = {}, path = {}) {
     if (raw === undefined || raw === null || raw === '') continue;
     query.set(name, validate(raw, name));
   }
-  if (endpoint === 'mandiPrices') {
+  if (endpoint === 'mandiPrices' || endpoint === 'statePrices') {
     const from = query.get('from');
     const to = query.get('to');
-    if (!from || !to) throw invalid('Both "from" and "to" are required for mandi prices.');
+    if (!from || !to) throw invalid('Both "from" and "to" are required for price observations.');
     if (from > to) throw invalid('"from" must not be after "to".');
     if (spanDays(from, to) > MAX_RANGE_DAYS) {
       throw invalid(`The date range may span at most ${MAX_RANGE_DAYS} days.`);
     }
-    if (!query.get('market_id') && !query.get('commodity_id') && !query.get('state_id')) {
-      throw invalid('Give a market, a commodity or a state.');
+    const filters =
+      endpoint === 'mandiPrices'
+        ? ['market_id', 'commodity_id', 'state_id']
+        : ['commodity_id', 'state_id'];
+    if (!filters.some((name) => query.get(name))) {
+      throw invalid(
+        endpoint === 'mandiPrices'
+          ? 'Give a market, a commodity or a state.'
+          : 'Give a state or a commodity.',
+      );
     }
   }
   let base = `${API_PREFIX}${spec.path}`;
@@ -208,6 +227,73 @@ export function parseEnvelope(body, { list }) {
 }
 
 /**
+ * Row-level contract checks for the two observation endpoints. A row of the wrong granularity, or
+ * one missing the fields the screens depend on (unit, unit basis, source labels, provenance), makes
+ * the whole response unusable rather than being shown half-understood. In particular a state-level
+ * row can never be returned as a mandi-level observation, and the reverse. Extra fields the API may
+ * add later are tolerated and ignored.
+ */
+const ROW_CONTRACTS = {
+  mandiPrices: {
+    granularity: 'mandi_daily',
+    required: [
+      'id',
+      'observed_date',
+      'market',
+      'state',
+      'commodity',
+      'modal_price',
+      'price_unit',
+      'unit_basis',
+      'source_labels',
+      'provenance',
+    ],
+  },
+  statePrices: {
+    granularity: 'state_daily',
+    required: [
+      'id',
+      'observed_date',
+      'state',
+      'commodity',
+      'modal_price',
+      'price_unit',
+      'arrival_unit',
+      'unit_basis',
+      'source_labels',
+      'provenance',
+    ],
+  },
+};
+
+/**
+ * @param {'mandiPrices' | 'statePrices'} endpoint
+ * @param {any[]} rows
+ */
+export function checkObservationRows(endpoint, rows) {
+  const contract = ROW_CONTRACTS[endpoint];
+  rows.forEach((row, i) => {
+    if (typeof row !== 'object' || row === null) throw new Error(`row ${i} is not an object`);
+    if (row.granularity !== contract.granularity) {
+      throw new Error(`row ${i} is not a ${contract.granularity} observation`);
+    }
+    for (const key of contract.required) {
+      if (!(key in row)) throw new Error(`row ${i} is missing "${key}"`);
+    }
+    if (endpoint === 'statePrices' && ('market' in row || 'district' in row)) {
+      throw new Error(`row ${i} claims mandi-level fields on a state-level observation`);
+    }
+    if (
+      typeof row.provenance !== 'object' ||
+      row.provenance === null ||
+      row.provenance.is_synthetic === true
+    ) {
+      throw new Error(`row ${i} has no usable provenance`);
+    }
+  });
+}
+
+/**
  * @param {import('../api/client').ApiClient} client
  * @param {keyof typeof ENDPOINTS} endpoint
  * @param {Record<string, unknown>} params
@@ -216,7 +302,16 @@ export function parseEnvelope(body, { list }) {
  */
 async function request(client, endpoint, params, { list, signal, id }) {
   const path = buildPath(endpoint, params, { id });
-  return client.get(path, { parse: (body) => parseEnvelope(body, { list }), signal });
+  return client.get(path, {
+    parse: (body) => {
+      const envelope = parseEnvelope(body, { list });
+      if (endpoint === 'mandiPrices' || endpoint === 'statePrices') {
+        checkObservationRows(endpoint, envelope.data);
+      }
+      return envelope;
+    },
+    signal,
+  });
 }
 
 /** The endpoints used by the screens. Each resolves with `{ data, pagination, meta }`. */
@@ -229,6 +324,7 @@ export const historical = {
   /** @param {import('../api/client').ApiClient} c @param {string} id @param {AbortSignal} [signal] */
   market: (c, id, signal) => request(c, 'marketDetail', {}, { list: false, signal, id }),
   mandiPrices: (c, p = {}, signal) => request(c, 'mandiPrices', p, { list: true, signal }),
+  statePrices: (c, p = {}, signal) => request(c, 'statePrices', p, { list: true, signal }),
   /** @param {import('../api/client').ApiClient} c @param {AbortSignal} [signal] */
   coverage: (c, signal) => request(c, 'coverage', {}, { list: false, signal }),
   sources: (c, signal) => request(c, 'sources', {}, { list: false, signal }),

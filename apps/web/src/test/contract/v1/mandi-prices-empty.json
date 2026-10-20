@@ -1,0 +1,33 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T06:18:22.182Z",
+  "request": "GET /api/v1/mandi-prices?commodity_id=30e94149-3299-4aa6-90b3-4b7bafc45b91&from=2025-06-01&to=2025-06-30&limit=2",
+  "status": 200,
+  "response": {
+    "pagination": {
+      "limit": 2,
+      "has_more": false,
+      "next_cursor": null
+    },
+    "data": [],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "mandi_daily",
+      "unit_note": "Prices are assumed to be INR per quintal (unit_basis \"assumed_from_documentation\"); the source file states no unit.",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "market_verification": "Market identities are created from source labels. No authoritative market list exists, so every market is \"unverified\".",
+      "window": {
+        "from": "2025-06-01",
+        "to": "2025-06-30"
+      },
+      "separation": "Mandi-level rows only. Missing mandi prices are never filled from state or national data, and this dataset has no arrivals."
+    }
+  }
+}

@@ -441,7 +441,7 @@ describe('Market Explorer (historical mandi prices)', () => {
       'Testcrop Alpha',
     ]);
     expect(
-      screen.getByText(/only 1 of 3 commodities have mandi-level observations/i),
+      screen.getByText(/only 1 of 3 commodities have mandi-level observations; the others/i),
     ).toBeVisible();
   });
 
@@ -568,18 +568,23 @@ describe('Commodities (real catalogue, coverage tiers)', () => {
     expect(screen.getByText('Barley(Jau)', { selector: 'h3' })).toBeVisible();
   });
 
-  it('spotlights a commodity, and links to its mandis only when it has mandi-level data', async () => {
+  it('spotlights a commodity through the searchable selector, and links to its mandis only when it has mandi-level data', async () => {
     renderApp('/commodities', { fetchImpl: mockFetch(healthyHandlers()) });
     await screen.findByText('Testcrop Alpha', { selector: 'h3' });
     const spotlight = up(screen.getByRole('heading', { name: 'Spotlight' }), 'section');
-    const select = within(spotlight).getByRole('combobox', { name: 'Commodity' });
+    const box = within(spotlight).getByRole('combobox', { name: 'Commodity' });
 
     // Nothing selected: disabled, with a reason.
     expect(
       screen.getByRole('button', { name: /explore mandis for selected commodity/i }),
     ).toBeDisabled();
 
-    choose(select, id(102)); // state-level only
+    // Search by name; the option carries its coverage information.
+    fireEvent.change(box, { target: { value: 'beta' } });
+    const beta = within(spotlight).getByRole('option', { name: /Testcrop Beta/ });
+    expect(beta).toHaveTextContent(/State-level observations only: 900 state-level observations/);
+    fireEvent.click(beta);
+    expect(box).toHaveValue('Testcrop Beta');
     expect(
       screen.getByText(/has no mandi-level observations, so there are no mandis to explore/i),
     ).toBeVisible();
@@ -587,13 +592,21 @@ describe('Commodities (real catalogue, coverage tiers)', () => {
       screen.queryByRole('link', { name: /explore mandis for selected commodity/i }),
     ).not.toBeInTheDocument();
 
-    choose(select, MANDI_ALPHA);
+    fireEvent.change(box, { target: { value: 'alpha' } });
+    const alpha = within(spotlight).getByRole('option', { name: /Testcrop Alpha/ });
+    expect(alpha).toHaveTextContent(/Mandi-level observations: 120 mandi observations/);
+    fireEvent.click(alpha);
     expect(
       screen.getByRole('link', { name: /explore mandis for selected commodity/i }),
     ).toHaveAttribute('href', `/markets?commodity=${MANDI_ALPHA}`);
-    expect(spotlight.textContent).toMatch(
-      /nothing about forecasting eligibility|not a statement about forecasting eligibility/i,
-    );
+    expect(spotlight.textContent).toMatch(/not a statement about forecasting eligibility/i);
+
+    // Clearing the selection returns to the empty spotlight.
+    fireEvent.click(within(spotlight).getByRole('button', { name: /clear commodity/i }));
+    expect(box).toHaveValue('');
+    expect(
+      screen.getByRole('button', { name: /explore mandis for selected commodity/i }),
+    ).toBeDisabled();
   });
 
   it('shows more of a long catalogue in steps', async () => {

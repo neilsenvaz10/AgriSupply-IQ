@@ -1,0 +1,225 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T06:18:25.556Z",
+  "request": "GET /api/v1/sources",
+  "status": 200,
+  "response": {
+    "data": [
+      {
+        "code": "lgd-github-mirror-2022-12",
+        "name": "Geographic reference: lgd-github-mirror-2022-12",
+        "source_type": "other",
+        "publisher": null,
+        "description": "Status: provisional-historical. Reference date: 2022-12. Licence: Government Open Data License - India (GODL-India). A third-party mirror of the Local Government Directory as of December 2022. It is NOT a verified current (2026) LGD registry: states, union territories and districts created, merged or renamed after 2022 are missing or differ, and the file could not be compared with the official portal (it requires an image captcha). Treat every resolution against it as provisional.",
+        "granularity": null,
+        "files": [
+          {
+            "id": "34b84c3f-e38b-4709-a64a-6dac4822c556",
+            "file_name": "1-state.csv",
+            "sha256": "e355f4179744d36813031fa75e08e2e72e9b1009b7c3e4604031ffb909eef500",
+            "size_bytes": 1493,
+            "registered_at": "2026-10-19T17:13:00.643Z"
+          },
+          {
+            "id": "4c777201-35c2-41b4-9057-4920f24d4e72",
+            "file_name": "2-district.csv",
+            "sha256": "3adf79c6ad6037eb90ccb1f02c7a39d32e21d5f1368c913fdd975db2d53fc2d7",
+            "size_bytes": 26161,
+            "registered_at": "2026-10-19T17:13:00.643Z"
+          }
+        ],
+        "initial_load": {
+          "importer_version": "2.2.1",
+          "finished_at": "2026-10-19T17:13:00.659Z",
+          "rows_read": 36,
+          "accepted": 36,
+          "exact_duplicates": 0,
+          "conflicts": 0,
+          "quarantined": 0
+        },
+        "runs_total": 2,
+        "last_completed_run_at": "2026-10-19T17:13:00.701Z",
+        "observations": null,
+        "assumptions": [
+          {
+            "code": "reference_is_provisional",
+            "statement": "A third-party mirror of the Local Government Directory as of December 2022. It is NOT a verified current (2026) LGD registry: states, union territories and districts created, merged or renamed after 2022 are missing or differ, and the file could not be compared with the official portal (it requires an image captcha). Treat every resolution against it as provisional.",
+            "evidence_reference": "database/reference/lgd/manifest.json"
+          }
+        ]
+      },
+      {
+        "code": "mandi_daily_prices_historical",
+        "name": "Mandi-level daily prices (historical file)",
+        "source_type": "historical_file",
+        "publisher": null,
+        "description": "Daily min, max and modal prices per market, commodity, variety and grade. Columns: STATE, District Name, Market Name, Commodity, Variety, Grade, Min_Price, Max_Price, Modal_Price, Price Date. No arrivals; no market identifiers.",
+        "granularity": "mandi_daily",
+        "files": [
+          {
+            "id": "d160afb4-4b7d-47fa-b258-1b7500bdab72",
+            "file_name": "Agriculture_price_dataset.csv",
+            "sha256": "156d7f6357e7b90c8ab4ad8b0ce6baf94b2a99d952024148bd980d8a748410cb",
+            "size_bytes": 55212516,
+            "registered_at": "2026-10-19T17:13:02.877Z"
+          }
+        ],
+        "initial_load": {
+          "importer_version": "2.2.1",
+          "finished_at": "2026-10-19T17:14:34.866Z",
+          "rows_read": 737392,
+          "accepted": 735461,
+          "exact_duplicates": 0,
+          "conflicts": 0,
+          "quarantined": 1931
+        },
+        "runs_total": 2,
+        "last_completed_run_at": "2026-10-19T17:20:39.937Z",
+        "observations": {
+          "count": 735461,
+          "first_date": "2023-06-06",
+          "last_date": "2025-06-11"
+        },
+        "assumptions": [
+          {
+            "code": "price_date_month_first",
+            "statement": "Price Date is read as month/day/year (M/D/YYYY).",
+            "evidence_reference": "docs/data-sources/DATASET_COVERAGE.md section 2 (440,211 rows have a second field above 12; none have a first field above 12)"
+          },
+          {
+            "code": "price_unit_inr_per_quintal",
+            "statement": "The file states no price unit or currency. Prices are taken as Indian rupees (INR) per quintal. This is an assumption, not a fact stated by the source.",
+            "evidence_reference": "docs/data-sources/DATASET_COVERAGE.md (section 1: dataset A prices in rupees per quintal) and the project owner's Milestone 2.2 instruction; not stated in the source file"
+          }
+        ]
+      },
+      {
+        "code": "national_monthly_prices_historical",
+        "name": "National monthly commodity prices (historical file)",
+        "source_type": "historical_file",
+        "publisher": null,
+        "description": "Monthly average prices for India by commodity. Columns: month, commodity_name, avg_modal_price, avg_min_price, avg_max_price, state_name, district_name, calculationType, change.",
+        "granularity": "national_monthly",
+        "files": [
+          {
+            "id": "a3ffd35d-af31-42a6-9d84-b84fea293786",
+            "file_name": "crop_price_dataset.csv",
+            "sha256": "7ab839feaafae49b933d762cd632d872b2f2289fc001124bda2d3c69ea671ab5",
+            "size_bytes": 194179,
+            "registered_at": "2026-10-19T17:13:02.218Z"
+          }
+        ],
+        "initial_load": {
+          "importer_version": "2.2.1",
+          "finished_at": "2026-10-19T17:13:02.582Z",
+          "rows_read": 2810,
+          "accepted": 2800,
+          "exact_duplicates": 0,
+          "conflicts": 0,
+          "quarantined": 10
+        },
+        "runs_total": 2,
+        "last_completed_run_at": "2026-10-19T17:19:46.284Z",
+        "observations": {
+          "count": 2800,
+          "first_date": "2010-01-01",
+          "last_date": "2025-03-01"
+        },
+        "assumptions": [
+          {
+            "code": "change_column_meaning_unconfirmed",
+            "statement": "The meaning of the \"change\" column (absolute or percentage, and its base) is unconfirmed. It is stored as reported and must not be used for modelling.",
+            "evidence_reference": "docs/data-sources/DATASET_COVERAGE.md; database/docs/CANONICAL_SCHEMA.md section 12"
+          },
+          {
+            "code": "price_unit_inr_per_quintal",
+            "statement": "The file states no price unit or currency. Prices are taken as Indian rupees (INR) per quintal. This is an assumption, not a fact stated by the source.",
+            "evidence_reference": "docs/data-sources/DATASET_COVERAGE.md (dataset C description) and the project owner's Milestone 2.2 instruction; not stated in the source file"
+          }
+        ]
+      },
+      {
+        "code": "state_daily_prices_arrivals_historical",
+        "name": "State-level daily prices and arrivals (merged report files)",
+        "source_type": "historical_file",
+        "publisher": null,
+        "description": "State x commodity x day modal price and arrival quantity, merged from report files. Units are stated per row. Contains footer text and structurally broken rows (flagged by row_issue).",
+        "granularity": "state_daily",
+        "files": [
+          {
+            "id": "1383a994-98f1-4116-bdeb-5aca2a4c005f",
+            "file_name": "merged_preprocessed_all_reports.csv",
+            "sha256": "899803ac0592cfbe99f481d647cbd70f7579e3fc53784eef485b247d8b18c754",
+            "size_bytes": 496383993,
+            "registered_at": "2026-10-19T17:14:35.957Z"
+          }
+        ],
+        "initial_load": {
+          "importer_version": "2.2.1",
+          "finished_at": "2026-10-19T17:18:35.831Z",
+          "rows_read": 1973777,
+          "accepted": 1953793,
+          "exact_duplicates": 19739,
+          "conflicts": 4,
+          "quarantined": 241
+        },
+        "runs_total": 2,
+        "last_completed_run_at": "2026-10-19T17:23:05.855Z",
+        "observations": {
+          "count": 1953793,
+          "first_date": "2022-01-01",
+          "last_date": "2026-07-02"
+        },
+        "assumptions": [
+          {
+            "code": "state_arrivals_are_not_mandi_arrivals",
+            "statement": "Arrival quantities are state-level totals as reported. They are never attributed to any market.",
+            "evidence_reference": "docs/data-sources/DATASET_COVERAGE.md section 1 (dataset B is state level)"
+          }
+        ]
+      },
+      {
+        "code": "wpi_national_monthly_historical",
+        "name": "Wholesale Price Index, national monthly (historical file)",
+        "source_type": "historical_file",
+        "publisher": null,
+        "description": "Wide CSV: one row per item, one column per month-year. Values are index numbers. The file does not state the index base period.",
+        "granularity": "wpi_monthly_index",
+        "files": [
+          {
+            "id": "e7cfb260-59ab-4647-8e36-f11fde61ef43",
+            "file_name": "Wholesale-Price-Index-from-2012-to-2024.csv",
+            "sha256": "7a91dcabcaf2398ae10c631f1d4bdb98b4888c8e9480a7295be17bb5d080601e",
+            "size_bytes": 58844,
+            "registered_at": "2026-10-19T17:13:01.526Z"
+          }
+        ],
+        "initial_load": {
+          "importer_version": "2.2.1",
+          "finished_at": "2026-10-19T17:13:02.032Z",
+          "rows_read": 6273,
+          "accepted": 6273,
+          "exact_duplicates": 0,
+          "conflicts": 0,
+          "quarantined": 0
+        },
+        "runs_total": 2,
+        "last_completed_run_at": "2026-10-19T17:19:45.829Z",
+        "observations": {
+          "count": 6273,
+          "first_date": "2012-04-01",
+          "last_date": "2024-12-01"
+        },
+        "assumptions": []
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "provenance",
+      "note": "initial_load sums the first completed load of each source (an interrupted attempt and its resume count as one). Later runs only re-checked the same files."
+    }
+  }
+}
