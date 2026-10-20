@@ -355,7 +355,8 @@ describe('Market Explorer (historical mandi prices)', () => {
     fireEvent.click(
       await screen.findByRole('button', { name: /view prices for synthetic mandi a/i }),
     );
-    expect(await screen.findAllByText('28 Mar 2024')).not.toHaveLength(0);
+    // Wait for the observation CARDS, not for a date that also appears in notes rendered earlier.
+    expect(await screen.findAllByText(/Source: synthetic_source/)).not.toHaveLength(0);
     expect(callsTo(fetchImpl, `/api/v1/markets/${id(201)}`)).toHaveLength(1);
     const prices = must(callsTo(fetchImpl, '/api/v1/mandi-prices').at(-1));
     expect(prices.searchParams.get('market_id')).toBe(id(201));
@@ -448,7 +449,9 @@ describe('Market Explorer (historical mandi prices)', () => {
   it('preselects the commodity from the Commodities page link and requests its prices', async () => {
     const fetchImpl = mockFetch(healthyHandlers());
     renderApp(`/markets?commodity=${MANDI_ALPHA}`, { fetchImpl });
-    await screen.findAllByText('28 Mar 2024');
+    // Wait for the observation CARDS (they alone carry the source line); a date such as 28 Mar 2024
+    // also appears in notes that render before the prices request has even been sent.
+    await screen.findAllByText(/Source: synthetic_source/);
     expect(selectLabelled('Commodity').value).toBe(MANDI_ALPHA);
     const prices = must(callsTo(fetchImpl, '/api/v1/mandi-prices').at(-1));
     expect(prices.searchParams.get('commodity_id')).toBe(MANDI_ALPHA);
@@ -457,7 +460,9 @@ describe('Market Explorer (historical mandi prices)', () => {
   it('rejects an over-long date window locally and sends no request for it', async () => {
     const fetchImpl = mockFetch(healthyHandlers());
     renderApp(`/markets?commodity=${MANDI_ALPHA}`, { fetchImpl });
-    await screen.findAllByText('28 Mar 2024');
+    // Wait for the observation CARDS (they alone carry the source line); a date such as 28 Mar 2024
+    // also appears in notes that render before the prices request has even been sent.
+    await screen.findAllByText(/Source: synthetic_source/);
     const before = callsTo(fetchImpl, '/api/v1/mandi-prices').length;
     fireEvent.change(screen.getByLabelText('From'), { target: { value: '2022-01-01' } });
     expect(await screen.findByText(/choose a window of at most 366 days/i)).toBeVisible();

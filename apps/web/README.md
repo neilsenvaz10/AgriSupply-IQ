@@ -30,12 +30,13 @@ In Compose, `apps/web/src` and `index.html` are mounted read-only into the conta
 changes, so edits in those files reload the browser. Changes to other files (config, `package.json`)
 need `docker compose --env-file database/.env up -d --build web`.
 
-| Command                                 | Purpose                                   |
-| --------------------------------------- | ----------------------------------------- |
-| `npm run check`                         | JSDoc type check (`tsc -p jsconfig.json`) |
-| `npm run lint` / `npm run format:check` | ESLint / Prettier                         |
-| `npm test`                              | Vitest + Testing Library                  |
-| `npm run build`                         | Production build into `dist/`             |
+| Command                                 | Purpose                                                     |
+| --------------------------------------- | ----------------------------------------------------------- |
+| `npm run check`                         | JSDoc type check (`tsc -p jsconfig.json`)                   |
+| `npm run lint` / `npm run format:check` | ESLint / Prettier                                           |
+| `npm test`                              | Vitest + Testing Library                                    |
+| `VITE_TEST_LATENCY_MS=40 npm test`      | Same, with a slow mocked API (finds timing-dependent tests) |
+| `npm run build`                         | Production build into `dist/`                               |
 
 `VITE_API_BASE_URL` is read by the **browser**, so it is the host URL of Express (`http://localhost:4000`),
 never a Docker service name. See `.env.example`.
