@@ -69,6 +69,19 @@ export async function grantIngestPrivileges(migrationUrl, ingestRole) {
       await client.query(
         `REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE public.measurement_units, public.system_metadata FROM ${role}`,
       );
+      // Milestone 2.4: identity decisions are made by reviewers and approvers through functions, never by the
+      // importer. The blanket grant above must not reach them, whatever the order the scripts are run in. The
+      // reference tables (geo_reference_set, admin_unit_version) KEEP the importer's INSERT: that is the loader.
+      await client.query(
+        `DO $$ DECLARE t text; BEGIN
+           FOREACH t IN ARRAY ARRAY['mapping_set', 'identity_decision', 'identity_review_event']
+           LOOP
+             IF to_regclass('public.' || t) IS NOT NULL THEN
+               EXECUTE format('REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE public.%I FROM ${role}', t);
+             END IF;
+           END LOOP;
+         END $$`,
+      );
       // Views are derived; nothing is written through them.
       await client.query(
         `DO $$ DECLARE v text; BEGIN

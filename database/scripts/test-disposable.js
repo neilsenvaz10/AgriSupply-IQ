@@ -168,11 +168,15 @@ async function main() {
   const migrationUrl = `postgresql://fasalytics_migrator:${migratorPw}@127.0.0.1:${port}/fasalytics`;
   const appUrl = `postgresql://fasalytics_app:${appPw}@127.0.0.1:${port}/fasalytics`;
   const ingestUrl = `postgresql://fasalytics_ingest:${ingestPw}@127.0.0.1:${port}/fasalytics`;
+  // The admin connection is used only by the identity-workflow tests to create (and drop) SYNTHETIC login roles
+  // in this throwaway database. The disposable guard verifies it like every other connection string.
+  const adminUrl = `postgresql://fasalytics_admin:${adminPw}@127.0.0.1:${port}/fasalytics`;
   const env = {
     ...withoutInheritedConnections(process.env),
     DATABASE_URL: appUrl,
     DATABASE_MIGRATION_URL: migrationUrl,
     DATABASE_INGEST_URL: ingestUrl,
+    DATABASE_ADMIN_URL: adminUrl,
     DB_INGEST_USER: 'fasalytics_ingest',
     FASALYTICS_DISPOSABLE_DB: '1',
     FASALYTICS_DISPOSABLE_TOKEN: disposableToken,

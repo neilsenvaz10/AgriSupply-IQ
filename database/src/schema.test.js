@@ -9,14 +9,19 @@ import * as schema from './schema/index.js';
 /** Static checks on the Drizzle schema and the migration files. No database is needed. */
 
 const EXPECTED_TABLES = [
+  'admin_unit_version',
   'commodities',
   'commodity_aliases',
   'data_sources',
   'district_aliases',
   'districts',
+  'geo_reference_set',
+  'identity_decision',
+  'identity_review_event',
   'ingestion_rejections',
   'ingestion_runs',
   'mandi_observations',
+  'mapping_set',
   'market_aliases',
   'markets',
   'measurement_units',
@@ -177,11 +182,18 @@ describe('migrations folder', () => {
   });
 
   it('inserts only physical unit constants: no agricultural data in any migration', () => {
-    const inserts = [...allSql.matchAll(/INSERT INTO\s+"?([a-z_]+)"?/gi)].map((m) => m[1]);
+    // Function bodies (dollar-quoted) legitimately contain INSERT statements that only run when called, for
+    // example the audit-event writer of Milestone 2.4; they insert nothing when the migration is applied.
+    const topLevel = allSql.replace(/\$\$[\s\S]*?\$\$/g, ' ');
+    const inserts = [...topLevel.matchAll(/INSERT INTO\s+"?([a-z_]+)"?/gi)].map((m) => m[1]);
     expect(new Set(inserts)).toEqual(new Set(['measurement_units']));
     expect(allSql).not.toMatch(
       /INSERT INTO\s+"?(states|districts|markets|commodities|varieties)"?/i,
     );
+    // Milestone 2.4: the only INSERTs in migrations 0005 and 0006 are inside function bodies.
+    for (const file of sqlFiles.filter((f) => /^000[56]_/.test(f))) {
+      expect(sqlOf(file).replace(/\$\$[\s\S]*?\$\$/g, ' '), file).not.toMatch(/INSERT INTO/i);
+    }
   });
 
   it('contains no credentials, role passwords or connection strings', () => {
@@ -191,7 +203,8 @@ describe('migrations folder', () => {
   });
 
   it('never weakens privileges for PUBLIC or grants administrative rights', () => {
-    expect(allSql).not.toMatch(/TO\s+PUBLIC/i);
+    // Word boundaries: `INSERT INTO public.x` is not a grant to PUBLIC.
+    expect(allSql).not.toMatch(/\bTO\s+PUBLIC\b/i);
     expect(allSql).not.toMatch(/SUPERUSER|CREATEROLE|CREATEDB|BYPASSRLS/i);
   });
 

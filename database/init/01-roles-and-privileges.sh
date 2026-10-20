@@ -32,6 +32,14 @@ CREATE ROLE :"app_user" LOGIN PASSWORD :'app_pw'
 -- Bound runaway queries from the application role.
 ALTER ROLE :"app_user" SET statement_timeout = '30s';
 
+-- Milestone 2.4 (Stage 3a): the two GROUP roles of the identity review workflow. They cannot log in and own
+-- nothing. Individual reviewers and approvers are separate login roles created by the administrator and
+-- made members of exactly one of them (docs/geography/GEOGRAPHIC_ARCHITECTURE.md). No login is created here.
+CREATE ROLE fasalytics_reviewer NOLOGIN
+  NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+CREATE ROLE fasalytics_approver NOLOGIN
+  NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+
 -- Nobody gets anything implicitly: PUBLIC loses all database-level privileges.
 REVOKE ALL ON DATABASE :"dbname" FROM PUBLIC;
 GRANT CONNECT ON DATABASE :"dbname" TO :"migrator_user", :"app_user";

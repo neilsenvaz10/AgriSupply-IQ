@@ -203,6 +203,26 @@ export async function runVerification({ appUrl, migrationUrl, ingestUrl = null }
         ],
         ['delete a measurement unit', "DELETE FROM measurement_units WHERE code = 'kg'"],
       ];
+      // Milestone 2.4: identity decisions are made only by reviewers and approvers through functions.
+      const identityPresent = await c.query("SELECT to_regclass('public.mapping_set') AS t");
+      if (identityPresent.rows[0].t !== null) {
+        canonicalForbidden.push(
+          [
+            'run an identity function (create a mapping set)',
+            "SELECT public.mapping_set_create('verify_nope')",
+          ],
+          [
+            'write the identity audit log',
+            "INSERT INTO identity_review_event (event_type, actor, actor_role) VALUES ('proposed', 'x', 'reviewer')",
+          ],
+          [
+            'create a mapping set directly',
+            "INSERT INTO mapping_set (code, created_by) VALUES ('verify-nope', 'x')",
+          ],
+          ['change an identity decision', "UPDATE identity_decision SET status = 'accepted'"],
+          ['write the official reference', 'DELETE FROM admin_unit_version'],
+        );
+      }
       for (const [label, sql] of canonicalForbidden) {
         const outcome = await expectDenied(c, sql);
         record(`application role cannot ${label}`, outcome.denied, outcome.detail);
@@ -329,6 +349,27 @@ export async function runVerification({ appUrl, migrationUrl, ingestUrl = null }
             `SELECT * FROM "${MIGRATIONS_SCHEMA}"."${MIGRATIONS_TABLE}" LIMIT 1`,
           ],
         ];
+        const identityPresentIngest = await c.query(
+          "SELECT to_regclass('public.mapping_set') AS t",
+        );
+        if (identityPresentIngest.rows[0].t !== null) {
+          denied.push(
+            [
+              'create a mapping set directly',
+              "INSERT INTO mapping_set (code, created_by) VALUES ('verify-nope', 'x')",
+            ],
+            [
+              'write the identity audit log',
+              "INSERT INTO identity_review_event (event_type, actor, actor_role) VALUES ('proposed', 'x', 'reviewer')",
+            ],
+            [
+              'propose an identity decision directly',
+              "INSERT INTO identity_decision (decision_kind) VALUES ('map_label')",
+            ],
+            ['run an identity function', "SELECT public.mapping_set_create('verify_nope')"],
+            ['delete official reference data', 'DELETE FROM admin_unit_version'],
+          );
+        }
         for (const [label, sql] of denied) {
           const outcome = await expectDenied(c, sql);
           record(`ingestion role cannot ${label}`, outcome.denied, outcome.detail);

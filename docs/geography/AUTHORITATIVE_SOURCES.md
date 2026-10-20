@@ -1,0 +1,127 @@
+# Authoritative geographic and mandi sources — evaluation
+
+Date: 2026-10-20. Stage 1 evaluation only. **Nothing was downloaded** (no dataset, dump or bulk file); only web pages and
+search results were read. Each entry says what was actually verified. Where an official page could not be read
+(automated access returned HTTP 403, or the page did not list what was needed) the entry says **NOT VERIFIED** instead of
+guessing. Verification level: **V** = read in this session; **S** = reported by a search result only; **N** = not verified.
+
+> **Stage 2 update (2026-10-20): several "not verified" items below are now verified.** Where this note and a table row
+> disagree, this note wins. Details, hashes and blockers: [MILESTONE_2_4_STAGE_2_FINDINGS.md](./MILESTONE_2_4_STAGE_2_FINDINGS.md),
+> [REFERENCE_ACQUISITION.md](./REFERENCE_ACQUISITION.md).
+>
+> - **LGD ownership and terms (V):** content owned by the Ministry of Panchayati Raj, hosted by NIC. The Copyright Policy allows free reproduction with
+>   prominent acknowledgement and non-misleading use; the Terms disclaim accuracy and legal force.
+> - **LGD states (V):** the public States/UTs table and per-state detail and history pages were retrieved (36 states/UTs, 0 duplicate codes). The
+>   registry's 36 states match them exactly. Detail pages carry version, minor version, order number/date, **an LGD effective date** and gazette date;
+>   31 of 36 effective dates are the 2005 baseline (not legal dates); Telangana is 17/06/2014 vs the legal appointed day 2 June 2014.
+> - **LGD districts and the full modification list (blocked):** behind a CAPTCHA (`downloadDirectory.do`, `globalviewdistrict.do`, `lgdTransaction.do`).
+>   data.gov.in's static CSV URLs return HTTP 403. The LGD API (NAPIX) needs an account. None was bypassed.
+> - **LGD change history (V):** a public recent-modifications feed shows transaction id, operation, description, timestamp and Government Order PDF, so
+>   dated, order-backed history exists; the complete list is CAPTCHA-gated.
+> - **eNAM directory (V):** the working URL is `https://enam.gov.in/assest/download/eNAM_Directory_20210720.pdf` (the `/web/assest/...` form returns an HTML shell).
+>   11.1 MB PDF, April 2021, 1,000 mandis in 21 states/UTs, **no identifier and no coordinates**, postal address with PIN and phone, no licence statement.
+> - **AGMARKNET, state APMC lists, DMI directory:** still not verified from official pages.
+
+> **Stage 2 completion update (2026-10-20): the official LGD district data is now in hand.**
+>
+> - **LGD _All Districts_ report (V, downloaded by the owner):** 784 active districts, codes 1–796, Census 2001/2011 codes, no duplicates; it is the _All Districts_ export filtered by a modification window (01/01/2005–20/10/2026), **not** a change log. Format: SpreadsheetML XML saved as `.xls`.
+> - **LGD _All States_ report (V):** 36 rows with a **State Version** column; identical to the registry.
+> - **LGD per-district detail and version-history pages (V, public, no CAPTCHA):** `globalviewDistrictDetail.do` / `viewDistrictHistoryReport.do` give the district version, the former names per version and the **effective date of the current version** (e.g. Mewat → Nuh 16/11/2016; Gurgaon → Gurugram 09/01/2017; Hoshangabad → Narmadapuram 07/02/2022; Khandwa (East Nimar) 05/10/2023; Odisha respellings 22/06/2026; Telangana districts 17/06/2014–12/08/2021). Older versions' dates are **not** shown.
+> - **Still not obtained:** the dated modification log (`lgdTransaction.do`, CAPTCHA) and any predecessor/successor relation for split districts. LGD does not yet show **Keralam** (state still "Kerala", version 1, on 2026-10-20).
+> - **Identifier stability (V):** codes never changed state between the 2022 mirror and today (0 of 699+61 shared codes); names change (61 of 760 shared codes) — **the LGD code is the stable key, the name is not.**
+
+## A. Geography
+
+### A1. Local Government Directory (LGD) — the reference of record
+
+| Item                        | Finding                                                                                                                                                                                                                                                                                                                                  |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| URL                         | https://lgdirectory.gov.in/ (V)                                                                                                                                                                                                                                                                                                          |
+| Authority                   | Ministry of Panchayati Raj, with the Office of the Registrar General of India (MHA); hosted and maintained by the National Informatics Centre; contents owned and updated by States/UTs (V)                                                                                                                                              |
+| Download                    | A "Download Directory" section and reports for states, districts, sub-districts, villages, local bodies (V). File formats are not stated on the page; a government document says HTML, PDF, spreadsheet, CSV and XML (S). A community note says the CSV download once stopped working (S, old) — **must be tested on the live site (N)** |
+| API                         | The page links the NAPIX API provider; endpoint details are not confirmed and a 2019 notice suggests they may be dated (V/N). A secondary article describes RESTful interfaces for licensed bodies (S)                                                                                                                                   |
+| Publication date / currency | Live directory, continuously updated (V). No fixed edition date                                                                                                                                                                                                                                                                          |
+| Identifier stability        | LGD codes are the national identifiers; the page says old values are archived when LGD codes are modified (V). Code stability across renames and splits should be assumed **stable for a unit while it exists, new codes for new units** (N)                                                                                             |
+| Historical changes          | A "List of Modifications Done in LGD" report and a "Recent Changes" feed exist (V). Whether creations, renames and mergers are exposed as a complete, dated, machine-readable change history is **not confirmed (N)**                                                                                                                    |
+| Licence / terms             | Terms and Conditions and a Copyright Policy exist; contents not read (N). The project already records the 2022 mirror under the Government Open Data License - India; that does not automatically apply to a fresh LGD download                                                                                                          |
+| Role                        | **Current** administrative geography. Not a historical source unless the modification report proves otherwise                                                                                                                                                                                                                            |
+
+### A2. data.gov.in LGD resources (government mirror)
+
+URL family: https://www.data.gov.in/catalog/local-government-directory-lgd (S). States, sub-districts, local bodies,
+villages and villages-with-PIN resources are listed as **updated monthly** under the National Data Sharing and Accessibility
+Policy; the listings say no API exists and one can be requested (S). The pages returned HTTP 403 to automated fetch, so
+licence field, columns and file sizes are **N** and need a manual look. A district resource was not seen in the results.
+
+### A3. Community mirrors of LGD (not authoritative)
+
+- `ramSeraph/opendata` daily archives, https://ramseraph.github.io/opendata/lgd/ (V): community project, daily zip
+  archives, no maintainer, licence or sizes stated; may hold snapshots over time (history not confirmed). Useful for
+  **cross-checking**, never as the reference of record.
+- India Data Portal LGD codes, https://ckandev.indiadataportal.com/dataset/lgd-codes (S; HTTP 403 on fetch): states, districts,
+  blocks, villages as CSV, data dated about 2023. A third-party portal; same caution.
+- `planemad/india-local-government-directory` (S): the origin of the project's current mirror (December 2022). A
+  community dump, **not** an official publication.
+
+### A4. Official administrative change records (needed for history)
+
+| Event                                                            | Record                                                                                                                                           | Verified                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Telangana created from Andhra Pradesh; appointed day 2 June 2014 | Andhra Pradesh Reorganisation Act, 2014 (Gazette 2 March 2014)                                                                                   | S (https://en.wikipedia.org/wiki/Andhra_Pradesh_Reorganisation_Act,_2014 — secondary); primary Gazette text **N**                                                                                                                                                                                                                                                                                                                                                 |
+| Telangana 10 → 33 districts                                      | State government notifications (2016 and 2019–2021)                                                                                              | S (count only); notifications and dates **N**                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Andhra Pradesh 13 → 26 districts, effective 4 April 2022         | AP gazette dated 2 April 2022                                                                                                                    | S (reported by The Wire, Business Today); primary **N**                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Hoshangabad → Narmadapuram                                       | MP notification dated 25 Feb 2022 renames the **town** Hoshangabad; Centre approved Feb 2022                                                     | S (https://mphc.gov.in/PDF/web_pdf/CI/D-716%20Dt.%2025.02.2022.pdf, garbled text). Whether the **district** name changed and when: **N**                                                                                                                                                                                                                                                                                                                          |
+| Gurgaon → Gurugram, Mewat → Nuh                                  | Haryana notifications (2016)                                                                                                                     | **N** — only general knowledge; no source found                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Kerala → Keralam                                                 | _Kerala (Alteration of Name) Act, 2026_; Lok Sabha 11 Aug, Rajya Sabha 12 Aug; commencement by Home Ministry gazette notification of 25 Aug 2026 | S, several outlets agree (https://www.onmanorama.com/news/kerala/2026/08/26/its-official-kerala-is-now-keralam-as-centre-notifies-name-change.html, https://www.thenewsminute.com/kerala/kerala-is-now-officially-keralam-as-union-govt-notifies-name-change); Bill text https://prsindia.org/files/bills_acts/bills_parliament/2026/Kerala_(Alteration_of_Name)_Bill_2026.pdf (S); a third-party gazette copy exists; **primary eGazette PDF not retrieved (N)** |
+| Orissa → Odisha (2011), Pondicherry → Puducherry (2006)          | Acts of Parliament                                                                                                                               | already recorded as reviewed decisions; primary texts N                                                                                                                                                                                                                                                                                                                                                                                                           |
+
+### A5. Census 2011 codes
+
+Referenced by CEDA's data dictionary as a stable key for matching district names across datasets (S). Census 2011
+administrative codes are **historical (2011)** and useful as a _bridge for pre-2014 and pre-split names_, not as current
+geography. Official source: Office of the Registrar General & Census Commissioner. Availability and terms **N**.
+
+### A6. Distinguishing current from historical
+
+- LGD = **current** (with some archived values). The mirror in the database = December 2022, **not current**.
+- An observation dated 2023-06 to 2025-06 should be understood against the geography **in force on that date**; the
+  Andhra Pradesh split (April 2022) is before the window, the Keralam rename (August 2026) is after it.
+- No historical observation is automatically mapped to a present-day district. A mapping is a dated decision (see
+  IDENTITY_RESOLUTION_DESIGN.md).
+
+## B. Mandi registries
+
+| Source                                                                                                     | URL                                                                                           | Authority                                        | Identifiers                                                                                             | Names/aliases                              | District & state                                                       | Address/coordinates | Status (active/closed)                                                                                                                              | Access                                                                                                                 | Terms         | Verified                           |
+| ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------- |
+| **eNAM**                                                                                                   | https://enam.gov.in/ (mandi status and APMC pages)                                            | Ministry of Agriculture & Farmers Welfare / SFAC | Unknown                                                                                                 | Unknown                                    | Unknown                                                                | Unknown             | Integrated mandis only (about 1,389 at 31 Dec 2023 across 23 states and 4 UTs per a Rajya Sabha reply; 1,466–1,473 on the homepage ticker, undated) | An "e-NAM Directory" PDF (dated 2021-07-20) is linked; the APMC page itself lists no mandis; live mandi list not found | Not read      | Counts S; directory contents **N** |
+| **AGMARKNET**                                                                                              | https://agmarknet.gov.in/                                                                     | Directorate of Marketing & Inspection / NIC      | Portal uses state, district and market selections; an official master list with codes was **not found** | Market names as entered by state reporters | Yes (selection hierarchy)                                              | Not found           | Not found                                                                                                                                           | Web reports; no official bulk master list found                                                                        | Not read      | Portal N; no master list found     |
+| **data.gov.in price resource** ("Current Daily Price of Various Commodities from Various Markets (Mandi)") | https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi    | Ministry of Agriculture & Farmers Welfare        | Unknown                                                                                                 | Market, district, state names (S)          | Names only                                                             | No                  | No                                                                                                                                                  | The page says no API exists; request one (S). HTTP 403 to automated fetch                                              | Unknown       | S                                  |
+| **CEDA Ashoka mirror of AGMARKNET**                                                                        | https://agmarknet.ceda.ashoka.edu.in/README.html                                              | Academic (CEDA, Ashoka University)               | **State, district and market IDs, marked unique**, plus Census 2011 mapping (S)                         | Names                                      | Yes                                                                    | No                  | No                                                                                                                                                  | Open download (S)                                                                                                      | Not read      | S; derived, not official           |
+| **DMI "Directory of Wholesale Agricultural Produce Assembling Markets in India"**                          | via DMI / data.gov.in                                                                         | Directorate of Marketing & Inspection            | Not confirmed                                                                                           | Yes (printed directory)                    | Yes                                                                    | Partial             | Historic print edition                                                                                                                              | Partial extracts online (S)                                                                                            | Unknown       | S                                  |
+| **State APMC directories**                                                                                 | e.g. MSAMB https://www.msamb.com (Maharashtra), Karnataka and Telangana marketing departments | State marketing boards                           | Not confirmed                                                                                           | Yes                                        | Yes                                                                    | Not confirmed       | Not confirmed                                                                                                                                       | No complete current district-wise list found (S); MSAMB 2012-13 report lists 304 main and 603 sub-markets (S)          | Unknown       | S                                  |
+| **Parliament replies** (regulated markets by state)                                                        | https://rsdebate.nic.in/bitstream/123456789/748037/1/PQ_263_09022024_U802_p121_p123.pdf       | Lok Sabha / Rajya Sabha                          | none                                                                                                    | none                                       | State totals only (e.g. Maharashtra 929, Karnataka 564, Telangana 282) | none                | counts by year                                                                                                                                      | PDF                                                                                                                    | Public record | S; **counts, not identities**      |
+
+**Finding.** No source evaluated provides, in a form verified in this session, **stable mandi identifiers together with
+district, coordinates, status and an open licence.** The most promising identifier source is the market/district/state ID set
+carried in AGMARKNET itself (reached through the CEDA mirror, a derived copy) and any official eNAM directory. Counts quoted
+from Parliament vary by definition (regulated markets, sub-yards, integrated mandis) and cannot be compared with our 1,610.
+Number sizes: our 1,610 mandis are a subset of what the national portals describe (roughly 7,000 regulated markets;
+about 4,300 reporting markets according to a third-party site).
+
+## C. Recommended evidence hierarchy
+
+1. Official identifier match (an LGD code; a registry market ID) with an official source file and hash.
+2. Official dated change record (Gazette / Act / state notification).
+3. Official register entry matching **name + state + district** with a second attribute (address or coordinates).
+4. Government-derived mirror (data.gov.in, CEDA) — corroboration only.
+5. Community mirror — cross-check only.
+6. Name similarity — **never** sufficient.
+
+## D. Open questions for the owner or a manual check
+
+1. Does `lgdirectory.gov.in` currently serve CSV district/state downloads, and is the modification report downloadable with
+   effective dates? (Needs a browser session; automated fetches could not confirm.)
+2. What are the exact licence terms on LGD downloads and on data.gov.in resources?
+3. Is there an official, downloadable eNAM mandi directory with identifiers?
+4. Where did the mandi file's market, district and state strings originally come from?
+5. Primary gazette PDFs for: Keralam, Telangana districts, Haryana renames, Narmadapuram.

@@ -36,6 +36,20 @@
       "when": 1792336945418,
       "tag": "0004_restrict_application_role_to_read_only",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792496285972,
+      "tag": "0005_geographic_reference_infrastructure",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792496463582,
+      "tag": "0006_identity_decision_infrastructure",
+      "breakpoints": true
     }
   ]
 }
