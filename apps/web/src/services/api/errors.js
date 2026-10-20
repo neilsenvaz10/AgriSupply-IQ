@@ -8,8 +8,10 @@
  * - `http`:    the server answered with a non-2xx status.
  * - `parse`:   the server answered 2xx but the body was not valid JSON or failed validation.
  * - `aborted`: the caller cancelled the request.
+ * - `invalid_request`: the request was rejected locally, before any network call, because a
+ *              parameter failed validation (nothing was sent).
  *
- * @typedef {'config' | 'network' | 'timeout' | 'http' | 'parse' | 'aborted'} ApiErrorKind
+ * @typedef {'config' | 'network' | 'timeout' | 'http' | 'parse' | 'aborted' | 'invalid_request'} ApiErrorKind
  */
 
 export class ApiError extends Error {
