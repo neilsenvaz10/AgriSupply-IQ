@@ -1,5 +1,6 @@
+import { createHash } from 'node:crypto';
 import { rows } from './db.js';
-import { encodeCursor, likeEscape } from './params.js';
+import { encodeCursor, invalid, likeEscape } from './params.js';
 import { day, num, stateMappingStatus } from './policy.js';
 
 /**
@@ -434,41 +435,47 @@ export async function listMandiPrices(c, p) {
     [...w.values, p.limit + 1],
   );
   const { page, pagination } = paginate(fetched, p.limit, (r) => [r.observed_date, r.id]);
+  return { pagination, data: page.map(mandiView) };
+}
+
+/**
+ * The public shape of one mandi observation (shared by /mandi-prices and /mandi-prices/latest).
+ *
+ * @param {any} r a row from the mandi SELECT
+ */
+function mandiView(r) {
   return {
-    pagination,
-    data: page.map((r) => ({
-      id: r.id,
-      granularity: 'mandi_daily',
-      observed_date: r.observed_date,
-      market: {
-        id: r.market_id,
-        name: r.market_name,
-        verification_status: r.market_status,
-        district_status: r.district_id ? 'resolved' : 'unresolved',
-      },
-      state: { id: r.state_id, name: r.state_name, ...mappingOf(r.source_state_label) },
-      district: r.district_id ? { id: r.district_id, name: r.district_name } : null,
-      commodity: { id: r.commodity_id, name: r.commodity_name },
-      variety:
-        r.variety_label === null && r.variety_id === null
-          ? null
-          : { id: r.variety_id, label: r.variety_label },
-      grade: r.grade,
-      min_price: num(r.min_price),
-      max_price: num(r.max_price),
-      modal_price: num(r.modal_price),
-      price_currency: r.price_currency,
-      price_unit: r.price_unit,
-      source_price_unit_label: r.source_price_unit_label,
-      unit_basis: r.unit_basis,
-      source_labels: {
-        state: r.source_state_label,
-        district: r.source_district_label,
-        market: r.source_market_label,
-        commodity: r.source_commodity_label,
-      },
-      provenance: provenance(r),
-    })),
+    id: r.id,
+    granularity: 'mandi_daily',
+    observed_date: r.observed_date,
+    market: {
+      id: r.market_id,
+      name: r.market_name,
+      verification_status: r.market_status,
+      district_status: r.district_id ? 'resolved' : 'unresolved',
+    },
+    state: { id: r.state_id, name: r.state_name, ...mappingOf(r.source_state_label) },
+    district: r.district_id ? { id: r.district_id, name: r.district_name } : null,
+    commodity: { id: r.commodity_id, name: r.commodity_name },
+    variety:
+      r.variety_label === null && r.variety_id === null
+        ? null
+        : { id: r.variety_id, label: r.variety_label },
+    grade: r.grade,
+    min_price: num(r.min_price),
+    max_price: num(r.max_price),
+    modal_price: num(r.modal_price),
+    price_currency: r.price_currency,
+    price_unit: r.price_unit,
+    source_price_unit_label: r.source_price_unit_label,
+    unit_basis: r.unit_basis,
+    source_labels: {
+      state: r.source_state_label,
+      district: r.source_district_label,
+      market: r.source_market_label,
+      commodity: r.source_commodity_label,
+    },
+    provenance: provenance(r),
   };
 }
 
@@ -869,3 +876,116 @@ export async function coverageSummary(c) {
 }
 
 export { day };
+
+/**
+ * The latest available observation of ONE commodity in each mandi, using each mandi's own latest date.
+ *
+ * Strategy: page over MARKETS in a total order (name, id) with keyset pagination, and for each market
+ * take its newest observation of the commodity through a LATERAL index probe on
+ * mandi_obs_history_idx (market_id, commodity_id, observed_date). A market with no observation of the
+ * commodity drops out of the CROSS JOIN, so nothing is invented for it, and state-level data is never
+ * consulted. One page costs at most limit + 1 probes; the full result set is never materialised.
+ *
+ * Several rows can share a mandi's latest date (varieties, grades). The one returned is chosen by a
+ * price-neutral, deterministic rule: variety label then grade, alphabetically (missing last), then
+ * id. `observations_on_latest_date` tells the client how many rows that date has.
+ *
+ * @param {Client} c
+ * @param {{ commodity_id: string, state_id: string | null, district_id: string | null, limit: number, cursor: string[] | null }} p
+ */
+/**
+ * Fingerprint of the filters a latest-observation cursor belongs to. The cursor carries it, so a cursor
+ * can only be continued with exactly the commodity, state and district it was issued for.
+ *
+ * @param {{ commodity_id: string, state_id?: string | null, district_id?: string | null }} p
+ */
+const latestScope = (p) =>
+  createHash('sha256')
+    .update(JSON.stringify([p.commodity_id, p.state_id ?? null, p.district_id ?? null]))
+    .digest('hex')
+    .slice(0, 16);
+
+export async function listLatestMandiPrices(c, p) {
+  const scope = latestScope(p);
+  if (p.cursor && (p.cursor.length !== 3 || p.cursor[2] !== scope)) {
+    throw invalid(
+      '"cursor" was issued for a different commodity, state or district. Start again without a cursor when the filters change.',
+    );
+  }
+  const w = where();
+  // $1 is the commodity (used by the lateral probe and the commodity join); filters follow as $2...
+  w.values.push(p.commodity_id);
+  if (p.state_id) w.add('m.state_id = ?', p.state_id);
+  if (p.district_id) w.add('m.district_id = ?', p.district_id);
+  if (p.cursor) {
+    w.values.push(p.cursor[0], p.cursor[1]);
+    const n = w.values.length;
+    w.raw(`(m.name, m.id) > ($${n - 1}, $${n}::uuid)`);
+  }
+  // Step 1 picks the PAGE of markets (a total order, keyset cursor) among those that have at least one
+  // observation of the commodity (one index probe each). Step 2 then probes the newest observation of
+  // only those markets, so the work is bounded by the page size, not by the number of mandis.
+  const fetched = await rows(
+    c,
+    `WITH page AS MATERIALIZED (
+       SELECT m.id, m.name, m.state_id, m.district_id, m.status, m.disambiguator
+         FROM markets m
+        WHERE EXISTS (SELECT 1 FROM mandi_observations e
+                       WHERE e.market_id = m.id AND e.commodity_id = $1::uuid)
+          ${w.sql().replace(/^WHERE/, 'AND')}
+        ORDER BY m.name, m.id LIMIT ${w.next()}
+     )
+     SELECT o.id, o.observed_date::text AS observed_date, o.market_id, m.name AS market_name,
+            m.status AS market_status, m.district_id, m.disambiguator, m.state_id, s.name AS state_name,
+            d.name AS district_name, o.commodity_id, cm.name AS commodity_name,
+            o.variety_id, o.variety_label, o.grade,
+            o.min_price, o.max_price, o.modal_price, o.price_currency, o.price_unit,
+            o.source_price_unit_label, o.unit_basis,
+            o.source_state_label, o.source_district_label, o.source_market_label, o.source_commodity_label,
+            ${PROVENANCE},
+            (SELECT count(*)::int FROM mandi_observations x
+              WHERE x.market_id = o.market_id AND x.commodity_id = o.commodity_id
+                AND x.observed_date = o.observed_date) AS observations_on_latest_date
+       FROM page m
+       JOIN states s ON s.id = m.state_id
+       LEFT JOIN districts d ON d.id = m.district_id
+       JOIN commodities cm ON cm.id = $1::uuid
+       CROSS JOIN LATERAL (
+              SELECT x.* FROM mandi_observations x
+               WHERE x.market_id = m.id AND x.commodity_id = $1::uuid
+               ORDER BY x.observed_date DESC, x.variety_label ASC NULLS LAST, x.grade ASC NULLS LAST, x.id ASC
+               LIMIT 1) o
+       JOIN data_sources src ON src.id = o.source_id
+      ORDER BY m.name, m.id`,
+    [...w.values, p.limit + 1],
+  );
+  const { page, pagination } = paginate(fetched, p.limit, (r) => [
+    r.market_name,
+    r.market_id,
+    scope,
+  ]);
+
+  // The newest observation date in the same scope (commodity, state, district). The client uses it
+  // as the reference date for "N days before the reference date"; it is a property of the data, not
+  // of the request.
+  const ref = where();
+  ref.add('o.commodity_id = ?', p.commodity_id);
+  if (p.state_id) ref.add('m.state_id = ?', p.state_id);
+  if (p.district_id) ref.add('m.district_id = ?', p.district_id);
+  // Without a geographic filter the markets table is not needed, so the commodity index alone answers it.
+  const join = p.state_id || p.district_id ? 'JOIN markets m ON m.id = o.market_id' : '';
+  const [reference] = await rows(
+    c,
+    `SELECT max(o.observed_date)::text AS reference_date FROM mandi_observations o ${join} ${ref.sql()}`,
+    ref.values,
+  );
+  return {
+    pagination,
+    referenceDate: reference?.reference_date ?? null,
+    data: page.map((r) => ({
+      ...mandiView(r),
+      latest_observation_date: r.observed_date,
+      observations_on_latest_date: r.observations_on_latest_date,
+    })),
+  };
+}

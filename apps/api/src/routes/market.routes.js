@@ -200,6 +200,45 @@ export function createMarketRouter(pool, options = {}) {
     });
   });
 
+  // Registered with its own path, so it can never be mistaken for the date-window listing above.
+  get('/mandi-prices/latest', async (req, res) => {
+    const p = parseQuery(req.query, {
+      commodity_id: { ...rule.uuid(), required: true },
+      state_id: rule.uuid(),
+      district_id: rule.uuid(),
+      limit: limitRule(),
+      cursor: rule.cursor(),
+    });
+    const result = await readOnly(pool, (c) =>
+      repo.listLatestMandiPrices(c, /** @type {any} */ (p)),
+    );
+    const { referenceDate, ...page } = result;
+    res.json({
+      ...page,
+      meta: meta(GRANULARITY.MANDI, {
+        ...geographyMeta,
+        endpoint: 'latest_observation_per_mandi',
+        scope:
+          "Each mandi's own latest available observation of the requested commodity in the historical files. Mandis with no observation of that commodity are absent; nothing is taken from state-level or national data.",
+        ordering:
+          'mandi name, then id. This is alphabetical, not a ranking by price, date or anything else.',
+        tie_break:
+          'When a mandi has several rows on its latest date (varieties, grades) one is returned, chosen price-neutrally by variety label, then grade, then id; observations_on_latest_date gives the number of rows that date has.',
+        date_semantics:
+          'observed_date (= latest_observation_date) is the date in the source file. requested_at is when this request was served. They are unrelated.',
+        requested_at: new Date().toISOString(),
+        reference_date: referenceDate,
+        reference_date_definition:
+          'The newest observation date among the mandis matching the requested commodity and filters, in the historical files. It is not today and not a live feed.',
+        filters: {
+          commodity_id: p['commodity_id'],
+          state_id: p['state_id'],
+          district_id: p['district_id'],
+        },
+      }),
+    });
+  });
+
   get('/state-prices', async (req, res) => {
     const p = parseQuery(req.query, {
       state_id: rule.uuid(),

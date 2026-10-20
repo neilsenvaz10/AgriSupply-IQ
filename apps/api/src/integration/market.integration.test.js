@@ -127,6 +127,7 @@ describe.runIf(state.migrated || requireDatabase)(
           '/api/v1/state-prices',
         ],
         ['/api/v1/national-prices', '/api/v1/national-prices'],
+        [`/api/v1/mandi-prices/latest?commodity_id=${missing}`, '/api/v1/mandi-prices/latest'],
         ['/api/v1/wpi/series', '/api/v1/wpi/series'],
         ['/api/v1/sources', '/api/v1/sources'],
         ['/api/v1/coverage', '/api/v1/coverage'],
@@ -144,7 +145,7 @@ describe.runIf(state.migrated || requireDatabase)(
         expect(validate(schema, res.body), path).toEqual([]);
         expect(res.body.meta.is_live).toBe(false);
       }
-    });
+    }, 30_000); // cold aggregates (coverage, sources) can take over a second each
 
     it('returns an empty page, not an error, for a window with no data', async () => {
       const res = await api(
@@ -436,6 +437,76 @@ describe.runIf(state.hasData || requireData)('historical market API on the impor
       expect(r.provenance.source_code).toBe('state_daily_prices_arrivals_historical');
     }
   });
+
+  it('latest per mandi: every mandi with the commodity appears once with its OWN latest date, identical to a direct SQL computation', async () => {
+    const all = await allPages('/api/v1/commodities');
+    const withMandi = all.filter((c) => c.coverage.mandi_daily.observations > 0);
+    expect(withMandi).toHaveLength(5);
+    for (const c of withMandi) {
+      const rows = await allPages(`/api/v1/mandi-prices/latest?commodity_id=${c.id}`);
+      const truth = await direct.query(
+        `SELECT market_id, id, observed_date::text AS d, cnt FROM (
+           SELECT market_id, id, observed_date,
+                  count(*) OVER (PARTITION BY market_id, observed_date)::int AS cnt,
+                  row_number() OVER (PARTITION BY market_id
+                    ORDER BY observed_date DESC, variety_label ASC NULLS LAST, grade ASC NULLS LAST, id ASC) AS rn
+             FROM mandi_observations WHERE commodity_id = $1) t
+          WHERE rn = 1`,
+        [c.id],
+      );
+      expect(rows.length, c.name).toBe(truth.rows.length);
+      expect(new Set(rows.map((r) => r.market.id)).size, c.name).toBe(rows.length);
+      const expected = new Map(truth.rows.map((r) => [r.market_id, [r.id, r.d, r.cnt]]));
+      for (const r of rows) {
+        expect(
+          [r.id, r.latest_observation_date, r.observations_on_latest_date],
+          `${c.name} ${r.market.name}`,
+        ).toEqual(expected.get(r.market.id));
+        expect(r.observed_date).toBe(r.latest_observation_date);
+        expect(r.granularity).toBe('mandi_daily');
+        expect(r.market.verification_status).toBe('unverified');
+        expect(r).toMatchObject({
+          price_unit: 'quintal',
+          unit_basis: 'assumed_from_documentation',
+        });
+      }
+      // Alphabetical by mandi name then id; no ranking by price or date.
+      const keys = rows.map((r) => [r.market.name, r.market.id]);
+      expect(keys).toEqual(
+        [...keys].sort((x, y) => (x[0] < y[0] ? -1 : x[0] > y[0] ? 1 : x[1] < y[1] ? -1 : 1)),
+      );
+    }
+  }, 120_000);
+
+  it('latest per mandi: a mandi that stopped reporting keeps its own older date, and geography filters restrict the set', async () => {
+    const onion = (await api('/api/v1/commodities?q=onion&limit=20')).body.data.find(
+      (c) => c.name === 'Onion',
+    );
+    const global = onion.coverage.mandi_daily.last_date;
+    const states = (await api('/api/v1/states?limit=100')).body.data;
+    let older = null;
+    for (const s of states) {
+      const rows = await allPages(
+        `/api/v1/mandi-prices/latest?commodity_id=${onion.id}&state_id=${s.id}`,
+      );
+      if (rows.length === 0) continue;
+      expect(rows.every((r) => r.state.id === s.id)).toBe(true);
+      const newest = rows
+        .map((r) => r.latest_observation_date)
+        .sort()
+        .at(-1);
+      const meta = (
+        await api(`/api/v1/mandi-prices/latest?commodity_id=${onion.id}&state_id=${s.id}&limit=1`)
+      ).body.meta;
+      expect(meta.reference_date).toBe(newest); // the reference date is the newest date in the same scope
+      if (newest < global) older = { state: s.name, newest };
+    }
+    // At least one state's newest Onion day is earlier than the national one (so the scope matters).
+    expect(
+      older,
+      'expected a state whose latest day is earlier than the national latest',
+    ).not.toBeNull();
+  }, 120_000);
 
   it('serves the national monthly series and the WPI index series separately, with their own semantics', async () => {
     const national = await allPages('/api/v1/national-prices');

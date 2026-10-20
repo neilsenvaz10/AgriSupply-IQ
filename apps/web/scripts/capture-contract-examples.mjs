@@ -113,6 +113,21 @@ await save('geography-unresolved', '/api/v1/geography/unresolved', {
     return b;
   },
 });
+// Latest available observation per mandi (Milestone 2.3D): a normal page, a filtered page, an empty
+// result (a commodity with no mandi-level observations) and the missing-parameter error.
+const noMandi = (await get('/api/v1/commodities?limit=500')).body.data.find(
+  (c) => c.coverage.mandi_daily.observations === 0,
+);
+await save('mandi-prices-latest', `/api/v1/mandi-prices/latest?commodity_id=${onion.id}&limit=2`);
+await save(
+  'mandi-prices-latest-state',
+  `/api/v1/mandi-prices/latest?commodity_id=${onion.id}&state_id=${kerala.id}&limit=2`,
+);
+await save(
+  'mandi-prices-latest-empty',
+  `/api/v1/mandi-prices/latest?commodity_id=${noMandi.id}&limit=2`,
+);
+await save('error-latest-missing-commodity', '/api/v1/mandi-prices/latest');
 await save('error-invalid-parameter', '/api/v1/mandi-prices?from=2025-01-01&to=2025-01-31');
 
 writeFileSync(

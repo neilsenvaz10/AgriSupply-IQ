@@ -12,7 +12,7 @@ import { decisionsForSource, loadDecisions } from './registry/decisions.js';
 import { loadReferenceSet } from './registry/load.js';
 import { buildReports, writeReports } from './report.js';
 import { databaseAvailable } from '../test/db.js';
-import { assertDisposable } from '../test/disposable.js';
+import { assertDisposable, guardedUrl } from '../test/disposable.js';
 import { sha256, sha256File } from './util.js';
 
 /**
@@ -94,9 +94,9 @@ describe.runIf(enabled)('ingestion framework (disposable database, ingestion rol
 
   beforeAll(async () => {
     await assertDisposable();
-    ingest = new pg.Pool({ connectionString: process.env.DATABASE_INGEST_URL, max: 4 });
-    owner = new pg.Pool({ connectionString: process.env.DATABASE_MIGRATION_URL, max: 2 });
-    app = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 1 });
+    ingest = new pg.Pool({ connectionString: await guardedUrl('DATABASE_INGEST_URL'), max: 4 });
+    owner = new pg.Pool({ connectionString: await guardedUrl('DATABASE_MIGRATION_URL'), max: 2 });
+    app = new pg.Pool({ connectionString: await guardedUrl('DATABASE_URL'), max: 1 });
     dir = mkdtempSync(join(tmpdir(), 'fasalytics-ingest-'));
     decisions = await loadDecisions(ALIASES);
     await loadReferenceSet({ pool: ingest, directory: REFERENCE });

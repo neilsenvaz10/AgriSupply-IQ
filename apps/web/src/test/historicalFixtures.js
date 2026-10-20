@@ -144,6 +144,41 @@ export function observation(n, marketRow, extra = {}) {
   };
 }
 
+/**
+ * A "latest observation per mandi" row: a mandi row plus the latest-date fields. `extra` overrides any field.
+ *
+ * @param {number} n
+ * @param {any} marketRow
+ * @param {Record<string, unknown>} [extra]
+ */
+export function latestObservation(n, marketRow, extra = {}) {
+  const date = /** @type {string} */ (extra['observed_date'] ?? '2024-03-28');
+  return {
+    ...observation(n, marketRow, { observed_date: date, ...extra }),
+    latest_observation_date: date,
+    observations_on_latest_date: 1,
+    ...extra,
+  };
+}
+
+/** The meta block of /mandi-prices/latest. */
+export function latestMeta(/** @type {string | null} */ referenceDate = '2024-03-28') {
+  return {
+    ...META,
+    granularity: 'mandi_daily',
+    endpoint: 'latest_observation_per_mandi',
+    scope: "Each mandi's own latest available observation of the requested commodity.",
+    ordering: 'mandi name, then id. This is alphabetical, not a ranking.',
+    tie_break: 'Price-neutral.',
+    date_semantics:
+      'observed_date is the source-file date; requested_at is when this request was served.',
+    requested_at: '2026-10-20T07:00:00.000Z',
+    reference_date: referenceDate,
+    reference_date_definition: 'The newest observation date in the same scope.',
+    filters: { commodity_id: id(101), state_id: null, district_id: null },
+  };
+}
+
 /** A state-level observation (a state as a whole). `extra` overrides any field. */
 export function stateObservation(n, extra = {}) {
   return {
@@ -344,6 +379,18 @@ export function healthyHandlers(overrides = {}) {
           },
         },
         meta: META,
+      },
+    }),
+    '/api/v1/mandi-prices/latest': () => ({
+      body: {
+        ...listBody(
+          [
+            latestObservation(701, MARKETS[0], { observed_date: '2024-03-28' }),
+            latestObservation(702, MARKETS[1], { observed_date: '2024-03-18' }),
+          ],
+          { limit: 50 },
+        ),
+        meta: latestMeta('2024-03-28'),
       },
     }),
     '/api/v1/state-prices': () => ({

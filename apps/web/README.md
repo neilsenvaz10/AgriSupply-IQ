@@ -140,6 +140,23 @@ state-level row can never be shown as a mandi observation.
   (refresh with `scripts/capture-contract-examples.mjs`); they are kept apart from the synthetic
   unit-test fixtures in `src/test/historicalFixtures.js` and need no API or database.
 
+### Milestone 2.3D additions
+
+- **Latest by mandi tab** (Market Explorer, `components/market/LatestByMandiView.jsx`): each mandi's _own_
+  latest available historical observation of one commodity (`GET /api/v1/mandi-prices/latest`), with
+  commodity (required), state and district filters and server-side cursor pagination ("Load more").
+  Mandis are listed alphabetically, never ranked; a mandi without an observation is simply absent, and
+  state-level prices are never substituted.
+- **Neutral freshness wording** (`describeFreshness` in `services/agri/format.js`): "Last reported on
+  [date]", "[N] days before the reference date ([date])" and "Historical observation". The reference date is
+  the newest observation date in the same scope, as stated by the API (not today). No policy defines
+  freshness yet, so nothing is called fresh, current or live.
+- The card shows the original unit (with the unit-assumption note), min/max, source provenance, mandi
+  verification and any unresolved-district uncertainty, and says when several rows exist for the same mandi
+  and date.
+- Contract tests read the real captures `mandi-prices-latest*.json` and `error-latest-missing-commodity.json`
+  in `src/test/contract/v1/`.
+
 | Screen             | Data                                                               | When there is none                                                                            |
 | ------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
 | Dashboard          | Latest-day mandi observations; a chosen mandi's own 90-day history | Explicit loading / empty / error states; recommendation, ranking, allocation stay unavailable |

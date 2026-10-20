@@ -1,7 +1,7 @@
 {
   "contract_version": "v1",
   "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
-  "captured_at": "2026-10-20T06:18:22.134Z",
+  "captured_at": "2026-10-20T08:26:12.456Z",
   "request": "GET /api/v1/markets/febff832-b77d-4fef-ad5d-5d85c4ae2474",
   "status": 200,
   "response": {

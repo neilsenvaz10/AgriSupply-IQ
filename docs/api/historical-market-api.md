@@ -29,6 +29,7 @@ Read-only Express endpoints under `/api/v1` that expose the **historical** data 
 | `/commodities`, `/commodities/{id}` | Commodity catalog with observed coverage per granularity                                     | none                                                            |
 | `/markets`, `/markets/{id}`         | Market directory with verification and district status                                       | none                                                            |
 | `/mandi-prices`                     | **Mandi-level** daily prices                                                                 | `from`, `to` and one of `market_id`, `commodity_id`, `state_id` |
+| `/mandi-prices/latest`              | **Each mandi's own latest** observation of one commodity (2.3D)                              | `commodity_id` (optional `state_id`, `district_id`)             |
 | `/state-prices`                     | **State-level** daily prices and arrivals                                                    | `from`, `to` and one of `state_id`, `commodity_id`              |
 | `/national-prices`                  | **National** monthly average prices                                                          | none (`from`/`to` months optional)                              |
 | `/wpi/series`, `/wpi/observations`  | Wholesale Price Index **index** series                                                       | `series_id` for observations                                    |
@@ -111,6 +112,58 @@ real captures: [coverage](./examples/real/coverage.json), [sources](./examples/r
 [national prices](./examples/real/national-prices.json), [WPI](./examples/real/wpi-observations.json),
 [states](./examples/real/states-kerala.json), [commodity](./examples/real/commodity-wheat.json).
 
+## Latest observation per mandi (Milestone 2.3D)
+
+`GET /api/v1/mandi-prices/latest?commodity_id=<uuid>[&state_id=<uuid>][&district_id=<uuid>][&limit=1..500][&cursor=...]`
+
+- **One row per mandi**, the mandi's own newest observation of the commodity. Different mandis therefore
+  carry different `observed_date`s. A mandi with no observation of the commodity is absent; a state-level
+  value is never substituted.
+- `commodity_id` is required. `state_id`/`district_id` filter by the mandi's geography. Unknown or malformed
+  parameters answer `400` in the standard error body.
+- **Order:** mandi name, then mandi id (total, so cursors are stable). It is alphabetical, not a ranking.
+- **Cursors are bound to their filters.** A `next_cursor` carries a fingerprint of the `commodity_id`,
+  `state_id` and `district_id` it was issued for. Sending it with a different commodity, state or district
+  (added, removed or changed), or sending a cursor that has no such binding, answers `400 INVALID_PARAMETER`
+  before any query runs, instead of silently continuing a different list. To change a filter, start again
+  without a cursor. `limit` may change between pages.
+- **Tie-break** when one mandi has several rows on its latest date: variety label, then grade, then row id
+  (price-neutral: the choice never depends on the price). `observations_on_latest_date` says how many
+  rows existed on that date.
+- **Dates:** `observed_date` (= `latest_observation_date`) is the date in the source file. `meta.requested_at`
+  is when the request was served. `meta.reference_date` is the newest observation date in the same scope (the
+  commodity, plus the state/district filter if any); it is _not_ today. Elapsed days are
+  `reference_date - observed_date`, in calendar days.
+- Original units, `unit_basis`, provenance and the mandi's verification/district status are carried
+  unchanged. `meta.is_live` is `false` and `data_status` is `historical_snapshot`.
+- No freshness judgement: the API does not say a row is fresh, current or live, because no freshness policy
+  has been defined.
+
+Query strategy: the page of mandis is chosen first (alphabetical keyset over `markets`, restricted to mandis
+that have the commodity), then one indexed lookup per mandi on `mandi_obs_history_idx (market_id,
+commodity_id, observed_date)` fetches its newest row (`LATERAL ... ORDER BY observed_date DESC ... LIMIT 1`).
+The work scales with the page size, not with the 735k-row table. The reference date is an indexed aggregate
+(joined to `markets` only when a state/district filter is present). No index or migration was added.
+
+Measured on the development database through the API (local, 20 runs):
+
+| Request                                         | p50                                     | p95   |
+| ----------------------------------------------- | --------------------------------------- | ----- |
+| commodity with the most mandi rows, 50 per page | 22 ms                                   | 46 ms |
+| same, 500 per page                              | 49 ms                                   | 61 ms |
+| same commodity + one state, 500 per page        | 21 ms                                   | 33 ms |
+| walking all pages (975 mandis, 20 pages of 50)  | first page 19 ms, last 11 ms, max 33 ms |
+
+Real example: [latest-mandi-prices.json](./examples/real/latest-mandi-prices.json).
+
+### Contract validation
+
+`apps/api/src/contract/captures.contract.test.js` validates every sanitized capture in
+`apps/web/src/test/contract/v1/` and `docs/api/examples/real/` against `docs/api/express.openapi.json`
+(OpenAPI 3.1, Ajv 2020-12). It needs no database and runs in CI. It fails on missing fields, wrong types,
+envelope mismatch, pagination/metadata faults, a non-historical response, and on an incompatible change to
+the schema; mutation tests prove each of those is detected.
+
 ## Query performance (development database, local, measured)
 
 | Request                                           |                                  p50 |    p95 |
@@ -141,4 +194,5 @@ added**; see the recommendation in the milestone report.
 - `/commodities` lists commodities by exact source label (for example `Barley (Jau)` and `Barley(Jau)` are
   separate rows); no fuzzy merging.
 - Aggregates are cached for 10 minutes in each API process.
-- Not wired to the React frontend yet.
+- The latest-per-mandi endpoint uses the `Latest by mandi` tab in Market Explorer; the other historical
+  endpoints are wired as described in `apps/web/README.md`.

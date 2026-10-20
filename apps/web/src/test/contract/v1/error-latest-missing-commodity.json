@@ -1,0 +1,14 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T08:26:13.862Z",
+  "request": "GET /api/v1/mandi-prices/latest",
+  "status": 400,
+  "response": {
+    "error": {
+      "code": "INVALID_PARAMETER",
+      "message": "Query parameter \"commodity_id\" is required.",
+      "requestId": "6aaae3f6-26d6-4d18-8e45-023a42df975e"
+    }
+  }
+}

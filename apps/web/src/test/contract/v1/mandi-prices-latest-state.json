@@ -1,0 +1,150 @@
+{
+  "contract_version": "v1",
+  "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
+  "captured_at": "2026-10-20T08:26:13.850Z",
+  "request": "GET /api/v1/mandi-prices/latest?commodity_id=e6650c5c-bccf-405a-ac48-f394f2d26746&state_id=741af001-8ddc-4c6a-a5f4-e5f423b36fd4&limit=2",
+  "status": 200,
+  "response": {
+    "pagination": {
+      "limit": 2,
+      "has_more": true,
+      "next_cursor": "WyJBbHV2YSIsIjNkM2Q1ODhiLWRlZDAtNGJiZC04NWUzLTM1YWFhM2Q5MmJlNiIsImZhM2M5ZmM2ZWQwZDJmZjgiXQ"
+    },
+    "data": [
+      {
+        "id": "3365ba5e-3a4f-4cbe-9fe4-22b45d96de95",
+        "granularity": "mandi_daily",
+        "observed_date": "2024-05-23",
+        "market": {
+          "id": "021b7905-058c-46a0-81d0-f3abfea17844",
+          "name": "Alappuzha",
+          "verification_status": "unverified",
+          "district_status": "resolved"
+        },
+        "state": {
+          "id": "741af001-8ddc-4c6a-a5f4-e5f423b36fd4",
+          "name": "KERALA",
+          "mapping_status": "resolved"
+        },
+        "district": {
+          "id": "24592461-28c3-44bd-9100-a1e3354f4dca",
+          "name": "ALAPPUZHA"
+        },
+        "commodity": {
+          "id": "e6650c5c-bccf-405a-ac48-f394f2d26746",
+          "name": "Onion"
+        },
+        "variety": {
+          "id": "fd0fbcbc-ed78-4554-ab31-acd183b787dc",
+          "label": "Big"
+        },
+        "grade": "FAQ",
+        "min_price": 2600,
+        "max_price": 3000,
+        "modal_price": 2800,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "source_price_unit_label": null,
+        "unit_basis": "assumed_from_documentation",
+        "source_labels": {
+          "state": "Kerala",
+          "district": "alappuzha",
+          "market": "Alappuzha",
+          "commodity": "Onion"
+        },
+        "provenance": {
+          "source_code": "mandi_daily_prices_historical",
+          "source_file_id": "d160afb4-4b7d-47fa-b258-1b7500bdab72",
+          "ingestion_run_id": "905a9358-de12-486d-a6e8-be6405878bff",
+          "source_row_number": 381659,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        },
+        "latest_observation_date": "2024-05-23",
+        "observations_on_latest_date": 2
+      },
+      {
+        "id": "a03adcfb-e5c8-4d85-9e53-7ea18522b673",
+        "granularity": "mandi_daily",
+        "observed_date": "2025-06-11",
+        "market": {
+          "id": "3d3d588b-ded0-4bbd-85e3-35aaa3d92be6",
+          "name": "Aluva",
+          "verification_status": "unverified",
+          "district_status": "resolved"
+        },
+        "state": {
+          "id": "741af001-8ddc-4c6a-a5f4-e5f423b36fd4",
+          "name": "KERALA",
+          "mapping_status": "resolved"
+        },
+        "district": {
+          "id": "7b671142-72e0-444d-b2c7-5008acc94fe4",
+          "name": "ERNAKULAM"
+        },
+        "commodity": {
+          "id": "e6650c5c-bccf-405a-ac48-f394f2d26746",
+          "name": "Onion"
+        },
+        "variety": {
+          "id": "fd0fbcbc-ed78-4554-ab31-acd183b787dc",
+          "label": "Big"
+        },
+        "grade": "FAQ",
+        "min_price": 2200,
+        "max_price": 3000,
+        "modal_price": 2600,
+        "price_currency": "INR",
+        "price_unit": "quintal",
+        "source_price_unit_label": null,
+        "unit_basis": "assumed_from_documentation",
+        "source_labels": {
+          "state": "Kerala",
+          "district": "ernakulam",
+          "market": "Aluva",
+          "commodity": "Onion"
+        },
+        "provenance": {
+          "source_code": "mandi_daily_prices_historical",
+          "source_file_id": "d160afb4-4b7d-47fa-b258-1b7500bdab72",
+          "ingestion_run_id": "905a9358-de12-486d-a6e8-be6405878bff",
+          "source_row_number": 736626,
+          "is_historical_snapshot": true,
+          "is_synthetic": false,
+          "quality_status": "accepted",
+          "quality_flags": []
+        },
+        "latest_observation_date": "2025-06-11",
+        "observations_on_latest_date": 1
+      }
+    ],
+    "meta": {
+      "data_status": "historical_snapshot",
+      "is_live": false,
+      "notice": "Historical records loaded from static files. They are not live or current market data, and nothing here is a forecast.",
+      "granularity": "mandi_daily",
+      "unit_note": "Prices are assumed to be INR per quintal (unit_basis \"assumed_from_documentation\"); the source file states no unit.",
+      "geography_reference": {
+        "reference_set": "lgd-github-mirror-2022-12",
+        "status": "provisional-historical",
+        "note": "A third-party mirror of the Local Government Directory as of December 2022. It is not a verified current registry."
+      },
+      "market_verification": "Market identities are created from source labels. No authoritative market list exists, so every market is \"unverified\".",
+      "endpoint": "latest_observation_per_mandi",
+      "scope": "Each mandi's own latest available observation of the requested commodity in the historical files. Mandis with no observation of that commodity are absent; nothing is taken from state-level or national data.",
+      "ordering": "mandi name, then id. This is alphabetical, not a ranking by price, date or anything else.",
+      "tie_break": "When a mandi has several rows on its latest date (varieties, grades) one is returned, chosen price-neutrally by variety label, then grade, then id; observations_on_latest_date gives the number of rows that date has.",
+      "date_semantics": "observed_date (= latest_observation_date) is the date in the source file. requested_at is when this request was served. They are unrelated.",
+      "requested_at": "2026-10-20T08:26:13.849Z",
+      "reference_date": "2025-06-11",
+      "reference_date_definition": "The newest observation date among the mandis matching the requested commodity and filters, in the historical files. It is not today and not a live feed.",
+      "filters": {
+        "commodity_id": "e6650c5c-bccf-405a-ac48-f394f2d26746",
+        "state_id": "741af001-8ddc-4c6a-a5f4-e5f423b36fd4",
+        "district_id": null
+      }
+    }
+  }
+}

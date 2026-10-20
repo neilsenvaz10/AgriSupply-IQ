@@ -90,3 +90,38 @@ export const TIER_LABEL = Object.freeze({
 export function addDays(iso, days) {
   return new Date(Date.parse(`${iso}T00:00:00Z`) + days * 864e5).toISOString().slice(0, 10);
 }
+
+/**
+ * Whole calendar days from `from` to `to` (both ISO dates, UTC arithmetic: no time zone or daylight
+ * saving can change the count). Negative when `to` is before `from`.
+ *
+ * @param {string} from YYYY-MM-DD
+ * @param {string} to YYYY-MM-DD
+ */
+export function daysBetween(from, to) {
+  return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 864e5);
+}
+
+/**
+ * Neutral freshness wording for an observation: when it was reported and how many calendar days
+ * that is before a CLEARLY DEFINED reference date (the newest observation in the same scope, as
+ * stated by the API). It never calls anything "fresh", "current" or "live" and makes no judgement:
+ * no policy defines freshness yet.
+ *
+ * @param {string} observed YYYY-MM-DD
+ * @param {string | null} reference YYYY-MM-DD or null
+ * @returns {{ reported: string, relative: string | null, days: number | null }}
+ */
+export function describeFreshness(observed, reference) {
+  const reported = `Last reported on ${formatDate(observed)}`;
+  if (!reference) return { reported, relative: null, days: null };
+  const days = daysBetween(observed, reference);
+  if (days < 0) {
+    return { reported, relative: 'later than the reference date (check the data)', days };
+  }
+  const relative =
+    days === 0
+      ? `on the reference date (${formatDate(reference)})`
+      : `${formatCount(days)} ${days === 1 ? 'day' : 'days'} before the reference date (${formatDate(reference)})`;
+  return { reported, relative, days };
+}

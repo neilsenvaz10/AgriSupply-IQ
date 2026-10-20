@@ -126,6 +126,16 @@ const ENDPOINTS = {
       cursor: V.cursor,
     },
   },
+  latestMandiPrices: {
+    path: '/mandi-prices/latest',
+    params: {
+      commodity_id: V.uuid,
+      state_id: V.uuid,
+      district_id: V.uuid,
+      limit: V.limit,
+      cursor: V.cursor,
+    },
+  },
   statePrices: {
     path: '/state-prices',
     params: {
@@ -164,6 +174,9 @@ export function buildPath(endpoint, params = {}, path = {}) {
     const raw = params[name];
     if (raw === undefined || raw === null || raw === '') continue;
     query.set(name, validate(raw, name));
+  }
+  if (endpoint === 'latestMandiPrices' && !query.get('commodity_id')) {
+    throw invalid('A commodity is required for the latest observation of each mandi.');
   }
   if (endpoint === 'mandiPrices' || endpoint === 'statePrices') {
     const from = query.get('from');
@@ -249,6 +262,23 @@ const ROW_CONTRACTS = {
       'provenance',
     ],
   },
+  latestMandiPrices: {
+    granularity: 'mandi_daily',
+    required: [
+      'id',
+      'observed_date',
+      'latest_observation_date',
+      'observations_on_latest_date',
+      'market',
+      'state',
+      'commodity',
+      'modal_price',
+      'price_unit',
+      'unit_basis',
+      'source_labels',
+      'provenance',
+    ],
+  },
   statePrices: {
     granularity: 'state_daily',
     required: [
@@ -267,7 +297,7 @@ const ROW_CONTRACTS = {
 };
 
 /**
- * @param {'mandiPrices' | 'statePrices'} endpoint
+ * @param {'mandiPrices' | 'statePrices' | 'latestMandiPrices'} endpoint
  * @param {any[]} rows
  */
 export function checkObservationRows(endpoint, rows) {
@@ -283,6 +313,9 @@ export function checkObservationRows(endpoint, rows) {
     if (endpoint === 'statePrices' && ('market' in row || 'district' in row)) {
       throw new Error(`row ${i} claims mandi-level fields on a state-level observation`);
     }
+    if (endpoint === 'latestMandiPrices' && row.latest_observation_date !== row.observed_date) {
+      throw new Error(`row ${i} has a latest_observation_date that differs from observed_date`);
+    }
     if (
       typeof row.provenance !== 'object' ||
       row.provenance === null ||
@@ -291,6 +324,24 @@ export function checkObservationRows(endpoint, rows) {
       throw new Error(`row ${i} has no usable provenance`);
     }
   });
+}
+
+/**
+ * The latest-per-mandi endpoint must say what it is, and carry the reference date and request time
+ * the freshness text relies on.
+ *
+ * @param {any} meta
+ */
+export function checkLatestMeta(meta) {
+  if (meta.endpoint !== 'latest_observation_per_mandi') {
+    throw new Error('meta does not identify the latest-observation endpoint');
+  }
+  if (!(meta.reference_date === null || /^\d{4}-\d{2}-\d{2}$/.test(String(meta.reference_date)))) {
+    throw new Error('meta.reference_date is not a date');
+  }
+  if (typeof meta.requested_at !== 'string' || Number.isNaN(Date.parse(meta.requested_at))) {
+    throw new Error('meta.requested_at is missing');
+  }
 }
 
 /**
@@ -305,9 +356,14 @@ async function request(client, endpoint, params, { list, signal, id }) {
   return client.get(path, {
     parse: (body) => {
       const envelope = parseEnvelope(body, { list });
-      if (endpoint === 'mandiPrices' || endpoint === 'statePrices') {
+      if (
+        endpoint === 'mandiPrices' ||
+        endpoint === 'statePrices' ||
+        endpoint === 'latestMandiPrices'
+      ) {
         checkObservationRows(endpoint, envelope.data);
       }
+      if (endpoint === 'latestMandiPrices') checkLatestMeta(envelope.meta);
       return envelope;
     },
     signal,
@@ -325,6 +381,8 @@ export const historical = {
   market: (c, id, signal) => request(c, 'marketDetail', {}, { list: false, signal, id }),
   mandiPrices: (c, p = {}, signal) => request(c, 'mandiPrices', p, { list: true, signal }),
   statePrices: (c, p = {}, signal) => request(c, 'statePrices', p, { list: true, signal }),
+  latestMandiPrices: (c, p = {}, signal) =>
+    request(c, 'latestMandiPrices', p, { list: true, signal }),
   /** @param {import('../api/client').ApiClient} c @param {AbortSignal} [signal] */
   coverage: (c, signal) => request(c, 'coverage', {}, { list: false, signal }),
   sources: (c, signal) => request(c, 'sources', {}, { list: false, signal }),

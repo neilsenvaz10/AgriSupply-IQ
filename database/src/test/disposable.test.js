@@ -3,7 +3,13 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { describe, expect, it } from 'vitest';
-import { DISPOSABLE_FLAG, DISPOSABLE_TOKEN_ENV, checkDisposable } from './disposable.js';
+import {
+  DISPOSABLE_FLAG,
+  DISPOSABLE_TOKEN_ENV,
+  checkDisposable,
+  collectDatabaseUrls,
+  guardedUrl,
+} from './disposable.js';
 
 /**
  * Regression tests for the disposable-database guard. They need no database: the decision logic
@@ -70,6 +76,78 @@ describe('disposable-database guard: decision logic', () => {
     expect((await checkDisposable(dev, async () => null)).ok).toBe(false);
     const other = env({ DATABASE_MIGRATION_URL: 'postgresql://m@db.example.org:6543/x' });
     expect((await checkDisposable(other, async () => TOKEN)).ok).toBe(true);
+  });
+});
+
+describe('disposable-database guard: every connection is verified (incident 2026-10-20)', () => {
+  /** A reader that vouches only for URLs on the throwaway host. */
+  const readOnlyThrowaway = async (/** @type {string} */ url) =>
+    url.includes('@127.0.0.1:55555/') ? TOKEN : null;
+  const good = (extra = {}) =>
+    env({
+      DATABASE_MIGRATION_URL: 'postgresql://m@127.0.0.1:55555/x',
+      DATABASE_URL: 'postgresql://a@127.0.0.1:55555/x',
+      ...extra,
+    });
+
+  it('refuses when ONLY the ingest URL points at a database without the identity', async () => {
+    const result = await checkDisposable(
+      good({ DATABASE_INGEST_URL: 'postgresql://i@localhost:5433/fasalytics' }),
+      readOnlyThrowaway,
+    );
+    expect(result).toMatchObject({ ok: false });
+    expect(JSON.stringify(result)).toContain('DATABASE_INGEST_URL');
+  });
+
+  it('refuses a test URL or any unnamed postgres URL that is not disposable', async () => {
+    for (const extra of [
+      { TEST_DATABASE_URL: 'postgresql://t@localhost:5433/fasalytics' },
+      { TEST_DATABASE_MIGRATION_URL: 'postgresql://t@localhost:5433/fasalytics' },
+      { SOME_FUTURE_WRITER: 'postgres://w@localhost:5433/fasalytics' },
+    ]) {
+      expect((await checkDisposable(good(extra), readOnlyThrowaway)).ok).toBe(false);
+    }
+  });
+
+  it('accepts when every connection reaches the disposable database', async () => {
+    const all = good({
+      DATABASE_INGEST_URL: 'postgresql://i@127.0.0.1:55555/x',
+      TEST_DATABASE_URL: 'postgresql://t@127.0.0.1:55555/x',
+    });
+    expect(await checkDisposable(all, readOnlyThrowaway)).toEqual({ ok: true });
+  });
+
+  it('collects named variables and any other postgres URL, and nothing else', () => {
+    const names = collectDatabaseUrls({
+      DATABASE_INGEST_URL: 'x',
+      OTHER: 'postgres://u@h/d',
+      NOT_A_URL: 'hello',
+      EMPTY: '',
+    }).map(([n]) => n);
+    expect(names).toEqual(['DATABASE_INGEST_URL', 'OTHER']);
+  });
+
+  it('guardedUrl hands out a URL only when the whole environment is verified', async () => {
+    const bad = good({ DATABASE_INGEST_URL: 'postgresql://i@localhost:5433/fasalytics' });
+    await expect(guardedUrl('DATABASE_INGEST_URL', bad, readOnlyThrowaway)).rejects.toThrow(
+      /Refusing to connect/,
+    );
+    const fine = good({ DATABASE_INGEST_URL: 'postgresql://i@127.0.0.1:55555/x' });
+    await expect(guardedUrl('DATABASE_INGEST_URL', fine, readOnlyThrowaway)).resolves.toContain(
+      '55555',
+    );
+  });
+
+  it('integration suites never read a write-capable URL straight from process.env', () => {
+    const suites = [
+      ...readdirSync(SRC).map((f) => f),
+      ...readdirSync(`${SRC}ingest`).map((f) => `ingest/${f}`),
+    ].filter((f) => f.endsWith('.integration.test.js'));
+    for (const file of suites) {
+      const text = readFileSync(`${SRC}${file}`, 'utf8');
+      const connect = /connectionString:\s*process\.env\./.exec(text);
+      expect(connect, `${file} opens a pool on a raw environment URL (use guardedUrl)`).toBeNull();
+    }
   });
 });
 

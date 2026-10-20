@@ -5,85 +5,109 @@
       "file": "states-kerala.json",
       "request": "GET /api/v1/states?q=kerala",
       "status": 200,
-      "sha256": "13b53278edea6f0e31bb2631238a113db8b45441ce356f9e18683f8b3b82f0c3"
+      "sha256": "c2ea620213d3f55df5febc43e3a6dfcf543c011f94ba07fe6b42afa97a84a97c"
     },
     {
       "file": "states-page-with-cursor.json",
       "request": "GET /api/v1/states?limit=2",
       "status": 200,
-      "sha256": "e19082288864faa17c584668d24e88c51d932d1648012078e8c84a56e4b02807"
+      "sha256": "beb0eff88227bbb85d389db3167571a0197bb43d9a5cf81f440d87e6172aa890"
     },
     {
       "file": "commodities-page-with-cursor.json",
       "request": "GET /api/v1/commodities?limit=3",
       "status": 200,
-      "sha256": "b068c467ef7f08d50d106c2293b33bf8f418e5fa5e9c5e8cfb56245c2649ce77"
+      "sha256": "06d876d159e7e150c1c8281c1b1d024b66fed4ddb8a5063efb1e677ba7a95bc1"
     },
     {
       "file": "commodity-wheat.json",
       "request": "GET /api/v1/commodities?q=wheat&limit=1",
       "status": 200,
-      "sha256": "78d1a8b3dcd71dd10ed7ff35a59c69918f72e2ce5df72fc180c2645537dd4f1a"
+      "sha256": "ee949c8931f079bca17df1bda4f3e14ccca43d894469a12adc0412cf7e37f85a"
     },
     {
       "file": "markets-unresolved-district.json",
       "request": "GET /api/v1/markets?district_status=unresolved&limit=2",
       "status": 200,
-      "sha256": "412eaebd5a3294b38f156e966c2fb0f48b51601ef3c98dec9fa7768c3ce69115"
+      "sha256": "baacd74e519bd094ac4fbbc26011bd121b31c0b72fd20f5a89ed44456cac3788"
     },
     {
       "file": "market-detail.json",
       "request": "GET /api/v1/markets/febff832-b77d-4fef-ad5d-5d85c4ae2474",
       "status": 200,
-      "sha256": "0b7c82c9986101d7123cbb75cde77be2cc228e4213ae61a67f8dcce0c4e93015"
+      "sha256": "84c09f66f4489bf0f250d3d99e76a9d8bc3f0271b0956cf71e03ab8d698ed635"
     },
     {
       "file": "mandi-prices.json",
       "request": "GET /api/v1/mandi-prices?commodity_id=e6650c5c-bccf-405a-ac48-f394f2d26746&from=2025-06-11&to=2025-06-11&limit=2",
       "status": 200,
-      "sha256": "06d367da69a2ca1698bace141bd3d23818d60da815a1665c7926649d7176ab62"
+      "sha256": "c4656565e377a22b8840a0f17375ccf78170d394c15e644457547d1b321a37fc"
     },
     {
       "file": "mandi-prices-empty.json",
       "request": "GET /api/v1/mandi-prices?commodity_id=30e94149-3299-4aa6-90b3-4b7bafc45b91&from=2025-06-01&to=2025-06-30&limit=2",
       "status": 200,
-      "sha256": "55dc732deac06a868dd8c3b82f3ef7dbf4a815b65154d31ab6dc1ce5df7b060f"
+      "sha256": "583968d24d6ac9e68cd5f359f805b1b30d573f49a655c0f354678003cf76394f"
     },
     {
       "file": "state-prices-keralam.json",
       "request": "GET /api/v1/state-prices?state_id=741af001-8ddc-4c6a-a5f4-e5f423b36fd4&from=2025-01-01&to=2025-01-31&limit=2",
       "status": 200,
-      "sha256": "28d16c8d0009a417d74e56062770f455f92919f337a2471b5d8a18667d7a7d1f"
+      "sha256": "0d137f11d1e4c63e63f315e53953708539d2b699eed4994c0b249b6864bd8bae"
     },
     {
       "file": "state-prices-count-units.json",
       "request": "GET /api/v1/state-prices?state_id=46194b5c-6edf-437b-b175-0a1897d8d731&commodity_id=7c2489df-ae3f-4c1c-800e-fa073517b4ff&from=2025-01-01&to=2025-01-01&limit=1",
       "status": 200,
-      "sha256": "78806b83d15909f67e5a34778d1fbe8d833113c5b218a4c57f992541991fe402"
+      "sha256": "a9075150fce704571cf003482224ee39d8972c7863db9591facb1114015aa929"
     },
     {
       "file": "coverage.json",
       "request": "GET /api/v1/coverage",
       "status": 200,
-      "sha256": "923776805425085cf7ef8233ce46b6f5f1c5b5c571c638432a89be5262421320"
+      "sha256": "1b443673addb96078de38ad5cc4d2f31618f1691fa0f57bfb4d739f3042743e6"
     },
     {
       "file": "sources.json",
       "request": "GET /api/v1/sources",
       "status": 200,
-      "sha256": "5b22d20b0f831670a220fe76fed76afdf4af4561cd35f6cce2ab5d597d3926e8"
+      "sha256": "2c458d5cbc411f80c63188e2431f61a9e2bbba1b48a7ccb32287e78556b6038b"
     },
     {
       "file": "geography-unresolved.json",
       "request": "GET /api/v1/geography/unresolved",
       "status": 200,
-      "sha256": "4467e0ee227fc9233ee5edaaecee1945e4e5b5a02e198ab85ba406f651735a94"
+      "sha256": "51d36b0f1525f8351b51cf68ee480045858032675a5eecffe1c353f8ceaa01dc"
+    },
+    {
+      "file": "mandi-prices-latest.json",
+      "request": "GET /api/v1/mandi-prices/latest?commodity_id=e6650c5c-bccf-405a-ac48-f394f2d26746&limit=2",
+      "status": 200,
+      "sha256": "cf80dea2e66b3bbfa4a6a31a5244da84d0dc4e60d9efbe774e2d464b461667a0"
+    },
+    {
+      "file": "mandi-prices-latest-state.json",
+      "request": "GET /api/v1/mandi-prices/latest?commodity_id=e6650c5c-bccf-405a-ac48-f394f2d26746&state_id=741af001-8ddc-4c6a-a5f4-e5f423b36fd4&limit=2",
+      "status": 200,
+      "sha256": "a143bccbfc51ffc75b5d07b4c0f4aa451705ac8a9291596ea1f0c5e85b23b3e1"
+    },
+    {
+      "file": "mandi-prices-latest-empty.json",
+      "request": "GET /api/v1/mandi-prices/latest?commodity_id=7ed93f1b-0da2-44e2-afa5-fc4829b942ac&limit=2",
+      "status": 200,
+      "sha256": "7140ce3f2edc7b0e2bc1c8a0fd694f25ac4bf7b96ba16d8fc4b326a5396045a6"
+    },
+    {
+      "file": "error-latest-missing-commodity.json",
+      "request": "GET /api/v1/mandi-prices/latest",
+      "status": 400,
+      "sha256": "ec973d8cd53c999042833a2d5fadda1c8836445cbbe6a283ec940cf3102f1fc2"
     },
     {
       "file": "error-invalid-parameter.json",
       "request": "GET /api/v1/mandi-prices?from=2025-01-01&to=2025-01-31",
       "status": 400,
-      "sha256": "f1a235d77bf024c7f82d72e9fc272f5e5c834c01cdbf3d261beff6aa321cc1f6"
+      "sha256": "410ab82026815775b03334e35fcafb9ab563f7c72fe2c24004349b2ad7f8219c"
     }
   ]
 }

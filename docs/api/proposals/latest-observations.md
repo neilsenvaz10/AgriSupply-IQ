@@ -1,6 +1,9 @@
-# Proposal (not implemented): latest mandi observation per market
+# Proposal (implemented in 2.3D): latest mandi observation per market
 
-Status: **proposed for review, no API code was changed in Milestone 2.3C.**
+Status: **IMPLEMENTED in Milestone 2.3D** as `GET /api/v1/mandi-prices/latest` (see
+`docs/api/historical-market-api.md` and `docs/api/express.openapi.json`). The text below is the original
+proposal and is kept for the reasoning; where it differs from the shipped endpoint, the OpenAPI document wins.
+(Originally: proposed for review, no API code was changed in Milestone 2.3C.)
 
 ## What the current API can and cannot do
 

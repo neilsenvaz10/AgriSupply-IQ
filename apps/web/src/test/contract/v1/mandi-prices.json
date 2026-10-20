@@ -1,7 +1,7 @@
 {
   "contract_version": "v1",
   "about": "A REAL response captured from the FASALYTICS historical market API (sanitized: shortened only). Not a synthetic fixture.",
-  "captured_at": "2026-10-20T06:18:22.162Z",
+  "captured_at": "2026-10-20T08:26:12.473Z",
   "request": "GET /api/v1/mandi-prices?commodity_id=e6650c5c-bccf-405a-ac48-f394f2d26746&from=2025-06-11&to=2025-06-11&limit=2",
   "status": 200,
   "response": {
