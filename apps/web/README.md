@@ -4,10 +4,14 @@ The farmer-facing application, converted from the eight Google Stitch designs. I
 JSX only** (JSDoc-typed, checked with `tsc -p jsconfig.json`). It talks only to the Express API; it never
 connects to PostgreSQL or the FastAPI service.
 
-> **Honest status.** The screens are implemented as **UI previews**. There is no agricultural data
-> pipeline, registry or trained model yet, so every data-dependent area shows an explicit
-> "unavailable" state instead of sample data. Nothing on any page is a price, forecast, recommendation,
-> count or "live" feed. The System Status page (real health check) is the only data-backed screen.
+> **Honest status.** Since Milestone 2.3B the **Dashboard, Market Explorer and Commodities** screens show
+> real **historical** data from the read-only Express endpoints under `/api/v1` (imported historical files,
+> not a live feed; every response must say `meta.is_live = false` or it is refused). Prices are shown with
+> their original units (INR per quintal for mandi data is an **assumption** and is labelled as one), market
+> identities are shown as **unverified**, unresolved districts and provisional state mappings are shown as
+> such, and a missing mandi price is never filled from state-level data. The other screens (forecasting,
+> comparison, allocation, simulation, copilot) remain **UI previews** with explicit "unavailable" states:
+> no model, forecast, recommendation or live feed exists. System Status is the real health check.
 
 ## Run it
 
@@ -38,20 +42,20 @@ never a Docker service name. See `.env.example`.
 
 ## Route map
 
-| Route          | Page                            | Source Stitch screen                       | Status                         |
-| -------------- | ------------------------------- | ------------------------------------------ | ------------------------------ |
-| `/`            | Redirects to `/dashboard`       |                                            |                                |
-| `/dashboard`   | Farmer Dashboard (landing page) | `original/.../fasalytics_farmer_dashboard` | UI preview                     |
-| `/markets`     | Nationwide Market Explorer      | `new-exports/nationwide_market_explorer`   | UI preview                     |
-| `/commodities` | Explore Commodities             | `new-exports/all_crop_commodity_explorer`  | UI preview                     |
-| `/forecast`    | AI Price Forecasting            | `new-exports/ai_price_forecasting`         | UI preview                     |
-| `/compare`     | Mandi Comparison                | `original/.../smart_mandi_comparison`      | UI preview                     |
-| `/allocate`    | Smart Harvest Allocation        | `original/.../smart_harvest_allocation`    | UI preview                     |
-| `/simulate`    | What-If Simulator               | `new-exports/what_if_market_simulator`     | UI preview                     |
-| `/assistant`   | AI Copilot                      | `original/.../fasalytics_ai_copilot`       | UI preview                     |
-| `/profile`     | Profile and preferences         | (design system only)                       | UI preview, no sign-in         |
-| `/status`      | System Status (diagnostics)     | (not a Stitch screen)                      | Working: real API health check |
-| `*`            | Not found                       |                                            |                                |
+| Route          | Page                            | Source Stitch screen                       | Status                                                                                   |
+| -------------- | ------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `/`            | Redirects to `/dashboard`       |                                            |                                                                                          |
+| `/dashboard`   | Farmer Dashboard (landing page) | `original/.../fasalytics_farmer_dashboard` | Historical mandi prices; recommendation, ranking and allocation widgets stay unavailable |
+| `/markets`     | Nationwide Market Explorer      | `new-exports/nationwide_market_explorer`   | Historical directory and mandi prices (server-paginated, dependent filters)              |
+| `/commodities` | Explore Commodities             | `new-exports/all_crop_commodity_explorer`  | Real catalogue with mandi / state-level-only / no-data coverage tiers                    |
+| `/forecast`    | AI Price Forecasting            | `new-exports/ai_price_forecasting`         | UI preview                                                                               |
+| `/compare`     | Mandi Comparison                | `original/.../smart_mandi_comparison`      | UI preview                                                                               |
+| `/allocate`    | Smart Harvest Allocation        | `original/.../smart_harvest_allocation`    | UI preview                                                                               |
+| `/simulate`    | What-If Simulator               | `new-exports/what_if_market_simulator`     | UI preview                                                                               |
+| `/assistant`   | AI Copilot                      | `original/.../fasalytics_ai_copilot`       | UI preview                                                                               |
+| `/profile`     | Profile and preferences         | (design system only)                       | UI preview, no sign-in                                                                   |
+| `/status`      | System Status (diagnostics)     | (not a Stitch screen)                      | Working: real API health check                                                           |
+| `*`            | Not found                       |                                            |                                                                                          |
 
 Alias paths redirect to the canonical routes: `/forecasting`, `/compare-mandis`, `/harvest-allocation`,
 `/what-if`, `/copilot` (see `src/app/navigation.js`). Stitch paths are under
@@ -90,30 +94,43 @@ frame, empty ring) plus a plain-language reason.
 - Pages never scroll horizontally (verified at 375, 768 and 1440 px). Zoom is not disabled (the exports
   disabled it). Focus rings are visible everywhere and animation respects `prefers-reduced-motion`.
 
-## Data-unavailable behaviour
+## Data layer and data-unavailable behaviour
 
-Each screen reads its data through one hook in `src/services/agri/index.js` that returns
-`{ status, data, reason, needs }`. Today every hook returns `unavailable`, makes **no network request**
-and never falls back to demo data. A later phase replaces the hook body with a real call through the
-Express API client; the pages already render `ready`, `loading` and `error` through `DataState`.
+Screens read data through hooks in `src/services/agri/` and render the standard state
+`{ status, data, reason, needs }` with `DataState` (`ready`, `loading`, `error`, `unavailable`).
 
-| Screen             | Unavailable message                                                                 | Needs (future Express endpoint, PROJECT.md section 5.5) |
-| ------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| Dashboard          | Market data will appear here once the ingestion pipeline is connected.              | prices, forecasts, comparison                           |
-| Market Explorer    | Market directory data is not available yet.                                         | `GET /markets` (state, district and market registries)  |
-| Commodities        | Commodity catalogue data is not available yet.                                      | `GET /commodities` plus capability tiers                |
-| Forecasting        | Forecasts are not available until the forecasting service is trained and validated. | `POST /forecasts`                                       |
-| Mandi Comparison   | Mandi comparison requires verified market prices and cost inputs.                   | `POST /compare`                                         |
-| Harvest Allocation | Allocation recommendations require verified market and forecast data.               | `POST /allocate`                                        |
-| What-If Simulator  | Risk simulation is not yet connected to the intelligence engine.                    | `POST /scenarios`                                       |
-| AI Copilot         | AI Copilot is not yet configured.                                                   | `POST /chat`                                            |
+- `historical.js` builds and validates the requests to `/api/v1` (parameters, the 366-day window, UUIDs,
+  limits and cursors are checked before anything is sent; a bad request is an `invalid_request` error and
+  nothing goes over the network) and checks every response: it must declare itself a historical snapshot
+  (`meta.is_live === false`), otherwise it is refused as an unexpected format and not displayed.
+- `useApiQuery.js` provides `useApiQuery` (one request) and `usePagedQuery` (cursor pagination: page 1, then
+  "Load more" with the server cursor). Both cancel in-flight requests when the inputs change or the page
+  unmounts, never show the previous inputs' data for new inputs, and never fabricate data.
+- `hooks.js` has the screen hooks (`useCoverage`, `useStates`, `useDistricts`, `useCommodityCatalogue`,
+  `useMarketDirectory`, `useMarketDetail`, `useMandiObservations`); `format.js` only formats API values
+  (dates, rupees, original units); it never converts units or computes changes.
 
-These endpoints do not exist yet and are **not** called.
+Endpoints used: `/coverage`, `/states`, `/districts`, `/commodities`, `/markets`, `/markets/{id}`,
+`/mandi-prices` (all GET; see `docs/api/historical-market-api.md`). State-level prices are never requested.
+
+| Screen             | Data                                                               | When there is none                                                                            |
+| ------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Dashboard          | Latest-day mandi observations; a chosen mandi's own 90-day history | Explicit loading / empty / error states; recommendation, ranking, allocation stay unavailable |
+| Market Explorer    | Market directory (server-paginated), mandi prices of a market      | "No mandi observations exist for these filters"; state prices are never substituted           |
+| Commodities        | Real catalogue with per-granularity coverage and date ranges       | Error state with retry                                                                        |
+| Forecasting        | none (no backend)                                                  | Forecasts are not available until the forecasting service is trained and validated.           |
+| Mandi Comparison   | none                                                               | Mandi comparison requires verified market prices and cost inputs.                             |
+| Harvest Allocation | none                                                               | Allocation recommendations require verified market and forecast data.                         |
+| What-If Simulator  | none                                                               | Risk simulation is not yet connected to the intelligence engine.                              |
+| AI Copilot         | none                                                               | AI Copilot is not yet configured.                                                             |
+
+The five screens without a backend make **no network request** and never fall back to demo data.
 
 ## What works today (frontend only)
 
-Sidebar, bottom-bar and drawer navigation; breadcrumbs; the filter dialog (Market Explorer); search
-input state (with an honest "not available yet" note); segmented controls (forecast horizon, allocation
+Sidebar, bottom-bar and drawer navigation; breadcrumbs; the Market Explorer filters (state, dependent
+district, district status, commodity), search and server-side paging; the Commodities category, coverage
+and search filters and spotlight; segmented controls (forecast horizon, allocation
 strategy, comparison sort) as remembered choices; the readiness-tier accordion; the What-If levers,
 presets and Reset (the chosen values are shown but never converted into a payout); suggested Copilot
 questions filling the input; the not-found page; the page-level error boundary; System Status.

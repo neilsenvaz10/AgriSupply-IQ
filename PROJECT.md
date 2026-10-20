@@ -112,7 +112,7 @@ state- and national-level prices, WPI, sources and coverage), using the `SELECT`
 granularities stay separate; every response states it is a historical snapshot (`is_live: false`); unit
 assumptions, the 1,610 unverified markets, the 49 unresolved district labels, the provisional Keralam mapping and
 the unresolved Gao label are exposed rather than hidden. See `docs/api/historical-market-api.md` and the OpenAPI
-contract. The React frontend is **not** connected yet. There are no models, forecasts, risk engine, simulation or
+contract. (Milestone 2.3B then connected the Dashboard, Market Explorer and Commodities screens to these endpoints; see `apps/web/README.md`.) There are no models, forecasts, risk engine, simulation or
 AI copilot, and no live-data ingestion.
 
 ### Decisions recorded during Phase 1

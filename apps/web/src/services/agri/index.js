@@ -1,11 +1,12 @@
 /**
  * Data boundary for the farmer-facing screens.
  *
- * Every screen reads its data through one hook below and renders the standard state shape, so a
- * later phase replaces the BODY of a hook with a real request through the Express API client
- * (`../api/client.js`) without touching any page. Today there is no agricultural data pipeline,
- * no registry and no trained model, so every hook reports `unavailable`. They make NO network
- * request, return NO sample data, and never fall back to demo values.
+ * Screens read their data through one hook below and render the standard state shape. Since
+ * Milestone 2.3B the Dashboard, Market Explorer and Commodities screens read the read-only HISTORICAL
+ * market endpoints of the Express API (see ./historical.js); every record they show comes from the
+ * API and is labelled as historical, never live. The remaining screens (forecast, comparison,
+ * allocation, simulation, copilot) have no backend yet, so their hooks still report `unavailable`:
+ * they make NO network request, return NO sample data, and never fall back to demo values.
  *
  * @typedef {'unavailable' | 'loading' | 'error' | 'ready'} DataStatus
  *
@@ -26,18 +27,6 @@ function unavailable(reason, needs) {
   return Object.freeze({ status: 'unavailable', data: null, reason, needs });
 }
 
-const DASHBOARD = unavailable(
-  'Market data will appear here once the ingestion pipeline is connected.',
-  'Phase 2 market data plus Phase 3 forecasts and Phase 5 comparison (Express /prices, /forecasts, /compare)',
-);
-const MARKETS = unavailable(
-  'Market directory data is not available yet.',
-  'Phase 2 canonical state, district and market registries (Express /markets)',
-);
-const COMMODITIES = unavailable(
-  'Commodity catalogue data is not available yet.',
-  'Phase 2 commodity registry and capability tiers (Express /commodities)',
-);
 const FORECAST = unavailable(
   'Forecasts are not available until the forecasting service is trained and validated.',
   'Phase 3 validated models served by the intelligence service (Express /forecasts)',
@@ -59,9 +48,15 @@ const COPILOT = unavailable(
   'Phase 8 tool-grounded assistant (Express /chat)',
 );
 
-export const useDashboardOverview = () => DASHBOARD;
-export const useMarketDirectory = () => MARKETS;
-export const useCommodityCatalogue = () => COMMODITIES;
+export {
+  useCommodityCatalogue,
+  useCoverage,
+  useDistricts,
+  useMandiObservations,
+  useMarketDirectory,
+  useMarketDetail,
+  useStates,
+} from './hooks';
 export const useForecast = () => FORECAST;
 export const useMandiComparison = () => COMPARISON;
 export const useHarvestAllocation = () => ALLOCATION;

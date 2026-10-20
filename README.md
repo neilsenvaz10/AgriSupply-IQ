@@ -296,8 +296,9 @@ needs the first successful GitHub Actions run (see [docs/process/REPOSITORY_POLI
 - [x] Phase 2 / Milestone 2.1: nationwide canonical PostgreSQL schema and data-integrity foundation ([design](./database/docs/CANONICAL_SCHEMA.md)): registries, source aliases, provenance, ingestion tracking and four granularity-separated observation tables.
 - [x] Phase 2 / Milestone 2.2: historical ingestion framework, provisional LGD registry loader, importers for the four datasets, quality and alias reports, and a least-privilege ingestion role. Verified end to end in **disposable** databases only (2,698,327 observations accepted, every input row reconciled); **not imported into the development database** ([details](./database/docs/INGESTION.md)).
 - [x] Phase 2 / Development import: the four historical datasets are imported into the development database (importer 2.2.1; every row reconciled; backup taken first)
-- [x] Phase 2 / Milestone 2.3A: read-only historical market APIs under `/api/v1` ([guide](./docs/api/historical-market-api.md)); historical snapshot data, not live; not yet used by the React frontend
-- [ ] Phase 2 / Milestone 2.3B onwards: frontend integration, official LGD reference, alias confirmation (not started)
+- [x] Phase 2 / Milestone 2.3A: read-only historical market APIs under `/api/v1` ([guide](./docs/api/historical-market-api.md)); historical snapshot data, not live
+- [x] Phase 2 / Milestone 2.3B: the Dashboard, Market Explorer and Commodities screens read the historical market API (historical data only, labelled as such; units, unverified markets and unresolved geography shown as they are); forecasting, comparison, allocation, simulation and copilot screens remain previews
+- [ ] Phase 2 / Milestone 2.3C onwards: official LGD reference, alias confirmation, further screens (not started)
 - [ ] Phases 3-10: forecasting, risk, mandi comparison, allocation, dashboard, AI copilot, accessibility, deployment (not started)
 
 **Known limitations today:** no authentication, rate limiting or TLS (all ports are bound to loopback); the web

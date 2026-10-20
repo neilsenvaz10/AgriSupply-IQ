@@ -35,6 +35,14 @@ const SCREENS = [
   ['/assistant', 'AI Copilot', 'AI Copilot is not yet configured.'],
 ];
 
+/**
+ * Dashboard, Market Explorer and Commodities read the historical market API (Milestone 2.3B); their
+ * data-dependent behaviour is tested in historicalPages.test.jsx. The screens below still have no
+ * backend and must keep showing honest unavailable states.
+ */
+const INTEGRATED = ['/dashboard', '/markets', '/commodities'];
+const UNAVAILABLE = SCREENS.filter(([path]) => !INTEGRATED.includes(path));
+
 /** Anything that would look like market data or a recommendation. */
 const FABRICATED = [
   /₹\s?\d/, // a rupee amount
@@ -112,7 +120,7 @@ describe('routes', () => {
 });
 
 describe('missing-data states', () => {
-  it.each(SCREENS)(
+  it.each(UNAVAILABLE)(
     '%s says plainly that its data is unavailable',
     async (path, _heading, message) => {
       const { text } = await mainText(path);
@@ -120,7 +128,7 @@ describe('missing-data states', () => {
     },
   );
 
-  it.each(SCREENS)('%s is labelled as a UI preview, not a working feature', async (path) => {
+  it.each(UNAVAILABLE)('%s is labelled as a UI preview, not a working feature', async (path) => {
     const { text } = await mainText(path);
     expect(text).toMatch(/ui preview|not configured|not available/i);
   });
@@ -133,7 +141,7 @@ describe('missing-data states', () => {
 });
 
 describe('no fabricated agricultural values', () => {
-  it.each([...SCREENS.map(([path]) => path), '/profile'])(
+  it.each([...UNAVAILABLE.map(([path]) => path), '/profile'])(
     '%s shows no prices, quantities, confidence scores, places, crops or personal names',
     async (path) => {
       const { text } = await mainText(path);
@@ -142,16 +150,7 @@ describe('no fabricated agricultural values', () => {
   );
 
   it('offers no selectable commodity, state or market options (the registry is not loaded)', async () => {
-    for (const path of [
-      '/dashboard',
-      '/markets',
-      '/commodities',
-      '/forecast',
-      '/compare',
-      '/allocate',
-      '/simulate',
-      '/profile',
-    ]) {
+    for (const path of ['/forecast', '/compare', '/allocate', '/simulate', '/profile']) {
       const { unmount } = renderApp(path);
       await screen.findByRole('main');
       for (const select of screen.getAllByRole('combobox')) {
@@ -162,11 +161,14 @@ describe('no fabricated agricultural values', () => {
     }
   });
 
-  it('does not call the API for agricultural data (the browser only talks to Express health)', async () => {
-    const fetchImpl = vi.fn(() => Promise.reject(new TypeError('offline')));
-    renderApp('/dashboard', { fetchImpl });
-    await screen.findByRole('main');
-    expect(fetchImpl).not.toHaveBeenCalled();
+  it('makes no API request at all from the pages that have no backend yet', async () => {
+    for (const [path] of UNAVAILABLE) {
+      const fetchImpl = vi.fn(() => Promise.reject(new TypeError('offline')));
+      const { unmount } = renderApp(path, { fetchImpl });
+      await screen.findByRole('main');
+      expect(fetchImpl, path).not.toHaveBeenCalled();
+      unmount();
+    }
   });
 });
 
@@ -208,14 +210,12 @@ describe('unavailable actions do not pretend to succeed', () => {
 });
 
 describe('working frontend interactions', () => {
-  it('Market Explorer: search keeps its input state and says it cannot search yet', async () => {
+  it('Market Explorer: search keeps its input state and says what it searches', async () => {
     renderApp('/markets');
-    const search = await screen.findByRole('searchbox', {
-      name: /search states, mandis or commodities/i,
-    });
+    const search = await screen.findByRole('searchbox', { name: /search mandis by name/i });
     fireEvent.change(search, { target: { value: 'abc' } });
     expect(search).toHaveValue('abc');
-    expect(screen.getByText(/search will work once the market directory is loaded/i)).toBeVisible();
+    expect(screen.getByText(/searches market names/i)).toBeVisible();
   });
 
   it('Market Explorer: the filter panel opens as a dialog and closes with Escape', async () => {
@@ -224,7 +224,14 @@ describe('working frontend interactions', () => {
     opener.focus();
     fireEvent.click(opener);
     const dialog = screen.getByRole('dialog', { name: 'Filters' });
-    expect(within(dialog).getAllByRole('combobox')).toHaveLength(3);
+    expect(
+      within(dialog)
+        .getAllByRole('combobox')
+        .map(
+          (box) =>
+            box.getAttribute('id') && dialog.querySelector(`label[for="${box.id}"]`)?.textContent,
+        ),
+    ).toEqual(['State', 'District', 'District status', 'Commodity']);
     fireEvent.keyDown(dialog, { key: 'Escape' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(opener).toHaveFocus();

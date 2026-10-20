@@ -1,3 +1,5 @@
+import { useMemo, useState } from 'react';
+import { LoadMore, MandiObservationCard, PriceSeriesChart } from '../components/market/historical';
 import { MaterialIcon } from '../components/ui/MaterialIcon';
 import {
   Card,
@@ -11,7 +13,15 @@ import {
 import { RegistrySelect } from '../components/ui/controls';
 import { DataState } from '../components/ui/DataState';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import { useDashboardOverview, useMandiComparison } from '../services/agri';
+import {
+  useCommodityCatalogue,
+  useCoverage,
+  useMandiComparison,
+  useMandiObservations,
+} from '../services/agri';
+import { addDays, formatDate } from '../services/agri/format';
+
+const CHART_DAYS = 90;
 
 /** Empty donut ring (Stitch allocation teaser) with no segments: nothing has been allocated. */
 function EmptyDonut() {
@@ -33,7 +43,7 @@ function EmptyChart() {
     <div
       className="relative h-40 w-full pt-2"
       role="img"
-      aria-label="Price chart: no data available"
+      aria-label="Price chart: select a mandi to plot its historical prices"
     >
       <svg
         className="h-full w-full overflow-visible"
@@ -55,7 +65,7 @@ function EmptyChart() {
         ))}
       </svg>
       <p className="absolute inset-0 flex items-center justify-center px-space-md text-center font-label-md text-label-md text-on-surface-variant">
-        No price history to plot
+        Select a mandi to plot its historical prices
       </p>
     </div>
   );
@@ -63,8 +73,56 @@ function EmptyChart() {
 
 export function DashboardPage() {
   useDocumentTitle('Dashboard');
-  const overview = useDashboardOverview();
   const comparison = useMandiComparison();
+  const coverage = useCoverage();
+  const catalogue = useCommodityCatalogue();
+  const [chosenCommodity, setChosenCommodity] = useState('');
+  const [marketId, setMarketId] = useState('');
+
+  // Only commodities that actually have mandi-level observations can be priced here. Until the
+  // user chooses, the one with the most observations is shown, and the page says so.
+  const mandiCommodities = useMemo(
+    () =>
+      catalogue.status === 'ready'
+        ? catalogue.data.items
+            .filter((c) => c.coverage.mandi_daily.observations > 0)
+            .sort(
+              (a, b) => b.coverage.mandi_daily.observations - a.coverage.mandi_daily.observations,
+            )
+        : [],
+    [catalogue],
+  );
+  const commodity =
+    mandiCommodities.find((c) => c.id === chosenCommodity) ?? mandiCommodities[0] ?? null;
+  const lastDate = commodity?.coverage.mandi_daily.last_date ?? null;
+
+  // Latest observation day of the commodity: every mandi that reported on it.
+  const latest = useMandiObservations(
+    { commodityId: commodity?.id ?? '', from: lastDate ?? '', to: lastDate ?? '' },
+    { enabled: Boolean(commodity && lastDate), pageSize: 100 },
+  );
+  const marketOptions = useMemo(() => {
+    const seen = new Map();
+    for (const r of latest.items) seen.set(r.market.id, r.market.name);
+    return [...seen]
+      .map(([value, label]) => ({ value, label }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [latest.items]);
+  const activeMarketId = marketOptions.some((o) => o.value === marketId) ? marketId : '';
+
+  // The chosen mandi's own history for the last 90 days of its data: points exactly as observed.
+  const series = useMandiObservations(
+    {
+      marketId: activeMarketId,
+      commodityId: commodity?.id ?? '',
+      from: lastDate ? addDays(lastDate, -(CHART_DAYS - 1)) : '',
+      to: lastDate ?? '',
+    },
+    { enabled: Boolean(activeMarketId && commodity && lastDate), pageSize: 500 },
+  );
+  const points = series.items
+    .filter((r) => r.modal_price !== null)
+    .map((r) => ({ id: r.id, date: r.observed_date, value: r.modal_price }));
 
   return (
     <div className="flex flex-col gap-space-md">
@@ -76,7 +134,9 @@ export function DashboardPage() {
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-high px-2 py-0.5 font-label-xs text-label-xs font-medium text-on-surface-variant">
             <span className="h-1.5 w-1.5 rounded-full bg-outline" aria-hidden="true" />
-            Data feed: not connected
+            {coverage.status === 'ready'
+              ? `Historical data to ${formatDate(coverage.data.coverage.granularities.mandi_daily.last_date)} · not a live feed`
+              : 'Historical data · not a live feed'}
           </span>
         </div>
         <div className="mt-1 flex flex-wrap items-start justify-between gap-space-sm">
@@ -115,9 +175,39 @@ export function DashboardPage() {
               </span>
             </div>
             <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
-              <RegistrySelect label="Commodity" placeholder="Select a commodity" />
-              <RegistrySelect label="Market or mandi" placeholder="Select a market" />
+              <RegistrySelect
+                label="Commodity"
+                placeholder="Select a commodity"
+                unavailable={mandiCommodities.length === 0}
+                options={mandiCommodities.map((c) => ({ value: c.id, label: c.name }))}
+                value={commodity?.id ?? ''}
+                onChange={(value) => {
+                  setChosenCommodity(value);
+                  setMarketId('');
+                }}
+              />
+              <RegistrySelect
+                label="Market or mandi"
+                placeholder="Select a market"
+                unavailable={marketOptions.length === 0}
+                options={marketOptions}
+                value={activeMarketId}
+                onChange={setMarketId}
+              />
             </div>
+            {commodity ? (
+              <p className="font-label-xs text-label-xs text-on-surface-variant">
+                {chosenCommodity
+                  ? ''
+                  : 'Showing the commodity with the most mandi observations until you choose one. '}
+                Mandis listed are those that reported on {formatDate(lastDate)}, the commodity’s
+                latest historical day
+                {latest.pagination?.has_more
+                  ? '; load more observations to list further mandis'
+                  : ''}
+                .
+              </p>
+            ) : null}
             <div className="flex items-center gap-1.5 rounded-lg bg-surface-container-low p-2.5 font-label-xs text-label-xs text-on-surface-variant">
               <MaterialIcon name="inventory_2" className="text-[16px] text-outline" />
               <span>Harvest lot: not set. Quantity and grade will be entered here.</span>
@@ -185,14 +275,42 @@ export function DashboardPage() {
                   Price trajectory
                 </h2>
                 <span className="font-label-xs text-label-xs text-on-surface-variant">
-                  Price per quintal across selected mandis
+                  Historical modal price per quintal (unit assumed) for the selected mandi
                 </span>
               </div>
             </div>
-            <DataState state={overview} skeleton={<Skeleton className="h-40 w-full" />}>
-              {() => null}
-            </DataState>
-            <EmptyChart />
+            {activeMarketId ? (
+              <DataState
+                state={{
+                  status: series.status,
+                  data: points,
+                  reason: series.reason,
+                  needs: '',
+                  retry: series.retry,
+                }}
+                skeleton={<Skeleton className="h-40 w-full" />}
+              >
+                {(pts) =>
+                  pts.length === 0 ? (
+                    <EmptyChart />
+                  ) : (
+                    <>
+                      <PriceSeriesChart points={pts} unitLabel="per quintal (unit assumed)" />
+                      <p className="font-label-xs text-label-xs text-on-surface-variant">
+                        Historical modal prices as recorded, last {CHART_DAYS} days of this mandi’s
+                        data ({formatDate(addDays(lastDate, -(CHART_DAYS - 1)))} to{' '}
+                        {formatDate(lastDate)}). No trend, change or forecast is shown.
+                        {series.pagination?.has_more
+                          ? ' Only the first 500 observations are plotted.'
+                          : ''}
+                      </p>
+                    </>
+                  )
+                }
+              </DataState>
+            ) : (
+              <EmptyChart />
+            )}
           </Card>
         </div>
 
@@ -205,21 +323,63 @@ export function DashboardPage() {
                   id="mandis-heading"
                   className="font-headline-sm text-headline-sm font-extrabold text-on-surface"
                 >
-                  Top mandi comparison
+                  Historical mandi prices
                 </h2>
                 <span className="font-label-xs text-label-xs text-on-surface-variant">
-                  Ranked by net in-hand realization
+                  {lastDate && commodity
+                    ? `Only the mandis that reported ${commodity.name} on ${formatDate(lastDate)}, its latest day: not all mandis, and not a ranking`
+                    : 'Only the mandis that reported on the commodity’s latest day: not all mandis, and not a ranking'}
                 </span>
               </div>
               <span className="font-label-xs text-label-xs font-bold uppercase tracking-wider text-outline">
-                None available
+                {lastDate ? formatDate(lastDate) : 'No data'}
               </span>
             </div>
-            <EmptyState icon="storefront" message={comparison.reason} />
-            <div className="grid gap-space-xs opacity-70" aria-hidden="true">
-              <SkeletonCard lines={2} />
-              <SkeletonCard lines={2} />
-            </div>
+            <DataState
+              state={{
+                status:
+                  catalogue.status === 'error'
+                    ? 'error'
+                    : commodity || catalogue.status !== 'ready'
+                      ? latest.status
+                      : 'unavailable',
+                data: latest.items,
+                reason:
+                  catalogue.status === 'error'
+                    ? catalogue.reason
+                    : latest.status === 'unavailable'
+                      ? 'No commodity with mandi-level observations is available.'
+                      : latest.reason,
+                needs: '',
+                retry: catalogue.status === 'error' ? catalogue.retry : latest.retry,
+              }}
+              icon="storefront"
+              skeleton={
+                <div className="grid gap-space-xs">
+                  <SkeletonCard lines={2} />
+                  <SkeletonCard lines={2} />
+                </div>
+              }
+            >
+              {(rows) =>
+                rows.length === 0 ? (
+                  <EmptyState
+                    icon="event_busy"
+                    message="No mandi observations exist for this commodity on its latest day."
+                  />
+                ) : (
+                  <div className="flex flex-col gap-space-xs">
+                    {rows.map((row) => (
+                      <MandiObservationCard key={row.id} row={row} />
+                    ))}
+                    <LoadMore pager={latest} noun="observations" />
+                  </div>
+                )
+              }
+            </DataState>
+            <InfoBanner icon="info">
+              {comparison.reason} Ranking mandis by net realization is not shown.
+            </InfoBanner>
           </section>
 
           {/* Allocation teaser (Stitch) */}
@@ -252,7 +412,8 @@ export function DashboardPage() {
 
       <p className="flex items-center justify-center gap-1.5 text-center font-label-xs text-label-xs text-on-surface-variant">
         <MaterialIcon name="info" className="text-[14px]" />
-        UI preview: no market data is connected, and nothing on this page is a price or a forecast.
+        Historical records from imported files: past prices only, not live prices, forecasts or
+        recommendations.
       </p>
     </div>
   );
