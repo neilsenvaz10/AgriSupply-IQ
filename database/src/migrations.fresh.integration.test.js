@@ -131,11 +131,13 @@ describe.runIf(runnable)(
       ]);
     });
 
-    it('creates both derived views with invoker security', async () => {
+    it('creates the derived and Milestone 2.4 views, all with invoker security', async () => {
       const views = await migrator.query(
         "SELECT c.relname, c.reloptions FROM pg_class c WHERE c.relkind = 'v' AND c.relnamespace = 'public'::regnamespace ORDER BY 1",
       );
       expect(views.rows.map((v) => v.relname)).toEqual([
+        'admin_unit_current',
+        'identity_decision_in_effect',
         'mandi_observations_normalized',
         'state_observations_normalized',
       ]);

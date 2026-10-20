@@ -32,3 +32,5 @@ export {
   wpiObservations,
   observationConflicts,
 } from './observations.js';
+export { geoReferenceSet, adminUnitVersion } from './geography.js';
+export { mappingSet, identityDecision, identityReviewEvent } from './identity.js';

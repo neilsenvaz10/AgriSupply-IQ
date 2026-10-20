@@ -126,6 +126,8 @@ jobs:
             echo "DATABASE_URL=${app_url}"
             echo "TEST_DATABASE_URL=${app_url}"
             echo "DATABASE_MIGRATION_URL=postgresql://fasalytics_migrator:${migrator_pw}@127.0.0.1:5433/fasalytics"
+            # Used only by the identity-workflow tests to create SYNTHETIC login roles in this throwaway database.
+            echo "DATABASE_ADMIN_URL=postgresql://fasalytics_admin:${admin_pw}@127.0.0.1:5433/fasalytics"
             echo "FASALYTICS_DISPOSABLE_DB=1"
             echo "FASALYTICS_DISPOSABLE_TOKEN=${disposable_token}"
           } >> "$GITHUB_ENV"
@@ -155,7 +157,7 @@ jobs:
       - name: Guard - the database must be the disposable one on this runner
         run: |
           set -eu
-          for url in "$DATABASE_URL" "$DATABASE_MIGRATION_URL" "$TEST_DATABASE_URL"; do
+          for url in "$DATABASE_URL" "$DATABASE_MIGRATION_URL" "$TEST_DATABASE_URL" "$DATABASE_ADMIN_URL"; do
             case "$url" in
               postgresql://*@127.0.0.1:5433/fasalytics) ;;
               *) echo "refusing to run: a database URL does not point at the disposable CI database" >&2; exit 1 ;;
