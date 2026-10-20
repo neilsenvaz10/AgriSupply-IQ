@@ -14,14 +14,51 @@ import pg from 'pg';
  * `npm run test:disposable` creates a new container, generates a fresh token and stores it with
  * `ALTER DATABASE ... SET fasalytics.disposable_token`. CI does the same for its own container.
  * The development database never carries the setting, so no environment variable, `.env` file or
- * port number can make the tests treat it as disposable. Both the migrator and the application
- * connection must point at a database carrying the token.
+ * port number can make the tests treat it as disposable.
+ *
+ * FAIL CLOSED ON EVERY CONNECTION: the check does not look at a fixed pair of variables. It collects
+ * every connection string in the environment (the named variables below AND any other variable whose
+ * value is a postgres URL) and requires EVERY ONE of them to reach a database carrying the token.
+ * A forgotten or inherited URL (for example DATABASE_INGEST_URL filled in from database/.env) therefore
+ * makes the whole run refuse to write instead of silently writing through it. Incident 2026-10-20.
  */
 
 export const DISPOSABLE_FLAG = 'FASALYTICS_DISPOSABLE_DB';
 export const DISPOSABLE_TOKEN_ENV = 'FASALYTICS_DISPOSABLE_TOKEN';
 export const DISPOSABLE_TOKEN_SETTING = 'fasalytics.disposable_token';
 const MIN_TOKEN_LENGTH = 24;
+
+/** Connection variables that can write (or read the schema) and must always be verified when set. */
+export const WRITE_CAPABLE_URL_VARS = [
+  'DATABASE_URL',
+  'DATABASE_MIGRATION_URL',
+  'DATABASE_INGEST_URL',
+  'TEST_DATABASE_URL',
+  'TEST_DATABASE_MIGRATION_URL',
+];
+/** Without these two the suites cannot run at all. */
+export const REQUIRED_URL_VARS = ['DATABASE_MIGRATION_URL', 'DATABASE_URL'];
+
+const POSTGRES_URL = /^postgres(?:ql)?:\/\//i;
+
+/**
+ * Every connection string the process could use: the named variables that are set, plus ANY other
+ * variable whose value looks like a postgres URL (so a new variable cannot bypass the guard).
+ *
+ * @param {Record<string, string | undefined>} env
+ * @returns {Array<[string, string]>}
+ */
+export function collectDatabaseUrls(env) {
+  /** @type {Array<[string, string]>} */
+  const found = [];
+  for (const [name, value] of Object.entries(env)) {
+    if (!value) continue;
+    if (WRITE_CAPABLE_URL_VARS.includes(name) || POSTGRES_URL.test(value.trim())) {
+      found.push([name, value]);
+    }
+  }
+  return found.sort(([a], [b]) => a.localeCompare(b));
+}
 
 /**
  * @typedef {{ ok: true } | { ok: false, reason: string }} DisposableCheck
@@ -76,13 +113,10 @@ export async function checkDisposable(env = process.env, readToken = readDatabas
       reason: `${DISPOSABLE_TOKEN_ENV} is missing or too short (use \`npm run test:disposable\`)`,
     };
   }
-  /** @type {Array<[string, string | undefined]>} */
-  const targets = [
-    ['DATABASE_MIGRATION_URL', env.DATABASE_MIGRATION_URL],
-    ['DATABASE_URL', env.DATABASE_URL],
-  ];
-  for (const [label, url] of targets) {
-    if (!url) return { ok: false, reason: `${label} is not set` };
+  for (const required of REQUIRED_URL_VARS) {
+    if (!env[required]) return { ok: false, reason: `${required} is not set` };
+  }
+  for (const [label, url] of collectDatabaseUrls(env)) {
     let found;
     try {
       found = await readToken(url);
@@ -119,4 +153,26 @@ export async function assertDisposable() {
       `Refusing to write: the target is not a verified disposable database: ${result.reason}.`,
     );
   }
+}
+
+/**
+ * The ONLY way an integration suite obtains a write-capable connection string. It re-verifies, at the
+ * moment of use, that the database behind THIS variable carries the disposable identity, so a suite
+ * can never open a pool on a URL that was not itself proven disposable.
+ *
+ * @param {string} name e.g. 'DATABASE_INGEST_URL'
+ * @param {Record<string, string | undefined>} [env]
+ * @param {(url: string) => Promise<string | null>} [readToken]
+ * @returns {Promise<string>}
+ */
+export async function guardedUrl(name, env = process.env, readToken = readDatabaseToken) {
+  const result = await checkDisposable(env, readToken);
+  if (!result.ok) {
+    throw new Error(
+      `Refusing to connect with ${name}: the target is not a verified disposable database: ${result.reason}.`,
+    );
+  }
+  const url = env[name];
+  if (!url) throw new Error(`${name} is not set.`);
+  return url;
 }

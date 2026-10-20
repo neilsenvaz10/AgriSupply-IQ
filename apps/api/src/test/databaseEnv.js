@@ -10,11 +10,12 @@ import { parseEnv } from 'node:util';
  */
 const file = fileURLToPath(new URL('../../../../database/.env', import.meta.url));
 
-if (existsSync(file)) {
+// A disposable run takes every URL from the provisioned environment and never reads the developer's
+// `.env` (incident 2026-10-20). The write-capable migrator URL is never mapped from it at all.
+if (process.env['FASALYTICS_DISPOSABLE_DB'] !== '1' && existsSync(file)) {
   const values = parseEnv(readFileSync(file, 'utf8'));
   const mapping = {
-    TEST_DATABASE_URL: 'DATABASE_URL',
-    TEST_DATABASE_MIGRATION_URL: 'DATABASE_MIGRATION_URL',
+    TEST_DATABASE_URL: 'DATABASE_URL', // the read-only application role only
   };
   for (const [target, source] of Object.entries(mapping)) {
     if (process.env[target] === undefined && values[source]) process.env[target] = values[source];
