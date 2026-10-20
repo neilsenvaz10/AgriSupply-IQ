@@ -291,6 +291,10 @@ export const COVERAGE = {
  */
 export function mockFetch(handlers) {
   const fn = vi.fn(async (input, init) => {
+    // Opt-in latency (VITE_TEST_LATENCY_MS=30 npm test) makes the mocked API answer slowly, like a busy
+    // CI runner, so a test that only passes when responses are instant fails here too.
+    const latency = Number(import.meta.env.VITE_TEST_LATENCY_MS ?? 0);
+    if (latency > 0) await new Promise((resolve) => setTimeout(resolve, latency));
     const url = new URL(String(input));
     const handler = handlers[url.pathname];
     if (init?.signal?.aborted) throw new DOMException('Aborted', 'AbortError');

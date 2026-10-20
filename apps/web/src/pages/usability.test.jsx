@@ -284,13 +284,12 @@ describe('Latest-observation discovery (no client-side re-sorting)', () => {
     const note = screen.getByText(/only rows observed on 28 Mar 2024/i);
     expect(note).toHaveTextContent(/latest available, not live, and it is not a ranking/);
     // The rows are shown in the order the API returned them; nothing is re-sorted or ranked.
-    const cards = screen
-      .getAllByRole('article')
-      .filter((a) => a.textContent?.includes('Source: synthetic_source'));
-    expect(cards.map((c) => c.querySelector('h3')?.textContent)).toEqual([
-      'Synthetic Mandi A',
-      'Synthetic Mandi B',
-    ]);
+    const reporters = () =>
+      screen
+        .queryAllByRole('article')
+        .filter((a) => a.textContent?.includes('Source: synthetic_source'))
+        .map((c) => c.querySelector('h3')?.textContent);
+    await waitFor(() => expect(reporters()).toEqual(['Synthetic Mandi A', 'Synthetic Mandi B']));
     expect(screen.getByRole('main').textContent).not.toMatch(/\btop\b|\bbest\b|\branked\b/i);
 
     fireEvent.click(screen.getByRole('button', { name: 'Last 90 days' }));
