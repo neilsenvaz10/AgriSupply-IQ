@@ -36,3 +36,7 @@ Status: **prepared, not executed.** Rehearsed on a disposable clone of the devel
 ## Rollback
 
 Migrations are additive and nothing in existing tables references them. If a step fails: drop the new views, the eleven functions, the five tables (`identity_review_event`, `identity_decision`, `mapping_set`, `admin_unit_version`, `geo_reference_set`) in that order, delete the two journal rows (`drizzle.__drizzle_migrations` ids 6 and 7), and restore from the backup only if existing data differs from the recorded fingerprints.
+
+## Official LGD reference load (separate approval, after the migrations)
+
+Status: tooling implemented and rehearsed on disposable databases; **not executed on development**. The migrations above only create empty tables; the reference data is loaded by its own controlled command, `scripts/load-lgd-reference-dev.js`, which needs a fresh backup, restore evidence, a dedicated loader login, a one-use authorization of at most 24 hours, exact database identity, the approved fingerprint, and a person typing the confirmation. The authorization format, checks, loader login lifecycle, failure recovery, retraction and the exact development procedure are in `LGD_REFERENCE_LOAD_REHEARSAL.md` section 8. Authorization files, credentials, evidence and fingerprints are kept outside Git. Do not run the disposable loader (`load-lgd-reference.js`) against development: it refuses by design.

@@ -92,6 +92,61 @@ async function registryIds(client) {
 }
 
 /**
+ * Inserts one reference set and its unit rows through a client that is ALREADY inside a transaction owned by the
+ * caller (no BEGIN, COMMIT or ROLLBACK here). The controlled development loader uses it to load all sets in one
+ * transaction; `loadReferencePlan` uses it for the disposable path.
+ *
+ * @param {import('pg').PoolClient} client
+ * @param {any} set
+ * @returns {Promise<string>} The id of the new reference set.
+ */
+export async function insertReferenceSet(client, set) {
+  const ids = await registryIds(client);
+  const inserted = await client.query(
+    `INSERT INTO geo_reference_set (code, kind, authority, source_url, access_method, original_filename, format, file_sha256, fingerprint_kind,
+       size_bytes, record_count, retrieved_at, as_of_date, publication_date, publication_note, licence_note, terms_note, notes)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`,
+    [
+      set.code,
+      set.kind,
+      set.authority,
+      set.sourceUrl,
+      set.accessMethod,
+      set.originalFilename,
+      set.format,
+      set.fileSha256,
+      set.fingerprintKind,
+      set.sizeBytes,
+      set.recordCount,
+      set.retrievedAt,
+      set.asOfDate,
+      set.publicationDate,
+      set.publicationNote,
+      set.licenceNote,
+      set.termsNote,
+      set.notes,
+    ],
+  );
+  const setId = inserted.rows[0].id;
+  const width = UNIT_COLUMNS.length;
+  for (let i = 0; i < set.units.length; i += 200) {
+    const batch = set.units.slice(i, i + 200);
+    const params = batch.flatMap((u) => unitValues(setId, u, ids));
+    const placeholders = batch
+      .map(
+        (_, row) =>
+          `(${UNIT_COLUMNS.map((c, col) => `$${row * width + col + 1}${c === 'raw_record' ? '::jsonb' : ''}`).join(', ')})`,
+      )
+      .join(', ');
+    await client.query(
+      `INSERT INTO admin_unit_version (${UNIT_COLUMNS.join(', ')}) VALUES ${placeholders}`,
+      params,
+    );
+  }
+  return setId;
+}
+
+/**
  * @param {import('pg').Pool} pool Connection of a role that may INSERT into the two reference tables.
  * @param {{ sets: any[] }} plan
  * @returns {Promise<Array<{ code: string, status: string, units: number, id: string }>>}
@@ -130,48 +185,7 @@ export async function loadReferencePlan(pool, plan) {
         results.push({ code: set.code, status: 'unchanged', units: set.units.length, id });
         continue;
       }
-      const ids = await registryIds(client);
-      const inserted = await client.query(
-        `INSERT INTO geo_reference_set (code, kind, authority, source_url, access_method, original_filename, format, file_sha256, fingerprint_kind,
-           size_bytes, record_count, retrieved_at, as_of_date, publication_date, publication_note, licence_note, terms_note, notes)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`,
-        [
-          set.code,
-          set.kind,
-          set.authority,
-          set.sourceUrl,
-          set.accessMethod,
-          set.originalFilename,
-          set.format,
-          set.fileSha256,
-          set.fingerprintKind,
-          set.sizeBytes,
-          set.recordCount,
-          set.retrievedAt,
-          set.asOfDate,
-          set.publicationDate,
-          set.publicationNote,
-          set.licenceNote,
-          set.termsNote,
-          set.notes,
-        ],
-      );
-      const setId = inserted.rows[0].id;
-      const width = UNIT_COLUMNS.length;
-      for (let i = 0; i < set.units.length; i += 200) {
-        const batch = set.units.slice(i, i + 200);
-        const params = batch.flatMap((u) => unitValues(setId, u, ids));
-        const placeholders = batch
-          .map(
-            (_, row) =>
-              `(${UNIT_COLUMNS.map((c, col) => `$${row * width + col + 1}${c === 'raw_record' ? '::jsonb' : ''}`).join(', ')})`,
-          )
-          .join(', ');
-        await client.query(
-          `INSERT INTO admin_unit_version (${UNIT_COLUMNS.join(', ')}) VALUES ${placeholders}`,
-          params,
-        );
-      }
+      const setId = await insertReferenceSet(client, set);
       await client.query('COMMIT');
       results.push({ code: set.code, status: 'loaded', units: set.units.length, id: setId });
     } catch (error) {
