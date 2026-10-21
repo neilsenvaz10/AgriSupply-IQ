@@ -557,6 +557,12 @@ describeIntegration(
             entityKind: 'market',
             subjectMarketId: fx.marketOne,
             targetAdminUnitVersionId: fx.stateUnit,
+            // since migration 0007 a state correction is accepted only with market-specific evidence
+            evidence: {
+              marketSpecificEvidence: [
+                { type: 'official_market_listing', stateLgdCode: 1, reference: 'synthetic' },
+              ],
+            },
           },
           {
             decisionKind: 'merge_markets',
