@@ -200,6 +200,16 @@ export const identityDecision = pgTable(
     uniqueIndex('idec_one_accepted_subject_uq')
       .on(t.mappingSetId, t.subjectMarketId, t.decisionKind)
       .where(sql`${t.status} = 'accepted' AND ${t.subjectMarketId} IS NOT NULL`),
+    // Stage 3b: duplicate protection for generated proposals. A proposal carries a deterministic `proposalKey` (the
+    // claim) and an `evidenceDigest` (the evidence) in its evidence document. At most one OPEN proposal exists per
+    // claim, and the same claim with the same evidence can be recorded only once whatever became of it: a closed
+    // claim is proposed again only with new evidence. Proposals without these keys (hand-made ones) are unaffected.
+    uniqueIndex('idec_open_proposal_key_uq')
+      .on(sql`(${t.evidence}->>'proposalKey')`)
+      .where(sql`${t.status} = 'proposed' AND ${t.evidence} ? 'proposalKey'`),
+    uniqueIndex('idec_proposal_evidence_uq')
+      .on(sql`(${t.evidence}->>'proposalKey')`, sql`(${t.evidence}->>'evidenceDigest')`)
+      .where(sql`${t.evidence} ? 'proposalKey' AND ${t.evidence} ? 'evidenceDigest'`),
     // A decision is superseded by at most one later decision.
     uniqueIndex('idec_supersedes_uq')
       .on(t.supersedesId)

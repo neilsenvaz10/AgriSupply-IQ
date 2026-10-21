@@ -50,6 +50,13 @@
       "when": 1792496463582,
       "tag": "0006_identity_decision_infrastructure",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792590685381,
+      "tag": "0007_identity_proposal_guards",
+      "breakpoints": true
     }
   ]
 }
