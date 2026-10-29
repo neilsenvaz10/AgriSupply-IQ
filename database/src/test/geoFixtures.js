@@ -430,3 +430,37 @@ export function worldSnapshot(world = WORLD) {
     decisions: rows.decisions,
   };
 }
+
+/**
+ * The synthetic geography plus five low-risk districts that qualify for a pilot (exact current name or spaces-only
+ * difference, single version, the 2005 default date, active, present in the registry).
+ */
+export function pilotWorld() {
+  const names = ['Pilotalpha', 'Pilotbravo', 'Pilotcharlie', 'Pilotdelta', 'Pilotecho'];
+  const labels = ['pilot alpha', 'pilotbravo', 'pilot charlie', 'pilotdelta', 'pilot echo'];
+  return {
+    ...WORLD,
+    districts: [
+      ...WORLD.districts,
+      ...names.map((name, i) => ({
+        code: 990601 + i,
+        state: 990001,
+        history: [name],
+        status: 'active',
+        effective: '2005-01-01',
+        baseline: true,
+        registry: true,
+      })),
+    ],
+    unresolved: [
+      ...WORLD.unresolved,
+      ...labels.map((label, i) => ({
+        state: 'alpha',
+        label,
+        markets: [
+          { name: `${names[i]} Mandi`, obs: 100 + i, first: '2023-06-06', last: '2025-06-11' },
+        ],
+      })),
+    ],
+  };
+}
