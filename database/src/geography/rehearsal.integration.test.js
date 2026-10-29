@@ -96,6 +96,7 @@ describeIntegration(
         `GRANT SELECT ON ALL TABLES IN SCHEMA public TO ${readerLogin.logins.reader.name}`,
       );
       reader = readerLogin.poolFor(db.ownerUrl, 'reader');
+      reader.on('error', () => undefined);
       const client = await db.owner.connect();
       try {
         allProposals = buildProposals(analyse(await readSnapshot(client)));
@@ -152,8 +153,10 @@ describeIntegration(
         }
       }
       const listed = await admin((c) => listReviewLogins(c));
-      expect(listed.map((l) => l.role).sort()).toEqual(Object.values(names).sort());
-      for (const l of listed) {
+      const own = new Set(Object.values(names));
+      const mine = listed.filter((l) => own.has(l.role));
+      expect(mine.map((l) => l.role).sort()).toEqual(Object.values(names).sort());
+      for (const l of mine) {
         expect(l).toMatchObject({
           can_login: true,
           connection_limit: 2,
@@ -286,8 +289,13 @@ describeIntegration(
     }, 180_000);
 
     it('ends a person’s access at once, keeps their name in the audit log, and revokes everyone in an emergency', async () => {
-      const held = await pools.revB.connect(); // an open session of the person
-      held.on('error', () => undefined); // the session is terminated on purpose
+      // Revocation terminates sessions on purpose. Close every pooled login connection FIRST, so that no pooled
+      // client (idle or checked out) is left to receive the termination and raise an unhandled error.
+      await Promise.all(Object.values(pools).map((p) => p.end().catch(() => undefined)));
+      // The one session that must be seen terminated is a standalone client with its own error handler.
+      const held = new pg.Client({ connectionString: urls.revB });
+      held.on('error', () => undefined); // the session is terminated on purpose: its error must reach this handler
+      await held.connect();
       await held.query('SELECT 1');
       const before = (
         await db.owner.query(
@@ -298,7 +306,7 @@ describeIntegration(
       expect(before).toBeGreaterThan(0);
       await admin((c) => revokeReviewLogin(c, names.revB));
       await expect(held.query('SELECT 1')).rejects.toBeDefined(); // the session was terminated
-      held.release(true);
+      await held.end().catch(() => undefined);
       expect(
         (
           await db.owner.query('SELECT count(*)::int AS n FROM pg_roles WHERE rolname = $1', [
@@ -319,7 +327,8 @@ describeIntegration(
       await expect(gone.query('SELECT 1')).rejects.toBeDefined();
       await gone.end().catch(() => undefined);
       const done = await admin((c) => revokeAllReviewLogins(c));
-      expect(done.sort()).toEqual(
+      // the emergency switch removes every review login of the cluster, this test's included
+      expect(done.filter((n) => Object.values(names).includes(n)).sort()).toEqual(
         Object.values(names)
           .filter((n) => n !== names.revB)
           .sort(),
