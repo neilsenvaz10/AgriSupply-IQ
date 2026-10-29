@@ -19,6 +19,7 @@ export async function createGeoDatabase({ adminUrl, migrationUrl, database, worl
     return url.toString();
   };
   const admin = new pg.Pool({ connectionString: adminUrl, max: 2 });
+  admin.on('error', () => undefined); // a session ended by the server must never surface as an unhandled error
   const migrator = new URL(migrationUrl).username;
   await admin.query(`CREATE DATABASE ${database} OWNER ${migrator}`);
   await admin.query(
@@ -27,7 +28,9 @@ export async function createGeoDatabase({ adminUrl, migrationUrl, database, worl
   const ownerUrl = urlFor(migrationUrl);
   await runMigrations(ownerUrl);
   const owner = new pg.Pool({ connectionString: ownerUrl, max: 4 });
+  owner.on('error', () => undefined);
   const adminDb = new pg.Pool({ connectionString: urlFor(adminUrl), max: 3 });
+  adminDb.on('error', () => undefined);
   const w = worldRows(world);
   await owner.query(
     `INSERT INTO data_sources (id, code, name, source_type) VALUES ($1, $2, 'Synthetic source A', 'other')`,
