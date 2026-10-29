@@ -98,3 +98,7 @@ Reference data reaches a non-disposable database only through `scripts/load-lgd-
 ## 13. Stage 3b: geographic identity proposals
 
 A deterministic, read-only discrepancy analysis (`src/geography/`, `scripts/geo-analyze.js`) compares the registry and aliases with the loaded LGD reference and prepares candidate proposals for the review workflow of this document, without submitting, accepting or applying anything. See `STAGE_3B_GEOGRAPHIC_IDENTITY_PROPOSALS.md`.
+
+## 14. Stage 3c: controlled identity review
+
+Personal reviewer and approver logins (`src/identity/logins.js`, `scripts/review-logins.js`), a pilot selector, a command-line submitter for pilot proposals, a read-only interpretation of accepted decisions, and a rehearsal harness are described in `STAGE_3C_REVIEW_PREPARATION.md` and `STAGE_3C_OPERATOR_RUNBOOK.md`. **Known limitation:** the database does not enforce independent approval of mapping-set _activation_ (any single approver can activate a set, even one they filled); this is an operating rule until a migration enforces it. No login, mapping set or decision exists in development.
